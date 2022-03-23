@@ -1,4 +1,6 @@
-# dfkwatch
+# kingdom.watch
+
+The source code of [Kingdom.Watch](https://kingdom.watch/) provided by community member Magg. Feel free to fork and contribute pull requests!
 
 ## Project setup
 ```
