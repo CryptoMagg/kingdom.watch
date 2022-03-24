@@ -55,6 +55,7 @@
                 <div class="input-group">
                   <input v-model="inputUserAddress" type="text" class="form-control me-2" placeholder="Default address" aria-label="Default address"/>
                   <button class="btn btn-light">Set</button>
+                  <button class="btn btn-light ms-1" :disabled="walletButtonDisabled" @click="connect()">{{ walletButtonText }}</button>
                 </div>
               </form>
             </nav>
@@ -79,7 +80,9 @@ export default {
   data() {
     return {
       copied: false,
-      inputUserAddress: ""
+      inputUserAddress: "",
+      walletButtonDisabled: false,
+      walletButtonText: "Connect"
     }
   },
   methods: {
@@ -91,14 +94,51 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 5000)
+    },
+    async checkConnected() {
+      try {
+        this.walletButtonDisabled = true;
+        this.walletButtonText = "Checking..."
+        const { ethereum } = window;
+        if (!ethereum) {
+          this.walletButtonText = "No Wallet"
+          return;
+        }
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+        if (accounts.length === 0) {
+          this.walletButtonDisabled = false;
+          this.walletButtonText = "Connect"
+          return;
+        }
+        this.setUserAddress(accounts[0]);
+        this.inputUserAddress = accounts[0]
+        this.walletButtonText = "Connected"
+      } catch (e) {
+        this.walletButtonDisabled = false;
+        console.log(`Error | checkConnected | ${e.code} | ${e.message}`);
+      }
+    },
+    async connect() {
+      try {
+        this.walletButtonText = "Connecting..."
+        this.walletButtonDisabled = true;
+        const { ethereum } = window;
+        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+        this.setUserAddress(accounts[0])
+        this.inputUserAddress = accounts[0]
+      } catch (e) {
+        this.walletButtonDisabled = false
+        this.walletButtonText = "Connect"
+        console.log(`Error | connect | ${e.code} | ${e.message}`);
+      }
     }
-
   },
   computed: {
     ...mapGetters(["storeUserAddress"])
   },
   mounted() {
     this.inputUserAddress = this.storeUserAddress
+    this.checkConnected()
   }
 }
 </script>

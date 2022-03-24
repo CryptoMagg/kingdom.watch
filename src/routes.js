@@ -2,7 +2,7 @@ import About from "@/components/about/About";
 import DevWatch from "@/components/dev/DevWatch";
 import BankWatch from "@/components/bank/BankWatch";
 import Pools from "@/components/pools/Pools";
-import Whales from "@/components/whales/Whales";
+import Whales from "@/data/Whales";
 import Personal from "@/components/personal/Personal";
 import PersonalFront from "@/components/personal/PersonalFront";
 import Epoch from "@/components/epoch/Epoch";
