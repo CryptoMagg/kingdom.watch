@@ -183,7 +183,7 @@ const inventoryItemAddresses = [
   "0x6D6eA1D2Dc1Df6Eaa2153f212d25Cf92d13Be628", // Lesser Fortune Stone
   "0x5da2EffE9857DcEcB786E13566Ff37B92e1E6862", // Fortune Stone
   "0x6D4f4bC32df561a35C05866051CbE9C92759Da29", // Lesser Chaos Stone
-  "0x3633F956410163A98D58D2D928B38C64A488654e", // Chaos Stone 
+  "0x3633F956410163A98D58D2D928B38C64A488654e", // Chaos Stone
 ]
 
 const defaultSort = {
@@ -262,7 +262,8 @@ export default {
         console.info(item.address.toLowerCase() +  prices[item.address.toLowerCase()])
         item.price = prices[item.address.toLowerCase()]
         item.jewels =  item.price * item.balance
-        jewels += item.jewels
+        if(!isNaN(item.jewels))
+          jewels += item.jewels
       }
 
       this.setInventoryTotal(jewels)
