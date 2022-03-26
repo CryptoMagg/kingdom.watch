@@ -83,6 +83,8 @@ export default {
           let decimals = 1
           if(itemAddress === "0x72cb10c6bfa5624dd07ef608027e366bd690048f")
             decimals = 1e18
+          else if(itemAddress === "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7".toLowerCase())
+            decimals = 1e3
 
           if (quest[itemAddress])
             q.rewards.push(
@@ -120,6 +122,8 @@ export default {
           let decimals = 1
           if(reward.item === "0x72cb10c6bfa5624dd07ef608027e366bd690048f")
             decimals = 1e18
+          else if(reward.item === "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7".toLowerCase())
+            decimals = 1e3
 
           h.rewards.push({
             item: getItem(reward.item),
@@ -151,6 +155,8 @@ export default {
           let decimals = 1
           if(reward.item === "0x72cb10c6bfa5624dd07ef608027e366bd690048f")
             decimals = 1e18
+          else if(reward.item === "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7".toLowerCase())
+            decimals = 1e3
 
           if (!totalAmount[reward.item])
             totalAmount[reward.item] = reward.amount / decimals

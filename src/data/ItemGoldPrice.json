@@ -68,11 +68,13 @@
     "name": "Bluestem",
     "address": "0xac5c49ff7e813de1947dc74bbb1720c353079ac9",
     "gold": 5
-  },  "0xc0214b37fcd01511e6283af5423cf24c96bb9808": {
+  },
+  "0xc0214b37fcd01511e6283af5423cf24c96bb9808": {
     "name": "milkweed",
     "address": "0xc0214b37fcd01511e6283af5423cf24c96bb9808",
     "gold": 12.5
-  },  "0x19b9f05cde7a61ab7aae5b0ed91aa62ff51cf881": {
+  },
+  "0x19b9f05cde7a61ab7aae5b0ed91aa62ff51cf881": {
     "name": "spiderfruit",
     "address": "0x19b9f05cde7a61ab7aae5b0ed91aa62ff51cf881",
     "gold": 10
