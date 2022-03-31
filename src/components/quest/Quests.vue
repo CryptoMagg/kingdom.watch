@@ -80,11 +80,7 @@ export default {
         const itemAddresses = getAllItemAddresses()
         for (let itemAddress of itemAddresses) {
 
-          let decimals = 1
-          if(itemAddress === "0x72cb10c6bfa5624dd07ef608027e366bd690048f")
-            decimals = 1e18
-          else if(itemAddress === "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7".toLowerCase())
-            decimals = 1e3
+          const decimals = this.getDecimalsForToken(itemAddress);
 
           if (quest[itemAddress])
             q.rewards.push(
@@ -119,11 +115,7 @@ export default {
           if (reward.item === "0x0000000000000000000000000000000000000000")
             continue
 
-          let decimals = 1
-          if(reward.item === "0x72cb10c6bfa5624dd07ef608027e366bd690048f")
-            decimals = 1e18
-          else if(reward.item === "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7".toLowerCase())
-            decimals = 1e3
+          const decimals = this.getDecimalsForToken(reward.item);
 
           h.rewards.push({
             item: getItem(reward.item),
@@ -152,11 +144,7 @@ export default {
           if (reward.item === "0x0000000000000000000000000000000000000000")
             continue
 
-          let decimals = 1
-          if(reward.item === "0x72cb10c6bfa5624dd07ef608027e366bd690048f")
-            decimals = 1e18
-          else if(reward.item === "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7".toLowerCase())
-            decimals = 1e3
+          const decimals = this.getDecimalsForToken(reward.item);
 
           if (!totalAmount[reward.item])
             totalAmount[reward.item] = reward.amount / decimals
@@ -178,9 +166,24 @@ export default {
     }
   },
   methods: {
+    getDecimalsForToken(token_address)
+    {
+      let decimals = 1;
+      let token_address_lower = token_address.toLowerCase();
+      if(token_address_lower === "0x72cb10c6bfa5624dd07ef608027e366bd690048f")
+      {
+        decimals = 1e18
+      }
+      if(token_address_lower === "0x3a4edcf3312f44ef027acfd8c21382a5259936e7")
+      {
+        decimals = 1e3
+      }
+      return decimals;
+    },
     professionString(professionId) {
       const professions = {
         "-1": "",
+        "0": "Mining",
         "2": "Gardening",
         "4": "Fishing",
         "6": "Foraging"
