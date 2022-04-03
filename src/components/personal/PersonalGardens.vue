@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <div>
       <p>{{ error }}</p>
@@ -7,211 +6,144 @@
     <div class="row">
       <div class="col-lg-8 p-2 m-auto">
         <div class="border border-dark rounded-3">
-          <h3 class="p-3">Total across all {{ pools().length }} pools</h3>
-          <table class="m-auto table table-hover w-100">
-            <tbody>
-            <PersonalAPR/>
-            </tbody>
-          </table>
-          <div v-if="pools().length < userPools.length" class="progress">
-            <div
-                class="progress-bar progress-bar-striped progress-bar-animated"
-                role="progressbar"
-                aria-valuenow="0"
-                aria-valuemin="0"
-                :aria-valuemax="userPools.length"
-                :style="{width: (pools().length/userPools.length * 100) + '%'}">
+          <div v-for="[[exp, symbol], expansion] of [[['Serendale', 'Jewel'], 'sd'], [['Crystalvale', 'Crystal'], 'cv']]" :key="symbol">
+            <h3 class="p-3">
+              Total {{ pools(expansion).length>0?"across all":"for" }} {{ pools(expansion).length }}
+              {{ exp }} pool{{ pools(expansion).length>1||pools(expansion).length===0?"s":""}}
+            </h3>
+            <table class="m-auto table table-hover w-100">
+              <tbody>
+              <PersonalAPR :expansion="expansion"/>
+              </tbody>
+            </table>
+            <div v-if="pools(expansion).length < userPools[expansion].length" class="progress">
+              <div
+                  class="progress-bar progress-bar-striped progress-bar-animated"
+                  role="progressbar"
+                  aria-valuenow="0"
+                  aria-valuemin="0"
+                  :aria-valuemax="userPools[expansion].length"
+                  :style="{width: (pools(expansion).length/userPools[expansion].length * 100) + '%'}">
+              </div>
+            </div>
+            <div v-for="poolId in userPools[expansion]" :key="poolId">
+              <PersonalGarden :pool-id="poolId" :user-info="userInfos[expansion][poolId]" :user-address="userAddress"/>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-for="poolId in userPools" :key="poolId">
-      <PersonalGarden :pool-id="poolId" :user-info="userInfos[poolId]" :user-address="userAddress"/>
-    </div>
-    <div>
-      <PersonalGardenCV :pool-id=0 :user-info="userInfosCV[0]" :user-address="userAddress"/>
-    </div>
+
   </div>
 </template>
 
 <script>
-import epochs from "@/data/Epochs";
-import epochsCV from "@/data/EpochsCV";
 
 const _ = require('lodash')
-import {hexToNumber} from "@harmony-js/utils";
-import PersonalGarden from "@/components/personal/PersonalGarden"
-import PersonalGardenCV from "@/components/personal/PersonalGardenCV"
+
+import epochs from "@/data/Epochs";
 import PersonalAPR from "@/components/personal/PersonalAPR";
-
-const {Harmony} = require('@harmony-js/core');
-const {
-  ChainID,
-  ChainType,
-} = require('@harmony-js/utils');
-
-const hmy = new Harmony(
-    'https://harmony-0-rpc.gateway.pokt.network', //'https://api.harmony.one',
-    {
-      chainType: ChainType.Harmony,
-      chainId: ChainID.HmyMainnet,
-    },
-);
-
-const gardenerContractJson = require("../../data/MasterGardener.json")
-const gardenerContractAddress = "0xdb30643c71ac9e2122ca0341ed77d09d5f99f924"
-const gardenerContract = hmy.contracts.createContract(gardenerContractJson.abi, gardenerContractAddress)
-
-const { ethers } = require("ethers");
-
-// const dfkChain = new ethers.providers.JsonRpcProvider('https://avax-dfk.gateway.pokt.network/v1/lb/6244818c00b9f0003ad1b619//ext/bc/q2aTwKuyzgs8pynF7UXBZCU7DejbZbZ6EUyHr3JQzYgwNPUPi/rpc');
-const dfkChain = new ethers.providers.JsonRpcProvider('https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc');
-const gardenerCVContractAddress = "0x57Dec9cC7f492d6583c773e2E7ad66dcDc6940Fb"
-const gardenerCVContract = new ethers.Contract(gardenerCVContractAddress, gardenerContractJson.abi, dfkChain)
+import PersonalGarden from "@/components/personal/PersonalGarden"
+import {contracts, RPCs, formatUnits, expansionSet, expansionArraySet, formatEther} from "@/utils/ethers"
 
 export default {
   name: "PersonalGardens",
   components: {
     PersonalAPR,
-    PersonalGarden,
-    PersonalGardenCV
+    PersonalGarden
   },
   props: ["userAddress"],
   data() {
     return {
       error: "",
-      poolCount: 0,
-      poolCountCV: 0,
-      userInfos: [],
-      userPools: [],
-      userInfosCV: [],
-      userPoolsCV: [],
-      totalAllocPoints: 0,
-      totalAllocPointsCV: 0,
-      totalRewardsPerDay: 0,
-      totalRewardsPerDayCV: 0,
-      progress: 0,
-      maxProgress: 4,
+      poolCount: {...expansionSet},
+      userInfos: {...expansionArraySet},
+      userPools: {...expansionArraySet},
+      totalAllocPoints: {...expansionSet},
+      totalRewardsPerDay: {...expansionSet},
+      progress: {...expansionSet},
+      maxProgress: {
+        sd: 4,
+        cv: 4
+      },
     }
   },
   methods: {
-    increaseProgress() {
-      this.progress++
-      const progressPct = this.progress / this.maxProgress * 100
-      this.setCommonProgress(progressPct)
+    increaseProgress(expansion) {
+      this.progress[expansion]++
+      const progressPct = this.progress[expansion] / this.maxProgress[expansion] * 100
+      this.setCommonProgress(progressPct, expansion)
     },
     async initGardens() {
-
       try {
-        this.poolCount = (await gardenerContract.methods.poolLength().call()) * 1
-        this.maxProgress += this.poolCount
-        this.increaseProgress()
+        for (const expansion of ['sd', 'cv']) {
+          let gardener = contracts[expansion].gardener
 
-        for (let i = 0; i < this.poolCount; i++) {
+          let plRaw = await gardener.poolLength()
+          this.poolCount[expansion] = formatUnits(plRaw, 0)
+          this.maxProgress[expansion] += this.poolCount[expansion]
+          this.increaseProgress(expansion)
 
-          const userInfo = await gardenerContract.methods.userInfo(i, this.userAddress)
-              .call()
-
-          if (userInfo.amount > 0) {
-            this.userInfos[i] = userInfo
-            this.userPools.push(i)
+          for (let i = 0; i < this.poolCount[expansion]; i++) {
+            let userInfo = await gardener.userInfo(i, this.userAddress)
+            if (userInfo.amount > 0) {
+              this.userInfos[expansion][i] = userInfo
+              if (this.userPools[expansion].indexOf(i) === -1) {
+                console.log(i)
+                this.userPools[expansion].push(i)
+              }
+            }
+            this.increaseProgress(expansion)
           }
+          this.setPoolCount(this.userPools[expansion].length)
 
-          this.increaseProgress()
+          let blockNum = await RPCs[expansion].getBlockNumber()
+          this.setBlockNumber(blockNum, expansion)
+
+          const epoch = epochs.getCurrentEpoch(blockNum, expansion)
+          this.increaseProgress(expansion)
+          let rpbRaw
+          let multiplier
+          if (expansion === "sd") {
+            multiplier = epoch.multiplier
+            rpbRaw = await gardener.REWARD_PER_BLOCK()
+          } else {
+            let multiRaw = await gardener.REWARD_MULTIPLIER(epoch.epoch)
+            multiplier = formatUnits(multiRaw, 0)
+            rpbRaw = await gardener.REWARD_PER_SECOND()
+          }
+          let rewardPerBlock = Number(formatEther(rpbRaw))
+          this.totalRewardsPerDay[expansion] = rewardPerBlock * multiplier * 86400 / this.blockTime(expansion)
+          this.increaseProgress(expansion)
+
+          let tapRaw = await gardener.totalAllocPoint()
+          this.totalAllocPoints[expansion] = Number(formatUnits(tapRaw, 0))
+          this.increaseProgress(expansion)
         }
-
-        this.setPoolCount(this.userPools.length)
-
-        hmy.blockchain.getBlockNumber()
-            .then(result => {
-              const blockNum = hexToNumber(result.result)
-              console.log(blockNum)
-              this.setBlockNumber(blockNum)
-              const epoch = epochs.getCurrentEpoch(blockNum)
-              this.increaseProgress()
-
-              return gardenerContract.methods.REWARD_PER_BLOCK()
-                  .call()
-                  .then(result => {
-                    const rewardPerBlock = result / 1e18
-                    this.totalRewardsPerDay = rewardPerBlock * epoch.multiplier * 86400 / this.blockTime()
-                    console.log(this.totalRewardsPerDay)
-                    this.increaseProgress()
-                  })
-            })
-
-        gardenerContract.methods.totalAllocPoint()
-            .call()
-            .then(totalAllocPoints => {
-              this.totalAllocPoints = totalAllocPoints
-              console.log(this.totalAllocPointsCV)
-              this.increaseProgress()
-            })
-
       } catch (e) {
         this.handleError(e)
       }
     },
+    calcApr(expansion) {
+      const userRewardsPerDay = this.calcUserRewardsPerDay(expansion)
+      const tokenPrice = this.prices(expansion)
+      const userUsdTotal = _.sumBy(this.pools(expansion), "usdValue")
 
-    async initCVGardens() {
-
-      try {
-        this.poolCountCV = (await gardenerCVContract.poolLength()) * 1
-        this.maxProgress += this.poolCount
-        this.increaseProgress()
-
-        for (let i = 0; i < this.poolCountCV; i++) {
-
-          const userInfo = await gardenerCVContract.userInfo(i, this.userAddress)
-          if (userInfo.amount > 0) {
-            this.userInfosCV[i] = userInfo
-            this.userPoolsCV.push(i)
-          }
-
-          this.increaseProgress()
-        }
-
-        this.setPoolCount(this.userPools.length)
-
-        dfkChain.getBlockNumber()
-            .then(result => {
-              const epochCV = epochsCV.getCurrentEpoch(result)
-              const rewardPerBlock = 16
-              this.totalRewardsPerDayCV = rewardPerBlock * epochCV.multiplier * 86400 / this.blockTime()
-              console.log(this.totalRewardsPerDayCV)
-            })
-
-        gardenerCVContract.totalAllocPoint()
-            .then(totalAllocPoints => {
-            
-              this.totalAllocPointsCV = totalAllocPoints
-              console.log(totalAllocPoints)
-              this.increaseProgress()
-            })
-      console.log(this.userInfosCV)
-      } catch (e) {
-        this.handleError(e)
-      }
-    },
-
-    calcApr() {
-      const userRewardsPerDay = this.calcUserRewardsPerDay()
-      const jewelPrice = this.prices()["JEWEL"]
-      const userUsdTotal = _.sumBy(this.pools(), "usdValue")
-
-      if (userRewardsPerDay === 0 || jewelPrice === 0 || userUsdTotal === 0)
+      if (userRewardsPerDay === 0 || tokenPrice === 0 || userUsdTotal === 0) {
         return 0
-
-      const userUsdPerDay = userRewardsPerDay * jewelPrice
-
-      return userUsdPerDay / userUsdTotal * 100
+      }
+      return (userRewardsPerDay * tokenPrice) / userUsdTotal * 100
 
     },
-    calcUserRewardsPerDay() {
+    calcUserRewardsPerDay(expansion) {
       let userRewardsDay = 0
-      for (let pool of this.pools()) {
-        userRewardsDay += pool.allocPoints / this.totalAllocPoints * this.totalRewardsPerDay * pool.userShare
+      for (let pool of this.pools(expansion)) {
+        userRewardsDay += (
+            pool.allocPoints[expansion]
+            / this.totalAllocPoints[expansion]
+            * this.totalRewardsPerDay[expansion]
+            * pool.userShare[expansion]
+        )
       }
 
       return userRewardsDay
@@ -224,15 +156,14 @@ export default {
   inject: ["setBlockNumber", "blockNumber", "epoch", "setPoolCount", "pools", "prices", "setCommonProgress", "blockTime"],
   provide() {
     return {
-      totalAllocPoints: () => this.totalAllocPoints,
-      totalRewardsPerDay: () => this.totalRewardsPerDay,
-      apr: () => this.calcApr(),
-      userRewardsPerDay: () => this.calcUserRewardsPerDay(),
+      totalAllocPoints: (expansion) => this.totalAllocPoints[expansion],
+      totalRewardsPerDay: (expansion) => this.totalRewardsPerDay[expansion],
+      apr: (expansion) => this.calcApr(expansion),
+      userRewardsPerDay: (expansion) => this.calcUserRewardsPerDay(expansion),
     }
   },
   mounted() {
     this.initGardens()
-    this.initCVGardens()
   }
 }
 </script>

@@ -3,147 +3,115 @@
     <h3 class="p-3">Bank</h3>
     <span v-if="error.length > 0" class="bg-dark font-danger">{{ error }}</span>
     <div>
-      <table class="m-auto table table-hover w-100">
+      <table class="m-auto table table-hover w-100" v-for="[[exp, symbol], expansion] of [[['Serendale', 'Jewel'], 'sd'], [['Crystalvale', 'Crystal'], 'cv']]" :key="symbol">
+        <thead>
+        <tr>
+          <th class="text-start">{{ exp }}</th>
+        </tr>
+        </thead>
         <tbody>
         <tr>
-          <td class="text-start">xJewel Balance</td>
-          <td class="text-end">{{ formattedUserXJewelBalance }}</td>
+          <td class="text-start">x{{ symbol }} Balance</td>
+          <td class="text-end">{{ formattedUserXBalance(expansion) }}</td>
         </tr>
         <tr>
-          <td class="text-start">Jewel Balance</td>
-          <td class="text-end">{{ formattedUserJewelBalance }}</td>
+          <td class="text-start">{{ symbol }} Balance</td>
+          <td class="text-end">{{ formattedUserBalance(expansion) }}</td>
         </tr>
         <tr>
           <td class="text-start">Bank ratio</td>
-          <td class="text-end">{{ xJewelRatio.toFixed(4) }}</td>
+          <td class="text-end">{{ xRatio(expansion).toFixed(4) }}</td>
         </tr>
         </tbody>
       </table>
     </div>
-    <div v-if="progress < maxProgress"  class="progress">
-      <div class="progress-bar progress-bar-striped progress-bar-animated"
-           role="progressbar"
-           aria-valuenow="{{ progress }}"
-           aria-valuemin="0"
-           aria-valuemax="{{ maxProgress }}"
-           :style="{width: (progress/maxProgress * 100) + '%'}">
+    <div v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+      <div v-if="progress[expansion] < maxProgress[expansion]"  class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated"
+             role="progressbar"
+             aria-valuenow="{{ progress[expansion] }}"
+             aria-valuemin="0"
+             aria-valuemax="{{ maxProgress[expansion] }}"
+             :style="{width: (progress[expansion]/maxProgress[expansion] * 100) + '%'}">
+        </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
-const formatNumber = require('../../utils/FormatNumber')
 
-const {Harmony} = require('@harmony-js/core');
-const {
-  ChainID,
-  ChainType,
-} = require('@harmony-js/utils');
-
-const hmy = new Harmony(
-    'https://api.harmony.one', //'https://harmony-0-rpc.gateway.pokt.network', //'https://api.harmony.one',
-    {
-      chainType: ChainType.Harmony,
-      chainId: ChainID.HmyMainnet,
-    },
-);
-
-const jewelContractJson = require("../../data/Jewel.json");
-const jewelContractAddress = "0x72Cb10C6bfA5624dD07Ef608027E366bd690048F";
-
-const jewelContract = hmy.contracts.createContract(jewelContractJson.abi, jewelContractAddress);
-
-const xJewelContractJson = require("../../data/xJewel.json");
-const xJewelContractAddress = "0xa9ce83507d872c5e1273e745abcfda849daa654f";
-
-const xJewelContract = hmy.contracts.createContract(xJewelContractJson.abi, xJewelContractAddress);
-
-
-const profileContractJson = require("../../data/profile.json")
-const profileContractAddress = "0xabd4741948374b1f5dd5dd7599ac1f85a34cacdd"
-
-const profileContract = hmy.contracts.createContract(profileContractJson.abi, profileContractAddress)
+import formatNumber from '@/utils/FormatNumber'
+import { expansionSet, contracts, formatEther } from "@/utils/ethers"
 
 export default {
   name: "PersonalBank",
   props: ["userAddress"],
   data() {
     return {
-      xJewelTotalSupply: 0.0,
-      bankJewelBalance: 0.0,
-      userXJewelBalance: 0.0,
-      userBankJewelBalance: 0.0,
+      xTotalSupply: {...expansionSet},
+      bankBalance: {...expansionSet},
+      userXBalance: {...expansionSet},
+      userBankBalance: {...expansionSet},
       error: "",
       loading: true,
-      progress: 0,
-      maxProgress: 3,
-    }
-  },
-  computed: {
-    xJewelRatio() {
-      if (this.xJewelTotalSupply > 0 && this.bankJewelBalance > 0)
-        return this.bankJewelBalance / this.xJewelTotalSupply
-      else
-        return 0.0
-    },
-    formattedUserXJewelBalance() {
-      return formatNumber(this.userXJewelBalance)
-    },
-    formattedUserJewelBalance() {
-      return formatNumber(this.userBankJewelBalance)
+      progress: {...expansionSet},
+      maxProgress: {
+        sd: 3,
+        cv: 3
+      },
     }
   },
   methods: {
     loadBank() {
       Promise.all([
-        xJewelContract.methods.totalSupply()
-            .call()
-            .then(totalSupply => {
-              this.xJewelTotalSupply = totalSupply
-              this.progress++
-            })
-            .catch(err => {
-              console.log(err)
-              this.error = err
+        contracts.sd.xToken.totalSupply()
+            .then(uint256 => { this.xTotalSupply.sd = Number(formatEther(uint256)); this.progress.sd++ })
+            .catch(err => { console.log(err); this.error = err }),
 
-            }),
+        contracts.sd.token.balanceOf(contracts.sd.xToken.address)
+            .then(uint256 => { this.bankBalance.sd = Number(formatEther(uint256)); this.progress.sd++ })
+            .catch(err => { console.log(err); this.error = err }),
 
-        jewelContract.methods.balanceOf(xJewelContractAddress)
-            .call()
-            .then(balance => {
-              this.bankJewelBalance = balance
-              this.progress++
-            })
-            .catch(err => {
-              console.log(err)
-              this.error = err
-            }),
+        contracts.sd.xToken.balanceOf(this.userAddress)
+            .then(uint256 => { this.userXBalance.sd = Number(formatEther(uint256)); this.progress.sd++ })
+            .catch(err => { console.log(err); this.error = err }),
+        contracts.cv.xToken.totalSupply()
+            .then(uint256 => { this.xTotalSupply.cv = Number(formatEther(uint256)); this.progress.cv++ })
+            .catch(err => { console.log(err); this.error = err }),
 
-        xJewelContract.methods.balanceOf(this.userAddress)
-            .call()
-            .then(balance => {
-              this.userXJewelBalance = balance / 1e18
-              this.progress++
-            })
-            .catch(err => {
-              console.log(err)
-              this.error = err
-            })
-      ])
-          .then(() => {
-            this.loading = false
-            this.userBankJewelBalance = this.xJewelRatio * this.userXJewelBalance
-            this.setBankBalance(this.userBankJewelBalance)
-          })
+        contracts.cv.token.balanceOf(contracts.cv.xToken.address)
+            .then(uint256 => { this.bankBalance.cv = Number(formatEther(uint256)); this.progress.cv++ })
+            .catch(err => { console.log(err); this.error = err }),
+
+        contracts.cv.xToken.balanceOf(this.userAddress)
+            .then(uint256 => { this.userXBalance.cv = Number(formatEther(uint256)); this.progress.cv++ })
+            .catch(err => { console.log(err); this.error = err }),
+      ]).then(() => {
+        this.loading = false
+        this.userBankBalance.sd = this.xRatio("sd") * this.userXBalance.sd
+        this.setBankBalance(this.userBankBalance.sd, "sd")
+        this.userBankBalance.cv = this.xRatio("cv") * this.userXBalance.cv
+        this.setBankBalance(this.userBankBalance.cv, "cv")
+      })
     },
     loadProfile() {
-      profileContract.methods.getProfileByAddress(this.userAddress)
-          .call()
+      contracts.sd.profile.getProfileByAddress(this.userAddress)
           .then(profile => {
             this.setProfileName(profile._name)
           })
+    },
+    xRatio(expansion) {
+      if (this.xTotalSupply[expansion] > 0 && this.bankBalance[expansion] > 0)
+        return this.bankBalance[expansion] / this.xTotalSupply[expansion]
+      else
+        return 0.0
+    },
+    formattedUserXBalance(expansion) {
+      return formatNumber(this.userXBalance[expansion])
+    },
+    formattedUserBalance(expansion) {
+      return formatNumber(this.userBankBalance[expansion])
     }
   },
   inject: ["setBankBalance", "setProfileName"],

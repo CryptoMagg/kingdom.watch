@@ -256,10 +256,10 @@ export default {
       const prices = this.prices()
       let jewels = 0
 
-      console.info(prices)
+      // console.info(prices)
 
       for (let item of this.items) {
-        console.info(item.address.toLowerCase() +  prices[item.address.toLowerCase()])
+        // console.info(item.address.toLowerCase() +  prices[item.address.toLowerCase()])
         item.price = prices[item.address.toLowerCase()]
         item.jewels =  item.price * item.balance
         if(!isNaN(item.jewels))
@@ -328,7 +328,7 @@ export default {
       this.itemSort = {...defaultSort}
 
       this.itemSort[field] = currentDir * -1
-      console.info(this.itemSort)
+      // console.info(this.itemSort)
     }
   },
   provide() {

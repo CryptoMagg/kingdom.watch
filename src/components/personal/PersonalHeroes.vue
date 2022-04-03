@@ -114,7 +114,7 @@ export default {
         hero["professionString"] = statGenes.profession.charAt(0).toUpperCase() + statGenes.profession.substring(1)
 
         if(!hero["classString"])
-          console.info(`Hero class ${hero.info.class}`)
+          // console.info(`Hero class ${hero.info.class}`)
 
         this.heroes.push(hero)
         // console.info(hero.info)
@@ -169,7 +169,7 @@ export default {
       let ids = [generation, info.rarity, summonsBucket, mainClass[info.class], profession]
 
       let id = ids.join('-')
-      console.info(id)
+      // console.info(id)
       if(!isNaN(this.floor[id]))
         return {
           confidence: generationString + ", R, " + summonsBucket + ", C, P",
@@ -177,7 +177,7 @@ export default {
         }
 
       id = ids.slice(0, 4).join('-')
-      console.info(id)
+      // console.info(id)
 
       if(!isNaN(this.floor[id]))
         return {
@@ -187,7 +187,7 @@ export default {
 
 
       id = ids.slice(0, 3).join('-')
-      console.info(id)
+      // console.info(id)
 
       if(!isNaN(this.floor[id]))
         return {
