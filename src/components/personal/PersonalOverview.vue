@@ -1,20 +1,21 @@
 <template>
   <div class="border border-dark rounded-3">
     <h3 class="p-3">Overview</h3>
-    <div v-if="progressBarWidth() < 100" class="progress">
+    <div v-if="progressBarWidth('sd') < 100" class="progress">
       <div class="progress-bar progress-bar-striped progress-bar-animated"
            role="progressbar"
            aria-valuenow="0"
            aria-valuemin="0"
            aria-valuemax="100"
-           :style="{width: (progressBarWidth()) + '%'}">
+           :style="{width: (progressBarWidth('sd')) + '%'}">
       </div>
     </div>
     <div>
       <table class="table table-hover w-100">
         <thead>
         <tr>
-          <th class="text-start" colspan="3">Grand Total</th>
+          <th class="text-start" colspan="2">Grand Total</th>
+          <th class="text-end">{{ formatNumber(grandTotalUsd("sd") + grandTotalUsd('cv'), '$') }}</th>
         </tr>
         </thead>
         <thead>
@@ -24,21 +25,33 @@
         </tr>
         </thead>
         <tbody>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start" colspan="3">Available</td>
+          <td class="text-start" colspan="2">Available</td>
+          <th class="text-end">
+            {{ formatNumber((totalAvailable('sd') * tokenPrice('sd')) + (totalAvailable('cv') * tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(totalAvailable(expansion)) }}</td>
           <td class="text-end">{{ formatNumber(totalAvailable(expansion) * tokenPrice(expansion), '$') }}</td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start" colspan="3">
+          <td class="text-start" colspan="2">
             <span class="form-check form-switch">
               <input v-model="includeLocked" class="form-check-input" type="checkbox" role="switch" id="flexSwitchLocked">
               <label class="form-check-label" for="flexSwitchLocked">Locked</label>
             </span>
           </td>
+          <th class="text-end">
+            {{ formatNumber(includeLocked?(totalLocked('sd')*tokenPrice('sd'))+(totalLocked('cv') * tokenPrice('cv')):0, '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
@@ -49,13 +62,19 @@
             <span>{{ formatNumber(includeLocked ? totalLocked(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
           </td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start" colspan="3">
+          <td class="text-start" colspan="2">
             <span class="form-check form-switch">
               <input v-model="includeHeroes" class="form-check-input" type="checkbox" role="switch" id="flexSwitchHeroes">
               <label class="form-check-label" for="flexSwitchHeroes">Heroes</label>
             </span>
           </td>
+          <th class="text-end">
+            {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv') * tokenPrice('cv')):0, '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
@@ -66,13 +85,19 @@
             <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
           </td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start" colspan="3">
+          <td class="text-start" colspan="2">
             <span class="form-check form-switch">
               <input v-model="includeInventory" class="form-check-input" type="checkbox" role="switch" id="flexSwitchInventory">
                <label class="form-check-label" for="flexSwitchInventory">Inventory</label>
             </span>
           </td>
+          <th class="text-end">
+            {{ formatNumber(includeInventory?(inventoryTotal('sd')*tokenPrice('sd'))+(inventoryTotal('cv') * tokenPrice('cv')):0, '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
@@ -83,8 +108,14 @@
             <span>{{ formatNumber(includeInventory ? inventoryTotal(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
           </td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start" colspan="3">Gardens</td>
+          <td class="text-start" colspan="2">Gardens</td>
+          <th class="text-end">
+            <span>{{ formatNumber(totalPoolUsd('sd') + totalPoolUsd('cv'), '$') }}</span>
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
@@ -97,7 +128,10 @@
 
         <thead>
         <tr>
-          <th class="text-start" colspan="3">Available</th>
+          <th class="text-start" colspan="2">Available</th>
+          <th class="text-end">
+            {{ formatNumber((totalAvailable('sd')*tokenPrice('sd'))+(totalAvailable('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         </thead>
         <thead>
@@ -108,22 +142,37 @@
         </tr>
         </thead>
         <tbody>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <th class="text-start" colspan="3">Wallet</th>
+          <th class="text-start" colspan="2">Wallet</th>
+          <th class="text-end">
+            {{ formatNumber((walletBalance['sd']*tokenPrice('sd'))+(walletBalance['cv']*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(walletBalance[expansion]) }}</td>
           <td class="text-end">{{ formatNumber(walletBalance[expansion] * tokenPrice(expansion), '$') }}</td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <th class="text-start" colspan="3">Bank</th>
+          <th class="text-start" colspan="2">Bank</th>
+          <th class="text-end">
+            {{ formatNumber((this.bankBalance('sd')*tokenPrice('sd'))+(this.bankBalance('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(this.bankBalance(expansion)) }}</td>
           <td class="text-end">{{ formatNumber(this.bankBalance(expansion) * tokenPrice(expansion), '$') }}</td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
           <th class="text-start" colspan="3">Pending Unlocked</th>
         </tr>
@@ -139,7 +188,10 @@
 
         <thead>
         <tr>
-          <th class="text-start" colspan="3">Locked</th>
+          <th class="text-start" colspan="2">Locked</th>
+          <th class="text-end">
+            {{ formatNumber((totalLocked('sd')*tokenPrice('sd'))+(totalLocked('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         </thead>
         <thead>
@@ -151,16 +203,28 @@
         </thead>
 
         <tbody>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <th class="text-start" colspan="3">Currently Locked</th>
+          <th class="text-start" colspan="2">Currently Locked</th>
+          <th class="text-end">
+            {{ formatNumber((lockedBalance['sd']*tokenPrice('sd'))+(lockedBalance['cv']*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(lockedBalance[expansion]) }}</td>
           <td class="text-end">{{ formatNumber(lockedBalance[expansion] * tokenPrice(expansion), '$') }}</td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <th class="text-start" colspan="3">Pending Locked</th>
+          <th class="text-start" colspan="2">Pending Locked</th>
+          <th class="text-end">
+            {{ formatNumber((pendingLocked('sd')*tokenPrice('sd'))+(pendingLocked('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
@@ -174,11 +238,17 @@
 
         <thead>
         <tr>
-          <th class="text-start" colspan="3">Hero Floor</th>
+          <th class="text-start" colspan="2">Hero Floor</th>
+          <th class="text-end">
+            {{ formatNumber((heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         </thead>
 
         <tbody>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end">{{ formatNumber(heroTotal(expansion)) }}</th>
@@ -207,6 +277,9 @@
             {{ formatNumber(totalPoolUsd, '$') }}
           </th>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         </thead>
 
         <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
@@ -254,16 +327,7 @@ export default {
       }
     }
   },
-  inject: [
-    "totalPending",
-    "epoch",
-    "bankBalance",
-    "prices",
-    "progressPct",
-    "pools",
-    "heroTotal",
-    "inventoryTotal"
-  ],
+  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal" ],
   methods: {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
