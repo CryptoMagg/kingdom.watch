@@ -42,21 +42,18 @@
         <td class="text-end">{{ formatNumber(item.jewels * prices()["JEWEL"], '$') }}</td>
         <td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.goldPrice) }}</span></td>
         <td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.goldPrice * item.balance) }}</span></td>
-        <td class="text-end"><span v-if="item.goldPrice">{{
-            formatNumber(item.goldPrice * item.balance * prices()["0x3a4edcf3312f44ef027acfd8c21382a5259936e7"] * prices()["JEWEL"], '$')
-          }}</span></td>
+        <td class="text-end">
+          <span v-if="item.goldPrice">
+            {{formatNumber(item.goldPrice * item.balance * itemPrices["0x3a4edcf3312f44ef027acfd8c21382a5259936e7"] * prices()["JEWEL"], '$') }}
+          </span>
+        </td>
       </tr>
       </tbody>
       <tfoot>
       <tr>
-        <th/>
-        <th class="text-start"></th>
-        <th class="text-end"></th>
-        <th class="text-end"></th>
-        <th class="text-end">{{ formatNumber(totalJewels) }}</th>
+        <th class="text-end" colspan="5">{{ formatNumber(totalJewels) }}</th>
         <th class="text-end">{{ formatNumber(totalUsd, '$') }}</th>
-        <th/>
-        <th class="text-end">{{ formatNumber(totalGold) }}</th>
+        <th class="text-end" colspan="2">{{ formatNumber(totalGold) }}</th>
         <th class="text-end">{{ formatNumber(totalUsdGold, '$') }}</th>
       </tr>
       </tfoot>
@@ -70,21 +67,9 @@ import formatNumber from "@/utils/FormatNumber";
 import SortIcon from "@/components/generic/SortIcon";
 import {getItem} from "@/utils/Items";
 
-const {Harmony} = require('@harmony-js/core');
-const {
-  ChainID,
-  ChainType,
-} = require('@harmony-js/utils');
-
-const erc20ContractJson = require("../../data/ERC20.json")
-
-const hmy = new Harmony(
-    'https://harmony-0-rpc.gateway.pokt.network', //https://api.harmony.one',
-    {
-      chainType: ChainType.Harmony,
-      chainId: ChainID.HmyMainnet,
-    },
-);
+import {formatUnits, contractJson, RPCs} from "@/utils/ethers"
+import { Contract } from 'ethers'
+import axios from "axios";
 
 const inventoryItemAddresses = [
 
@@ -208,6 +193,7 @@ export default {
   data() {
     return {
       items: [],
+      itemPrices: {},
       itemSort: {...defaultSort}
     }
   },
@@ -253,20 +239,16 @@ export default {
       return items
     },
     totalJewels() {
-      const prices = this.prices()
       let jewels = 0
 
-      // console.info(prices)
-
       for (let item of this.items) {
-        // console.info(item.address.toLowerCase() +  prices[item.address.toLowerCase()])
-        item.price = prices[item.address.toLowerCase()]
+        item.price = this.itemPrices[item.address.toLowerCase()]
         item.jewels =  item.price * item.balance
         if(!isNaN(item.jewels))
           jewels += item.jewels
       }
 
-      this.setInventoryTotal(jewels)
+      this.setInventoryTotal(jewels, 'sd')
       return jewels
     },
     totalGold() {
@@ -280,20 +262,26 @@ export default {
       return gold
     },
     totalUsd() {
-      const prices = this.prices()
-
-      return this.totalJewels * prices["JEWEL"]
+      return this.totalJewels * this.prices()["JEWEL"]
     },
     totalUsdGold() {
-      const prices = this.prices()
-
-      return this.totalGold * prices["0x3a4edcf3312f44ef027acfd8c21382a5259936e7"] * prices["JEWEL"]
-
+      return this.totalGold * this.itemPrices["0x3a4edcf3312f44ef027acfd8c21382a5259936e7"] * this.prices()["JEWEL"]
     }
   },
   methods: {
     formatNumber(num, prefix, suffix, decimals) {
       return formatNumber(num, prefix, suffix, decimals)
+    },
+    async loadPrice(address) {
+      const dsPrefix = "https://api.dexscreener.io/latest/dex/tokens/"
+      let r = await axios.get(dsPrefix + address)
+      if (r.status === 200) {
+        let pairs = r.data.pairs.filter(pair => pair.dexId === "defikingdoms" && pair.quoteToken.symbol === 'JEWEL')
+        if (pairs.length > 0)
+          this.itemPrices[address] = Number(pairs[0].priceUsd)
+      } else {
+        console.log(`Got status ${r.status} : ${r.statusText} while loading prices`)
+      }
     },
     async loadInventory() {
       const allItems = []
@@ -302,15 +290,16 @@ export default {
         allItems.push(this.loadItem(itemAddress.toLowerCase()))
 
       await Promise.all(allItems)
-
     },
     async loadItem(itemAddress) {
-      const erc20Contract = hmy.contracts.createContract(erc20ContractJson.abi, itemAddress)
-      const erc20Decimals = await erc20Contract.methods.decimals().call()
+      const contract = new Contract(itemAddress, contractJson.erc20.abi, RPCs.sd)
+      const decimals = await contract.decimals()
 
-      const balance = (await erc20Contract.methods.balanceOf(this.userAddress).call()) / 10 ** erc20Decimals
+      const balance = Number(formatUnits(await contract.balanceOf(this.userAddress), decimals))
       if (balance === 0)
         return
+
+      await this.loadPrice(itemAddress)
 
       const item = {
         ...getItem(itemAddress),
@@ -328,7 +317,6 @@ export default {
       this.itemSort = {...defaultSort}
 
       this.itemSort[field] = currentDir * -1
-      // console.info(this.itemSort)
     }
   },
   provide() {
