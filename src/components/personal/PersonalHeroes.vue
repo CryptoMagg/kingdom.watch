@@ -5,9 +5,12 @@
       <tr>
         <th class="text-start">ID#</th>
         <th class="text-end">Gen</th>
+        <th class="text-end">Level</th>
         <th class="text-start">Rarity</th>
         <th class="text-start">Class</th>
         <th class="text-start">Profession</th>
+        <th class="text-start">Boosts</th>
+        <th class="text-start">Summons</th>
         <th class="text-end"><router-link to="/about/floorprice">Floor</router-link></th>
         <th class="text-start"><router-link to="/about/floorprice">Confidence</router-link></th>
       </tr>
@@ -16,17 +19,20 @@
         <tr v-for="hero of heroes[expansion]" :key="hero">
           <td class="text-start">{{ hero.id }}</td>
           <td class="text-end">{{ hero.info.generation }}</td>
+          <td class="text-end">{{ hero.state.level }}</td>
           <td class="text-start" :class="hero.rarityString">{{ hero.rarityString }}</td>
           <td class="text-start">{{ hero.classString }}</td>
           <td class="text-start">{{ hero.professionString }}</td>
+          <td class="text-start d-flex"><div class="Uncommon">{{ hero.statBoost1 }}</div> / <div class="Rare">{{ hero.statBoost2 }}</div></td>
+          <td class="text-start">{{ hero.summoningInfo.maxSummons - hero.summoningInfo.summons }}/{{ hero.summoningInfo.maxSummons }}</td>
           <td class="text-end">{{ formatNumber(hero.floorPrice, null, null, 0)}}</td>
           <td class="text-start">{{ hero.floorConfidence }}</td>
         </tr>
       </tbody>
       <tfoot>
       <tr>
-        <td class="text-start" colspan="5">{{ heroes.length }} Heroes total. {{ priceStamp }}</td>
-        <th class="text-end">{{ formatNumber(heroTotal)}}</th>
+        <td class="text-start" colspan="8">{{ heroes.sd.length }} Heroes total. {{ priceStamp }}</td>
+        <th class="text-end">{{ formatNumber(heroTotal.sd)}}</th>
         <th />
       </tr>
       </tfoot>
@@ -85,6 +91,8 @@ export default {
         this.heroTotal.sd += floorData.price
 
         let hero = {...rawHero}
+        hero.statBoost1 = statGenes.statBoost1
+        hero.statBoost2 = statGenes.statBoost2
         hero.floorPrice = floorData.price
         hero.floorConfidence = floorData.confidence
 
@@ -99,7 +107,7 @@ export default {
         this.setHeroProgress(processedHeroes/heroCount * 100.0, 'sd')
       }
 
-      this.setHeroTotal(this.heroTotal, 'sd')
+      this.setHeroTotal(this.heroTotal.sd, 'sd')
       this.setHeroProgress(100, 'sd')
     },
 

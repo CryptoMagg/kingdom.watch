@@ -111,7 +111,7 @@ import timeString from '../../utils/TimeString'
 
 import axios from "axios"
 import epochs from '../../data/Epochs'
-import { contractAddrs, expansionSet } from "@/utils/ethers"
+import { contractAddrs } from "@/utils/ethers"
 
 import Address from "@/components/generic/Address"
 import PersonalOverview from "@/components/personal/PersonalOverview"
@@ -134,9 +134,9 @@ export default {
   data() {
     return {
       userAddress: "",
-      bankBalance: {...expansionSet},
-      totalPending: {...expansionSet},
-      blockNumber: {...expansionSet},
+      bankBalance: { sd: 0, cv: 0 },
+      totalPending: { sd: 0, cv: 0 },
+      blockNumber: { sd: 0, cv: 0 },
       blockTime: {
         sd: 2,
         cv: 1
@@ -145,29 +145,23 @@ export default {
         sd: 604800,
         cv: 604800
       },
-      epoch: {
-        sd: {},
-        cv: {}
-      },
+      epoch: { sd: {}, cv: {} },
       prices: {
         JEWEL: 0.0,
         CRYSTAL: 0.0,
       },
       pricesTimestamp: 0,
       priceGeneratedStamp: 0,
-      pools: {
-        sd: [],
-        cv: []
-      },
-      poolCount: {...expansionSet},
-      commonProgressPct: {...expansionSet},
-      poolProgress: {...expansionSet},
-      bankProgressPct: {...expansionSet},
-      progressPct: {...expansionSet},
+      pools: { sd: [], cv: [] },
+      poolCount: { sd: 0, cv: 0 },
+      commonProgressPct: { sd: 0, cv: 0 },
+      poolProgress: { sd: 0, cv: 0 },
+      bankProgressPct: { sd: 0, cv: 0 },
+      progressPct: { sd: 0, cv: 0 },
       profileName: "",
-      heroTotal: {...expansionSet},
-      heroProgress: {...expansionSet},
-      inventoryTotal: {...expansionSet},
+      heroTotal: { sd: 0, cv: 0 },
+      heroProgress: { sd: 0, cv: 0 },
+      inventoryTotal: { sd: 0, cv: 0 },
     }
   },
   methods: {
