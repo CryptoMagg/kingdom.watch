@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <div>
       <p>{{ error }}</p>
@@ -7,58 +6,45 @@
     <div class="row">
       <div class="col-lg-8 p-2 m-auto">
         <div class="border border-dark rounded-3">
-          <h3 class="p-3">Total across all {{ pools().length }} pools</h3>
-          <table class="m-auto table table-hover w-100">
-            <tbody>
-            <PersonalAPR/>
-            </tbody>
-          </table>
-          <div v-if="pools().length < userPools.length" class="progress">
-            <div
-                class="progress-bar progress-bar-striped progress-bar-animated"
-                role="progressbar"
-                aria-valuenow="0"
-                aria-valuemin="0"
-                :aria-valuemax="userPools.length"
-                :style="{width: (pools().length/userPools.length * 100) + '%'}">
+          <div v-for="[[exp, symbol], expansion] of [[['Serendale', 'Jewel'], 'sd'], [['Crystalvale', 'Crystal'], 'cv']]" :key="symbol">
+            <h3 class="p-3">
+              {{ pools(expansion).length>0?"Total across":"" }} {{ pools(expansion).length }}
+              {{ exp }} pool{{ pools(expansion).length>1||pools(expansion).length===0?"s":""}}
+            </h3>
+            <table class="m-auto table table-hover w-100">
+              <tbody>
+              <PersonalAPR :expansion="expansion"/>
+              </tbody>
+            </table>
+            <div v-if="pools(expansion).length < Object.keys(this.userPools[expansion]).length" class="progress">
+              <div
+                  class="progress-bar progress-bar-striped progress-bar-animated"
+                  role="progressbar"
+                  aria-valuenow="0"
+                  aria-valuemin="0"
+                  :aria-valuemax="Object.keys(this.userPools[expansion]).length"
+                  :style="{width: (pools(expansion).length/Object.keys(this.userPools[expansion]).length * 100) + '%'}">
+              </div>
+            </div>
+            <div v-for="poolId of userPools[expansion]" :key="poolId" class="shit">
+              <PersonalGarden :pool-id="poolId" :user-info="userInfos[expansion][poolId]" :expansion="expansion" :user-address="userAddress"/>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-for="poolId in userPools" :key="poolId">
-      <PersonalGarden :pool-id="poolId" :user-info="userInfos[poolId]" :user-address="userAddress"/>
-    </div>
+
   </div>
 </template>
 
 <script>
-import epochs from "@/data/Epochs";
 
 const _ = require('lodash')
-import {hexToNumber} from "@harmony-js/utils";
-import PersonalGarden from "@/components/personal/PersonalGarden"
+
+import epochs from "@/data/Epochs";
 import PersonalAPR from "@/components/personal/PersonalAPR";
-
-const {Harmony} = require('@harmony-js/core');
-const {
-  ChainID,
-  ChainType,
-} = require('@harmony-js/utils');
-
-const hmy = new Harmony(
-    'https://harmony-0-rpc.gateway.pokt.network', //'https://api.harmony.one',
-    {
-      chainType: ChainType.Harmony,
-      chainId: ChainID.HmyMainnet,
-    },
-);
-
-const gardenerContractJson = require("../../data/MasterGardener.json")
-const gardenerContractAddress = "0xdb30643c71ac9e2122ca0341ed77d09d5f99f924"
-
-const gardenerContract = hmy.contracts.createContract(gardenerContractJson.abi, gardenerContractAddress)
-
+import PersonalGarden from "@/components/personal/PersonalGarden"
+import {contracts, RPCs, formatUnits, formatEther} from "@/utils/ethers"
 
 export default {
   name: "PersonalGardens",
@@ -70,88 +56,109 @@ export default {
   data() {
     return {
       error: "",
-      poolCount: 0,
-      userInfos: [],
-      userPools: [],
-      totalAllocPoints: 0,
-      totalRewardsPerDay: 0,
-      progress: 0,
-      maxProgress: 4,
+      poolCount: {
+        sd: 0,
+        cv: 0
+      },
+      userInfos: {
+        sd: {},
+        cv: {}
+      },
+      userPools: {
+        sd: {},
+        cv: {}
+      },
+      totalAllocPoints: {
+        sd: 0,
+        cv: 0
+      },
+      totalRewardsPerDay: {
+        sd: 0,
+        cv: 0
+      },
+      progress: {
+        sd: 0,
+        cv: 0
+      },
+      maxProgress: {
+        sd: 4,
+        cv: 4
+      },
     }
   },
   methods: {
-    increaseProgress() {
-      this.progress++
-      const progressPct = this.progress / this.maxProgress * 100
-      this.setCommonProgress(progressPct)
+    increaseProgress(expansion) {
+      this.progress[expansion]++
+      const progressPct = this.progress[expansion] / this.maxProgress[expansion] * 100
+      this.setCommonProgress(progressPct, expansion)
     },
     async initGardens() {
-
       try {
-        this.poolCount = (await gardenerContract.methods.poolLength().call()) * 1
-        this.maxProgress += this.poolCount
-        this.increaseProgress()
+        for (const expansion of ['sd', 'cv']) {
+          let gardener = contracts[expansion].gardener
 
-        for (let i = 0; i < this.poolCount; i++) {
+          let plRaw = await gardener.poolLength()
+          this.poolCount[expansion] = formatUnits(plRaw, 0)
+          this.maxProgress[expansion] += this.poolCount[expansion]
+          this.increaseProgress(expansion)
 
-          const userInfo = await gardenerContract.methods.userInfo(i, this.userAddress)
-              .call()
-
-          if (userInfo.amount > 0) {
-            this.userInfos[i] = userInfo
-            this.userPools.push(i)
+          for (let i=0;i<this.poolCount[expansion];i++) {
+            let userInfo = await gardener.userInfo(i, this.userAddress)
+            if (userInfo.amount.gt(0)) {
+              this.userInfos[expansion][i] = userInfo
+              this.userPools[expansion][i] = i
+            }
+            this.increaseProgress(expansion)
           }
+          this.setPoolCount(Object.keys(this.userPools[expansion]).length)
 
-          this.increaseProgress()
+          let blockNum = await RPCs[expansion].getBlockNumber()
+          this.setBlockNumber(blockNum, expansion)
+
+          const epoch = epochs.getCurrentEpoch(blockNum, expansion)
+          this.increaseProgress(expansion)
+          let rpbRaw
+          let multiplier
+          if (expansion === "sd") {
+            multiplier = epoch.multiplier
+            rpbRaw = await gardener.REWARD_PER_BLOCK()
+          } else {
+            let multiRaw = await gardener.REWARD_MULTIPLIER(epoch.epoch-1)
+            multiplier = Number(formatUnits(multiRaw, 0))
+            rpbRaw = await gardener.REWARD_PER_SECOND()
+          }
+          let rewardPerBlock = Number(formatEther(rpbRaw))
+          this.totalRewardsPerDay[expansion] = rewardPerBlock * multiplier * 86400 / this.blockTime(expansion)
+          this.increaseProgress(expansion)
+
+          let tapRaw = await gardener.totalAllocPoint()
+          this.totalAllocPoints[expansion] = Number(formatUnits(tapRaw, 0))
+          this.increaseProgress(expansion)
         }
-
-        this.setPoolCount(this.userPools.length)
-
-        hmy.blockchain.getBlockNumber()
-            .then(result => {
-              const blockNum = hexToNumber(result.result)
-              this.setBlockNumber(blockNum)
-              const epoch = epochs.getCurrentEpoch(blockNum)
-              this.increaseProgress()
-
-              return gardenerContract.methods.REWARD_PER_BLOCK()
-                  .call()
-                  .then(result => {
-                    const rewardPerBlock = result / 1e18
-                    this.totalRewardsPerDay = rewardPerBlock * epoch.multiplier * 86400 / this.blockTime()
-                    this.increaseProgress()
-                  })
-            })
-
-        gardenerContract.methods.totalAllocPoint()
-            .call()
-            .then(totalAllocPoints => {
-              this.totalAllocPoints = totalAllocPoints
-              this.increaseProgress()
-            })
-
       } catch (e) {
         this.handleError(e)
       }
     },
+    calcApr(expansion) {
+      const userRewardsPerDay = this.calcUserRewardsPerDay(expansion)
+      const tokenPrice = this.prices(expansion)
+      const userUsdTotal = _.sumBy(this.pools(expansion), "usdValue")
 
-    calcApr() {
-      const userRewardsPerDay = this.calcUserRewardsPerDay()
-      const jewelPrice = this.prices()["JEWEL"]
-      const userUsdTotal = _.sumBy(this.pools(), "usdValue")
-
-      if (userRewardsPerDay === 0 || jewelPrice === 0 || userUsdTotal === 0)
+      if (userRewardsPerDay === 0 || tokenPrice === 0 || userUsdTotal === 0) {
         return 0
-
-      const userUsdPerDay = userRewardsPerDay * jewelPrice
-
-      return userUsdPerDay / userUsdTotal * 100
+      }
+      return (userRewardsPerDay * tokenPrice) / userUsdTotal * 100
 
     },
-    calcUserRewardsPerDay() {
+    calcUserRewardsPerDay(expansion) {
       let userRewardsDay = 0
-      for (let pool of this.pools()) {
-        userRewardsDay += pool.allocPoints / this.totalAllocPoints * this.totalRewardsPerDay * pool.userShare
+      for (let pool of this.pools(expansion)) {
+        userRewardsDay += (
+            pool.allocPoints
+            / this.totalAllocPoints[expansion]
+            * this.totalRewardsPerDay[expansion]
+            * pool.userShare
+        )
       }
 
       return userRewardsDay
@@ -164,10 +171,10 @@ export default {
   inject: ["setBlockNumber", "blockNumber", "epoch", "setPoolCount", "pools", "prices", "setCommonProgress", "blockTime"],
   provide() {
     return {
-      totalAllocPoints: () => this.totalAllocPoints,
-      totalRewardsPerDay: () => this.totalRewardsPerDay,
-      apr: () => this.calcApr(),
-      userRewardsPerDay: () => this.calcUserRewardsPerDay(),
+      totalAllocPoints: (expansion) => this.totalAllocPoints[expansion],
+      totalRewardsPerDay: (expansion) => this.totalRewardsPerDay[expansion],
+      apr: (expansion) => this.calcApr(expansion),
+      userRewardsPerDay: (expansion) => this.calcUserRewardsPerDay(expansion),
     }
   },
   mounted() {

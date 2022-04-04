@@ -1,20 +1,35 @@
-const tokens = require("@/data/tokens.json")
+import axios from "axios";
+
 const goldPriceImport = require("@/data/ItemGoldPrice.json")
 
+const TokenListURL = "https://raw.githubusercontent.com/tradescrow/token-lists/main/build/tokens/tradescrow-dfk.tokenlist.json"
+
+let tokens = []
 const items = new Map()
 const itemAddresses = []
 const goldPricesMapped = {}
 
+export function GetTokenList() {
+    if (tokens.length > 0) return
+
+    axios.get(TokenListURL).then(r => {
+        if (r.status === 200) {
+            tokens = r.data.tokens.filter(token => token.chainId === 1666600000)
+        } else {
+            console.log(`Got status ${r.status} : ${r.statusText} while loading token list`)
+        }
+    })
+}
+
 export function getItem(address) {
     const _items = items.size > 0 ? items : mapItems()
-
     const item = {
         ..._items.has(address) ? _items.get(address) : {name:"Unknown item", address}
     }
     const goldPrices = mappedGoldPrices()
 
-    item["goldPrice"] = item.address && goldPrices[item.address.toLowerCase()]
-        ? goldPrices[item.address.toLowerCase()]["gold"]
+    item["goldPrice"] = item.address && goldPrices[item.address]
+        ? goldPrices[item.address]["gold"]
         : 0
     if(item.name === "Unknown item") console.info(address)
     return item
@@ -28,18 +43,15 @@ export function getAllItemAddresses() {
     const _items = items.size > 0 ? items : mapItems()
 
     for (const address of _items.keys()) {
-        itemAddresses.push(address.toLowerCase())
+        itemAddresses.push(address)
     }
-
     return itemAddresses
 }
 
 function mapItems() {
-
-    for (let token of tokens.tokens) {
-        items.set(token.address.toLowerCase(), token)
+    for (let token of tokens) {
+        items.set(token.address, token)
     }
-
     return items
 }
 
@@ -48,7 +60,7 @@ function mappedGoldPrices() {
         return goldPricesMapped
 
     for(const [addr, obj] of Object.entries(goldPriceImport))
-        goldPricesMapped[addr.toLowerCase()] = obj
+        goldPricesMapped[addr] = obj
 
     return goldPricesMapped
 }

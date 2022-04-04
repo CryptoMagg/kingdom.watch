@@ -1,76 +1,125 @@
 <template>
   <div class="border border-dark rounded-3">
     <h3 class="p-3">Overview</h3>
-    <div v-if="progressBarWidth < 100" class="progress">
+    <div v-if="progressBarWidth('sd') < 100" class="progress">
       <div class="progress-bar progress-bar-striped progress-bar-animated"
            role="progressbar"
            aria-valuenow="0"
            aria-valuemin="0"
            aria-valuemax="100"
-           :style="{width: (progressBarWidth) + '%'}">
+           :style="{width: (progressBarWidth('sd')) + '%'}">
       </div>
     </div>
     <div>
       <table class="table table-hover w-100">
         <thead>
         <tr>
-          <th class="text-start">Grand Total</th>
-          <th></th>
-          <th class="text-end">{{ formatNumber(grandTotalUsd, '$') }}</th>
+          <th class="text-start" colspan="2">Grand Total</th>
+          <th class="text-end">{{ formatNumber(grandTotalUsd("sd") + grandTotalUsd('cv'), '$') }}</th>
+        </tr>
+        </thead>
+        <thead>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <th class="text-start ps-5">{{ symbol }}</th>
+          <th class="text-end" colspan="2">{{ formatNumber(grandTotalUsd(expansion), '$') }}</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td class="text-start">Available Jewels</td>
-          <td class="text-end">{{ formatNumber(totalAvailableJewels) }}</td>
-          <td class="text-end">{{ formatNumber(totalAvailableJewels * jewelPrice, '$') }}</td>
-        </tr>
-        <tr>
-          <td class="text-start">
-            <span class="form-check form-switch">
-              <label class="form-check-label" for="flexSwitchLocked">Locked Jewels</label>
-              <input v-model="includeLocked" class="form-check-input" type="checkbox" role="switch"
-                     id="flexSwitchLocked">
-            </span>
 
-          </td>
-          <td class="text-end"><span v-if="includeLocked">{{ formatNumber(totalLockedJewels) }}</span></td>
-          <td class="text-end"><span v-if="includeLocked">{{ formatNumber(totalLockedJewels * jewelPrice, '$') }}</span></td>
-        </tr>
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start">
+          <td class="text-start" colspan="2">Available</td>
+          <th class="text-end">
+            {{ formatNumber((totalAvailable('sd') * tokenPrice('sd')) + (totalAvailable('cv') * tokenPrice('cv')), '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">{{ formatNumber(totalAvailable(expansion)) }}</td>
+          <td class="text-end">{{ formatNumber(totalAvailable(expansion) * tokenPrice(expansion), '$') }}</td>
+        </tr>
+
+        <tr><td colspan="3"></td></tr>
+
+        <tr>
+          <td class="text-start" colspan="2">
             <span class="form-check form-switch">
+              <input v-model="includeLocked" class="form-check-input" type="checkbox" role="switch" id="flexSwitchLocked">
+              <label class="form-check-label" for="flexSwitchLocked">Locked</label>
+            </span>
+          </td>
+          <th class="text-end">
+            {{ formatNumber(includeLocked?(totalLocked('sd')*tokenPrice('sd'))+(totalLocked('cv') * tokenPrice('cv')):0, '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">
+            <span>{{ formatNumber(includeLocked ? totalLocked(expansion) : 0) }}</span>
+          </td>
+          <td class="text-end">
+            <span>{{ formatNumber(includeLocked ? totalLocked(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
+          </td>
+        </tr>
+
+        <tr><td colspan="3"></td></tr>
+
+        <tr>
+          <td class="text-start" colspan="2">
+            <span class="form-check form-switch">
+              <input v-model="includeHeroes" class="form-check-input" type="checkbox" role="switch" id="flexSwitchHeroes">
               <label class="form-check-label" for="flexSwitchHeroes">Heroes</label>
-              <input v-model="includeHeroes" class="form-check-input" type="checkbox" role="switch"
-                     id="flexSwitchHeroes">
             </span>
           </td>
+          <th class="text-end">
+            {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv') * tokenPrice('cv')):0, '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">
-            <span v-if="includeHeroes">{{ formatNumber(heroTotal()) }}</span>
+            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) : 0) }}</span>
           </td>
           <td class="text-end">
-            <span v-if="includeHeroes">{{ formatNumber(heroTotal() * jewelPrice, '$') }}</span>
+            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
           </td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start">
+          <td class="text-start" colspan="2">
             <span class="form-check form-switch">
-              <label class="form-check-label" for="flexSwitchInventory">Inventory</label>
-              <input v-model="includeInventory" class="form-check-input" type="checkbox" role="switch"
-                     id="flexSwitchInventory">
+              <input v-model="includeInventory" class="form-check-input" type="checkbox" role="switch" id="flexSwitchInventory">
+               <label class="form-check-label" for="flexSwitchInventory">Inventory</label>
             </span>
           </td>
+          <th class="text-end">
+            {{ formatNumber(includeInventory?(inventoryTotal('sd')*tokenPrice('sd'))+(inventoryTotal('cv') * tokenPrice('cv')):0, '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">
-            <span v-if="includeInventory">{{ formatNumber(inventoryTotal()) }}</span>
+            <span>{{ formatNumber(includeInventory ? inventoryTotal(expansion) : 0) }}</span>
           </td>
           <td class="text-end">
-            <span v-if="includeInventory">{{ formatNumber(inventoryTotal() * jewelPrice, '$') }}</span>
+            <span>{{ formatNumber(includeInventory ? inventoryTotal(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
           </td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start">Gardens</td>
-          <td class="text-end"></td>
-          <td class="text-end">{{ formatNumber(totalPoolUsd, '$') }}</td>
+          <td class="text-start" colspan="2">Gardens</td>
+          <th class="text-end">
+            <span>{{ formatNumber(totalPoolUsd('sd') + totalPoolUsd('cv'), '$') }}</span>
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end" colspan="2">{{ formatNumber(totalPoolUsd(expansion), '$') }}</td>
         </tr>
         <tr>
           <td colspan="3">&nbsp;</td>
@@ -79,27 +128,61 @@
 
         <thead>
         <tr>
-          <th class="text-start">Available Jewels</th>
-          <th class="text-end">{{ formatNumber(totalAvailableJewels) }}</th>
-          <th class="text-end">{{ formatNumber(totalAvailableJewels * jewelPrice, '$') }}</th>
+          <th class="text-start" colspan="2">Available</th>
+          <th class="text-end">
+            {{ formatNumber((totalAvailable('sd')*tokenPrice('sd'))+(totalAvailable('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         </thead>
-
+        <thead>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <th class="text-start ps-5">{{ symbol }}</th>
+          <th class="text-end">{{ formatNumber(totalAvailable(expansion)) }}</th>
+          <th class="text-end">{{ formatNumber(totalAvailable(expansion) * tokenPrice(expansion), '$') }}</th>
+        </tr>
+        </thead>
         <tbody>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start">Wallet Jewels</td>
-          <td class="text-end">{{ formatNumber(walletBalanceJewels) }}</td>
-          <td class="text-end">{{ formatNumber(walletBalanceJewels * jewelPrice, '$') }}</td>
+          <th class="text-start" colspan="2">Wallet</th>
+          <th class="text-end">
+            {{ formatNumber((walletBalance['sd']*tokenPrice('sd'))+(walletBalance['cv']*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
-        <tr>
-          <td class="text-start">Bank Jewels</td>
-          <td class="text-end">{{ formatNumber(this.bankBalance()) }}</td>
-          <td class="text-end">{{ formatNumber(this.bankBalance() * jewelPrice, '$') }}</td>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">{{ formatNumber(walletBalance[expansion]) }}</td>
+          <td class="text-end">{{ formatNumber(walletBalance[expansion] * tokenPrice(expansion), '$') }}</td>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start">Pending Unlocked Jewels</td>
-          <td class="text-end">{{ formatNumber(pendingUnlockedJewels) }}</td>
-          <td class="text-end">{{ formatNumber(pendingUnlockedJewels * jewelPrice, '$') }}</td>
+          <th class="text-start" colspan="2">Bank</th>
+          <th class="text-end">
+            {{ formatNumber((this.bankBalance('sd')*tokenPrice('sd'))+(this.bankBalance('cv')*tokenPrice('cv')), '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">{{ formatNumber(this.bankBalance(expansion)) }}</td>
+          <td class="text-end">{{ formatNumber(this.bankBalance(expansion) * tokenPrice(expansion), '$') }}</td>
+        </tr>
+
+        <tr><td colspan="3"></td></tr>
+
+        <tr>
+          <th class="text-start" colspan="2">Pending Unlocked</th>
+          <th class="text-end">
+            {{ formatNumber((pendingUnlocked('sd')*tokenPrice('sd'))+(pendingUnlocked('cv')*tokenPrice('cv')), '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">{{ formatNumber(pendingUnlocked(expansion)) }}</td>
+          <td class="text-end">{{ formatNumber(pendingUnlocked(expansion) * tokenPrice(expansion), '$') }}</td>
         </tr>
         <tr>
           <td colspan="3">&nbsp;</td>
@@ -108,22 +191,48 @@
 
         <thead>
         <tr>
-          <th class="text-start">Locked Jewels</th>
-          <th class="text-end">{{ formatNumber(totalLockedJewels) }}</th>
-          <th class="text-end">{{ formatNumber(totalLockedJewels * jewelPrice, '$') }}</th>
+          <th class="text-start" colspan="2">Locked</th>
+          <th class="text-end">
+            {{ formatNumber((totalLocked('sd')*tokenPrice('sd'))+(totalLocked('cv')*tokenPrice('cv')), '$') }}
+          </th>
+        </tr>
+        </thead>
+        <thead>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <th class="text-start ps-5">{{ symbol }}</th>
+          <th class="text-end">{{ formatNumber(totalLocked(expansion)) }}</th>
+          <th class="text-end">{{ formatNumber(totalLocked(expansion) * tokenPrice(expansion), '$') }}</th>
         </tr>
         </thead>
 
         <tbody>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start">Currently Locked Jewels</td>
-          <td class="text-end">{{ formatNumber(lockedBalance) }}</td>
-          <td class="text-end">{{ formatNumber(lockedBalance * jewelPrice, '$') }}</td>
+          <th class="text-start" colspan="2">Currently Locked</th>
+          <th class="text-end">
+            {{ formatNumber((lockedBalance['sd']*tokenPrice('sd'))+(lockedBalance['cv']*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">{{ formatNumber(lockedBalance[expansion]) }}</td>
+          <td class="text-end">{{ formatNumber(lockedBalance[expansion] * tokenPrice(expansion), '$') }}</td>
+        </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
-          <td class="text-start">Pending Locked Jewels</td>
-          <td class="text-end">{{ formatNumber(pendingLockedJewels) }}</td>
-          <td class="text-end">{{ formatNumber(pendingLockedJewels * jewelPrice, '$') }}</td>
+          <th class="text-start" colspan="2">Pending Locked</th>
+          <th class="text-end">
+            {{ formatNumber((pendingLocked('sd')*tokenPrice('sd'))+(pendingLocked('cv')*tokenPrice('cv')), '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">{{ formatNumber(pendingLocked(expansion)) }}</td>
+          <td class="text-end">{{ formatNumber(pendingLocked(expansion) * tokenPrice(expansion), '$') }}</td>
         </tr>
         <tr>
           <td colspan="3">&nbsp;</td>
@@ -132,17 +241,21 @@
 
         <thead>
         <tr>
-          <th class="text-start">Hero Floor</th>
-          <th class="text-end">{{ formatNumber(heroTotal()) }}</th>
-          <th class="text-end">{{ formatNumber(heroTotal() * jewelPrice, '$') }}</th>
+          <th class="text-start" colspan="2">Hero Floor</th>
+          <th class="text-end">
+            {{ formatNumber((heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         </thead>
 
         <tbody>
-        <tr>
-          <td class="text-start">Hero floor</td>
-          <td class="text-end">{{ formatNumber(heroTotal()) }}</td>
-          <td class="text-end">{{ formatNumber(heroTotal() * jewelPrice, '$') }}</td>
+
+        <tr><td colspan="3"></td></tr>
+
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+          <th class="text-start ps-5">{{ symbol }}</th>
+          <th class="text-end">{{ formatNumber(heroTotal(expansion)) }}</th>
+          <th class="text-end">{{ formatNumber(heroTotal(expansion) * tokenPrice(expansion), '$') }}</th>
         </tr>
         <tr>
           <td colspan="3">&nbsp;</td>
@@ -167,15 +280,22 @@
             {{ formatNumber(totalPoolUsd, '$') }}
           </th>
         </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         </thead>
 
-        <tbody>
-        <tr v-for="pool in sortedPools" :key="pool">
-          <td class="text-start">{{ pool.poolName }} <span v-if="pool.userUnstaked >0"
-                                                           class="text-danger">Unstaked LP</span></td>
-          <td class="text-end">{{ formatNumber(pool.apr() * 365) }}%</td>
-          <td class="text-end">{{ formatNumber(pool.usdValue, '$') }}</td>
-        </tr>
+        <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+          <tr>
+            <th class="text-start ps-5" colspan="3">{{ symbol }}</th>
+          </tr>
+          <tr v-for="pool in sortedPools(expansion)" :key="pool">
+            <td class="text-start">{{ pool.poolName }}
+              <span v-if="pool.userUnstaked >0" class="text-danger">Unstaked LP</span>
+            </td>
+            <td class="text-end">{{ formatNumber(pool.apr()) }}%</td>
+            <td class="text-end">{{ formatNumber(pool.usdValue, '$') }}</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -183,96 +303,97 @@
 </template>
 
 <script>
-const formatNumber = require('../../utils/FormatNumber')
-const {Harmony} = require('@harmony-js/core');
-const {
-  ChainID,
-  ChainType,
-} = require('@harmony-js/utils');
 
-const hmy = new Harmony(
-    'https://harmony-0-rpc.gateway.pokt.network', //'https://api.harmony.one',
-    {
-      chainType: ChainType.Harmony,
-      chainId: ChainID.HmyMainnet,
-    },
-);
-
-const jewelContractJson = require("../../data/Jewel.json");
-const jewelContractAddress = "0x72Cb10C6bfA5624dD07Ef608027E366bd690048F";
-
-const jewelContract = hmy.contracts.createContract(jewelContractJson.abi, jewelContractAddress);
-
+import formatNumber from "@/utils/FormatNumber"
+import { contracts, formatEther, expansionSet } from "@/utils/ethers"
 
 export default {
   name: "PersonalOverview",
   props: ["userAddress"],
   data() {
     return {
-      lockedBalance: 0,
-      walletBalanceJewels: 0,
-      localProgress: 0,
+      lockedBalance: {...expansionSet},
+      walletBalance: {...expansionSet},
+      localProgress: {...expansionSet},
       includeHeroes: true,
       includeInventory: true,
       includeLocked: true,
       poolSort: {
-        id: 1,
-        name: 0,
-        apr: 0,
-        usd: 0
-      },
+        sd: { id: 1, name: 0, apr: 0, usd: 0 },
+        cv: { id: 1, name: 0, apr: 0, usd: 0 }
+      }
     }
   },
-  inject: [
-    "totalPendingJewels",
-    "epoch",
-    "bankBalance",
-    "prices",
-    "progressPct",
-    "pools",
-    "heroTotal",
-    "inventoryTotal"
-  ],
+  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal" ],
   methods: {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
     },
     toggleSort(field, dir) {
       this.poolSort = {
-        id: 0,
-        name: 0,
-        apr: 0,
-        usd: 0
+        sd: { id: 1, name: 0, apr: 0, usd: 0 },
+        cv: { id: 1, name: 0, apr: 0, usd: 0 }
       }
-
-      this.poolSort[field] = dir
-      console.log(this.poolSort)
+      this.poolSort.sd[field] = dir
+      this.poolSort.cv[field] = dir
     },
     async loadWalletAndLocked() {
-      this.lockedBalance = (await jewelContract.methods.lockOf(this.userAddress).call()) / 1e18
-      this.localProgress++
-      this.walletBalanceJewels = (await jewelContract.methods.balanceOf(this.userAddress).call()) / 1e18
-      this.localProgress++
-    }
-  },
-  computed: {
-    sortedPools() {
-      let sp = []
-      const pools = [...this.pools()]
+      for (const expansion of ["sd", "cv"]) {
+        let lockedRaw = await contracts[expansion].token.lockOf(this.userAddress)
+        this.lockedBalance[expansion] = Number(formatEther(lockedRaw))
+        this.localProgress++
 
-      if (this.poolSort.name > 0)
+        let balRaw = await contracts[expansion].token.balanceOf(this.userAddress)
+        this.walletBalance[expansion] = Number(formatEther(balRaw))
+        this.localProgress++
+      }
+    },
+    grandTotalUsd(expansion) {
+      let grandTotal = this.totalAvailable(expansion) * this.tokenPrice(expansion)
+      if (this.includeLocked)
+        grandTotal += this.totalLocked(expansion) * this.tokenPrice(expansion)
+      if (this.includeHeroes)
+        grandTotal += this.heroTotal(expansion) * this.tokenPrice(expansion)
+      if(this.includeInventory)
+        grandTotal += this.inventoryTotal(expansion) * this.tokenPrice(expansion)
+      grandTotal += this.totalPoolUsd(expansion)
+      return grandTotal
+    },
+    totalAvailable(expansion) {
+      return this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
+    },
+    totalLocked(expansion) {
+      return this.lockedBalance[expansion] + this.pendingLocked(expansion)
+    },
+    totalPoolUsd(expansion) {
+      let runningTotal = 0
+      for (let pool of this.pools(expansion)) {
+        runningTotal += pool.usdValue
+      }
+      return runningTotal
+    },
+    pendingUnlocked(expansion) {
+      return this.totalPending(expansion) * this.epoch(expansion).unlock / 100
+    },
+    pendingLocked(expansion) {
+      return this.totalPending(expansion) * (100 - this.epoch(expansion).unlock) / 100
+    },
+    sortedPools(expansion) {
+      let sp = []
+      const pools = [...this.pools(expansion)]
+      if (this.poolSort[expansion].name > 0)
         sp = pools.sort((a, b) => b.poolName.localeCompare(a.poolName))
-      else if (this.poolSort.name < 0)
+      else if (this.poolSort[expansion].name < 0)
         sp = pools.sort((a, b) => a.poolName.localeCompare(b.poolName))
 
-      else if (this.poolSort.apr > 0)
+      else if (this.poolSort[expansion].apr > 0)
         sp = pools.sort((a, b) => a.apr() - b.apr())
-      else if (this.poolSort.apr < 0)
+      else if (this.poolSort[expansion].apr < 0)
         sp = pools.sort((a, b) => b.apr() - a.apr())
 
-      else if (this.poolSort.usd > 0)
+      else if (this.poolSort[expansion].usd > 0)
         sp = pools.sort((a, b) => a.usdValue - b.usdValue)
-      else if (this.poolSort.usd < 0)
+      else if (this.poolSort[expansion].usd < 0)
         sp = pools.sort((a, b) => b.usdValue - a.usdValue)
 
       else
@@ -280,58 +401,16 @@ export default {
 
       return sp
     },
-    progressBarWidth() {
-      const poolBankPct = this.progressPct() * 0.8
-      const localPct = this.localProgress / 2 * 0.2 * 100
+    progressBarWidth(expansion) {
+      const poolBankPct = this.progressPct(expansion) * 0.8
+      const localPct = this.localProgress[expansion] / 2 * 0.2 * 100
 
       return poolBankPct + localPct
     },
 
-    jewelPrice() {
-      return this.prices()["JEWEL"]
+    tokenPrice(expansion) {
+      return this.prices(expansion)
     },
-
-    grandTotalUsd() {
-      let grandTotal = this.totalAvailableJewels * this.jewelPrice
-
-      if (this.includeLocked)
-        grandTotal += this.totalLockedJewels * this.jewelPrice
-
-      if (this.includeHeroes)
-        grandTotal += this.heroTotal() * this.jewelPrice
-
-      if(this.includeInventory)
-        grandTotal += this.inventoryTotal() * this.jewelPrice
-
-      grandTotal += this.totalPoolUsd
-      return grandTotal
-    },
-
-    totalAvailableJewels() {
-      return this.walletBalanceJewels + this.bankBalance() + this.pendingUnlockedJewels
-    },
-
-    totalLockedJewels() {
-      return this.lockedBalance + this.pendingLockedJewels
-    },
-
-    totalPoolUsd() {
-      let runningTotal = 0
-
-      for (let pool of this.pools())
-        runningTotal += pool.usdValue
-
-      return runningTotal
-    },
-
-    pendingUnlockedJewels() {
-      return this.totalPendingJewels() * this.epoch().unlock / 100
-    },
-
-    pendingLockedJewels() {
-      return this.totalPendingJewels() * (100 - this.epoch().unlock) / 100
-    },
-
 
   },
   mounted() {

@@ -5,39 +5,30 @@
       <span v-if="profileName.length > 0">({{ profileName }})</span>
     </h2>
     <div class="row justify-content-md-center">
-      <div class=" col-md-auto">
+      <div class="col-md-auto">
         <table class="table border">
-          <tbody>
-          <tr v-if="prices['JEWEL'] > 0">
-            <td class="text-start">Jewel price</td>
-            <td class="text-end">${{ prices["JEWEL"].toFixed(2) }}</td>
-          </tr>
-          <tr v-if="prices['JEWEL'] > 0">
-            <td class="text-start">Price age</td>
-            <td class="text-end">{{ ((Date.now() - priceGeneratedStamp) / 1000).toFixed(0) }} s</td>
-          </tr>
-
+          <thead>
           <tr>
-            <td class="text-start">Block number</td>
-            <td class="text-end">{{ blockNumber }}</td>
+            <th scope="col">Symbol</th>
+            <th scope="col">Price</th>
+            <th scope="col">Update</th>
+            <th scope="col">Block #</th>
           </tr>
-
-          <tr v-if="blockTime > 0">
-            <td class="text-start">Block time</td>
-            <td class="text-end">{{ blockTime.toFixed(2) }} s</td>
-          </tr>
-          <tr v-if="blockTimeMeasureDuration > 0">
-            <td class="text-start">Block time measurement period</td>
-            <td class="text-end">{{ blockTimeMeasurementString }}</td>
+          </thead>
+          <tbody>
+          <tr v-for="[symbol, expansion] of [['JEWEL', 'sd'], ['CRYSTAL', 'cv']]" :key="symbol">
+            <td>{{ symbol }}</td>
+            <td>${{ prices[symbol].toFixed(2) }}</td>
+            <td>30s</td>
+            <td>{{ blockNumber[expansion] }}</td>
           </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <p v-if="blockNumber > 0">
-    </p>
     <br/>
+
     <p>Pro-tip: Bookmark this page!</p>
 
     <div class="row">
@@ -120,7 +111,7 @@ import timeString from '../../utils/TimeString'
 
 import axios from "axios"
 import epochs from '../../data/Epochs'
-
+import { contractAddrs } from "@/utils/ethers"
 
 import Address from "@/components/generic/Address"
 import PersonalOverview from "@/components/personal/PersonalOverview"
@@ -143,111 +134,126 @@ export default {
   data() {
     return {
       userAddress: "",
-      bankBalance: 0.0,
-      totalPendingJewels: 0.0,
-      blockNumber: 0,
-      blockTime: 2,
-      blockTimeMeasureDuration: 0,
-      epoch: {},
-      prices: {JEWEL: 0.0},
+      bankBalance: { sd: 0, cv: 0 },
+      totalPending: { sd: 0, cv: 0 },
+      blockNumber: { sd: 0, cv: 0 },
+      blockTime: {
+        sd: 2,
+        cv: 1
+      },
+      blockTimeMeasureDuration: {
+        sd: 604800,
+        cv: 604800
+      },
+      epoch: { sd: {}, cv: {} },
+      prices: {
+        JEWEL: 0.0,
+        CRYSTAL: 0.0,
+      },
       pricesTimestamp: 0,
       priceGeneratedStamp: 0,
-      pools: [],
-      poolCount: 15,
-      commonProgressPct: 0,
-      poolProgress: 0,
-      bankProgressPct: 0,
-      progressPct: 0,
+      pools: { sd: [], cv: [] },
+      poolCount: { sd: 0, cv: 0 },
+      commonProgressPct: { sd: 0, cv: 0 },
+      poolProgress: { sd: 0, cv: 0 },
+      bankProgressPct: { sd: 0, cv: 0 },
+      progressPct: { sd: 0, cv: 0 },
       profileName: "",
-      heroTotal: 0,
-      heroProgress: 0,
-      inventoryTotalJewels: 0,
+      heroTotal: { sd: 0, cv: 0 },
+      heroProgress: { sd: 0, cv: 0 },
+      inventoryTotal: { sd: 0, cv: 0 },
     }
   },
   methods: {
-    poolDone(poolData) {
-      this.totalPendingJewels += poolData.pendingRewards
-      this.pools.push(poolData)
+    poolDone(poolData, expansion) {
+      this.totalPending[expansion] += poolData.pendingRewards
+      this.pools[expansion].push(poolData)
 
-      this.poolProgress++
+      this.poolProgress[expansion]++
 
       this.calcProgressPct()
     },
     calcProgressPct() {
-      const poolProgressPct = this.poolProgress / this.poolCount * 100
-
-      this.progressPct = this.commonProgressPct * 0.2 + poolProgressPct * 0.35 + this.bankProgressPct * 0.1 + this.heroProgress * 0.35
+      for (const expansion of ["sd", "cv"]) {
+        this.progressPct[expansion] = (
+            this.commonProgressPct[expansion] * 0.2
+            + (this.poolProgress[expansion] / this.poolCount[expansion] * 100) * 0.35
+            + this.bankProgressPct[expansion] * 0.1 + this.heroProgress[expansion] * 0.35
+        )
+      }
     },
     async loadPrices() {
       if (this.pricesTimestamp + priceCacheMaxAge > Date.now()) {
         console.log("Prices still up to date")
         return
       }
-
-      return axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/getPrices")
-          .then(response => {
-            if (response.status === 200) {
-              this.prices = response.data["prices"]
-              this.priceGeneratedStamp = response.data["timestamp"]
-              this.blockTime = response.data["blockTime"]
-              this.blockTimeMeasureDuration = response.data["blockTimeMeasurementDuration"]
-              this.pricesTimestamp = Date.now()
-            } else {
-              console.log(`Got status ${response.status} : ${response.statusText} while loading prices`)
-            }
-          })
-          .catch(err => {
-            console.log(`Got ${err} while loading prices`)
-          })
+      const dsPrefix = "https://api.dexscreener.io/latest/dex/tokens/"
+      const expSet = [
+        ["JEWEL", contractAddrs.sd.jewel],
+        ["CRYSTAL", contractAddrs.cv.crystal]
+      ]
+      for (const [symbol, addr] of expSet) {
+        let r = await axios.get(dsPrefix + addr)
+        if (r.status === 200) {
+          let pairs = r.data.pairs.filter(pair => pair.dexId === "defikingdoms")
+          this.prices[symbol] = Number(pairs[0].priceUsd)
+        } else {
+          console.log(`Got status ${r.status} : ${r.statusText} while loading prices`)
+        }
+      }
+      this.pricesTimestamp = Date.now()
     },
   },
   computed: {
     blockTimeMeasurementString() {
-      return timeString.timeSpanStringSeconds(this.blockTimeMeasureDuration / 1000)
+      return timeString.timeSpanStringSeconds(604800 / 1000)
     },
   },
   provide() {
     return {
-      progressPct: () => this.progressPct,
-      epoch: () => this.epoch,
-      blockTime: () => this.blockTime,
-      prices: () => this.prices,
-      setBlockNumber: (blockNum) => {
-        this.blockNumber = blockNum
-        this.epoch = epochs.getCurrentEpoch(blockNum)
+      progressPct: (expansion) => this.progressPct[expansion],
+      epoch: (expansion) => this.epoch[expansion],
+      blockTime: (expansion) => this.blockTime[expansion],
+      prices: (expansion) => expansion ? this.prices[expansion==="sd"?"JEWEL":"CRYSTAL"] : this.prices,
+      setBlockNumber: (blockNum, expansion) => {
+        this.blockNumber[expansion] = blockNum
+        this.epoch[expansion] = epochs.getCurrentEpoch(blockNum, expansion)
       },
 
-      blockNumber: () => this.blockNumber,
-      bankBalance: () => this.bankBalance,
+      blockNumber: (expansion) => this.blockNumber[expansion],
+      bankBalance: (expansion) => this.bankBalance[expansion],
 
-      setBankBalance: (balance) => {
-        this.bankBalance = balance
-        this.bankProgressPct = 100
+      setBankBalance: (balance, expansion) => {
+        this.bankBalance[expansion] = balance
+        this.bankProgressPct[expansion] = 100
         this.calcProgressPct()
       },
-      setPoolCount: (count) => {
-        this.poolCount = count
+      setPoolCount: (count, expansion) => {
+        this.poolCount[expansion] = count
         this.calcProgressPct()
       },
       poolDone: this.poolDone,
-      pools: () => this.pools.sort((a, b) => a.poolId - b.poolId),
-      totalPendingJewels: () => this.totalPendingJewels,
-      setCommonProgress: (pct) => {
-        this.commonProgressPct = pct
+      pools: (expansion) => {
+        if (!expansion) return []
+        return this.pools[expansion].sort((a, b) => a.poolId - b.poolId)
+      },
+      totalPending: (expansion) => this.totalPending[expansion],
+      setCommonProgress: (pct, expansion) => {
+        this.commonProgressPct[expansion] = pct
         this.calcProgressPct()
       },
 
       setProfileName: (name) => this.profileName = name,
 
-      setHeroTotal: (total) => this.heroTotal = total,
-      heroTotal: () => this.heroTotal,
-      setHeroProgress: (pct) => {
-        this.heroProgress = pct
+      setHeroTotal: (total, expansion) => this.heroTotal[expansion] = total,
+      heroTotal: (expansion) => this.heroTotal[expansion],
+      setHeroProgress: (pct, expansion) => {
+        this.heroProgress[expansion] = pct
         this.calcProgressPct()
       },
 
-      setInventoryTotal: (total) => this.inventoryTotalJewels = total,
-      inventoryTotal: () => this.inventoryTotalJewels
+      setInventoryTotal: (total, expansion) => this.inventoryTotal[expansion] = total,
+      inventoryTotal: (expansion) => this.inventoryTotal[expansion]
     }
   },
   created() {
