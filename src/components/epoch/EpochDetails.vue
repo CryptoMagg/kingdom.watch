@@ -1,34 +1,45 @@
 <template>
   <tr>
     <th class="text-start">Epoch #</th>
-    <th class="text-end">{{ epoch["epoch"] }}</th>
+    <th class="text-end">{{ sdEpoch["epoch"] }}</th>
+    <th class="text-end">{{ cvEpoch["epoch"] }}</th>
   </tr>
   <tr>
     <td class="text-start">Unlock rate</td>
     <td class="text-end">
-      <span v-if="epoch.unlock >0">{{ epoch["unlock"] }}%</span>
+      <span v-if="sdEpoch.unlock >0">{{ sdEpoch["unlock"] }}%</span>
+    </td>
+    <td class="text-end">
+      <span v-if="cvEpoch.unlock >0">{{ cvEpoch["unlock"] }}%</span>
     </td>
   </tr>
   <tr>
     <td class="text-start">Multiplier</td>
     <td class="text-end">
-      <span v-if="epoch.multiplier > 0">{{ epoch["multiplier"] }}x</span>
+      <span v-if="sdEpoch.multiplier > 0">{{ sdEpoch["multiplier"] }}x</span>
+    </td>
+    <td class="text-end">
+      <span v-if="cvEpoch.multiplier > 0">{{ cvEpoch["multiplier"] }}x</span>
     </td>
   </tr>
-  <tr v-if="!!epoch['timeLeftString']">
+  <tr v-if="!!sdEpoch['timeLeftString']">
     <td class="text-start">Time until</td>
-    <td class="text-end">{{ epoch["timeLeftString"] }}</td>
+    <td class="text-end">{{ sdEpoch["timeLeftString"] }}</td>
+    <td class="text-end">{{ cvEpoch["timeLeftString"] }}</td>
   </tr>
 </template>
 
 <script>
 export default {
   name: "EpochDetails",
-  props: ["whichEpoch"],
+  props: ["whichEpoch", 'expansion'],
   inject: ["getEpoch"],
   computed: {
-    epoch() {
-      return this.getEpoch(this.whichEpoch)
+    sdEpoch() {
+      return this.getEpoch(this.whichEpoch, 'sd')
+    },
+    cvEpoch() {
+      return this.getEpoch(this.whichEpoch, 'cv')
     }
   }
 }
