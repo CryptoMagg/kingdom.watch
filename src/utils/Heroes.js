@@ -181,15 +181,13 @@ export const mainClass = {
     11: "DarkKnight",
     12: "Summoner",
     13: "Ninja",
-    18: "Dragoon",
-    19: "Sage",
-    // 16: "Paladin",
-    // 17: "DarkKnight",
-    // 18: "Summoner",
-    // 19: "Ninja",
+    16: "Paladin",
+    17: "DarkKnight",
+    18: "Summoner",
+    19: "Ninja",
     "1c": "DreadKnight",
-    // 24: "Dragoon",
-    //25: "Sage",
+    24: "Dragoon",
+    25: "Sage",
     28: "DreadKnight"
 }
 

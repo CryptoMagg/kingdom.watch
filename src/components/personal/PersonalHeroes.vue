@@ -1,11 +1,9 @@
 <template>
   <div>
-
     <table class="table table-hover w-100">
       <thead>
       <tr>
         <th class="text-start">ID#</th>
-<!--        <th class="text-start">Hero</th>-->
         <th class="text-end">Gen</th>
         <th class="text-start">Rarity</th>
         <th class="text-start">Class</th>
@@ -14,18 +12,16 @@
         <th class="text-start"><router-link to="/about/floorprice">Confidence</router-link></th>
       </tr>
       </thead>
-      <tbody>
-      <tr v-for="hero of heroes" :key="hero">
-        <td class="text-start">{{ hero.id }}</td>
-<!--        <td />-->
-<!--        <td class="text-start">{{ hero.info.firstName }} {{ hero.info.lastName }} </td>-->
-        <td class="text-end">{{ hero.info.generation }}</td>
-        <td class="text-start" :class="hero.rarityString">{{ hero.rarityString }}</td>
-        <td class="text-start">{{ hero.classString }}</td>
-        <td class="text-start">{{ hero.professionString }}</td>
-        <td class="text-end">{{ formatNumber(hero.floorPrice, null, null, 0)}}</td>
-        <td class="text-start">{{ hero.floorConfidence }}</td>
-      </tr>
+      <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tr v-for="hero of heroes[expansion]" :key="hero">
+          <td class="text-start">{{ hero.id }}</td>
+          <td class="text-end">{{ hero.info.generation }}</td>
+          <td class="text-start" :class="hero.rarityString">{{ hero.rarityString }}</td>
+          <td class="text-start">{{ hero.classString }}</td>
+          <td class="text-start">{{ hero.professionString }}</td>
+          <td class="text-end">{{ formatNumber(hero.floorPrice, null, null, 0)}}</td>
+          <td class="text-start">{{ hero.floorConfidence }}</td>
+        </tr>
       </tbody>
       <tfoot>
       <tr>
@@ -44,27 +40,7 @@ import axios from "axios";
 import formatNumber from "@/utils/FormatNumber";
 import {getStatGenes, mainClass} from "@/utils/Heroes";
 
-const {Harmony} = require('@harmony-js/core');
-const {
-  ChainID,
-  ChainType,
-} = require('@harmony-js/utils');
-
-const hmy = new Harmony(
-    'https://harmony-0-rpc.gateway.pokt.network', //'https://api.harmony.one',
-    {
-      chainType: ChainType.Harmony,
-      chainId: ChainID.HmyMainnet,
-    },
-);
-
-const heroesContractJson = require("../../data/heroes.json")
-const heroesContractAddress = "0x5f753dcdf9b1ad9aabc1346614d1f4746fd6ce5c"
-const heroesContract = hmy.contracts.createContract(heroesContractJson.abi, heroesContractAddress)
-
-const auctionsContractJson = require("../../data/auctions.json")
-const auctionsContractAddress = "0x13a65B9F8039E2c032Bc022171Dc05B30c3f2892"
-const auctionsContract = hmy.contracts.createContract(auctionsContractJson.abi, auctionsContractAddress)
+import {contracts, expansionSet, expansionObjSet, expansionArraySet, formatUnits} from "@/utils/ethers";
 
 const rarity = ["Common", "Uncommon", "Rare", "Legendary", "Mythic"]
 
@@ -75,9 +51,9 @@ export default {
   inject: ["setHeroTotal", "setHeroProgress"],
   data() {
     return {
-      heroes: [],
-      floor: {},
-      heroTotal: 0
+      heroes: {...expansionArraySet},
+      floor: {...expansionObjSet},
+      heroTotal: {...expansionSet}
     }
   },
   methods: {
@@ -85,45 +61,46 @@ export default {
       return formatNumber(num, prefix, suffix, decimals)
     },
     async fetchHeroes() {
-      this.heroes = []
-      const heroIds = await heroesContract.methods.getUserHeroes(this.userAddress).call()
+      this.heroes.sd = []
+      const heroIdsRaw = await contracts.sd.hero.getUserHeroes(this.userAddress)
+      const heroIds = heroIdsRaw.map(heroId => Number(formatUnits(heroId, 0)))
 
-      const auctionHeroIds = await auctionsContract.methods.getUserAuctions(this.userAddress).call()
+      const auctionHeroIdsRaw = await contracts.sd.auction.getUserAuctions(this.userAddress)
+      const auctionHeroIds = auctionHeroIdsRaw.map(heroId => Number(formatUnits(heroId, 0)))
 
       const combinedHeroIds = heroIds.concat(auctionHeroIds)
 
       const heroCount = combinedHeroIds.length
 
       let processedHeroes = 0
-      this.heroTotal = 0
+      this.heroTotal.sd = 0
 
       for (let heroId of combinedHeroIds) {
-        const hero = await heroesContract.methods.getHero(heroId).call()
 
-        const [statGenes, ] = getStatGenes(hero.info.statGenes)
+        const rawHero = await contracts.sd.hero.getHero(heroId)
 
-        const floorData = this.floorPrice(hero, statGenes.profession)
+        const [statGenes, ] = getStatGenes(rawHero.info.statGenes)
+        const floorData = this.floorPrice(rawHero, statGenes.profession)
 
-        this.heroTotal += floorData.price
+        this.heroTotal.sd += floorData.price
 
-        hero["floorPrice"] = floorData.price
-        hero["floorConfidence"] = floorData.confidence
+        let hero = {...rawHero}
+        hero.floorPrice = floorData.price
+        hero.floorConfidence = floorData.confidence
 
-        hero["rarityString"] = rarity[hero.info.rarity]
-        hero["classString"] = mainClass[hero.info.class]
-        hero["professionString"] = statGenes.profession.charAt(0).toUpperCase() + statGenes.profession.substring(1)
+        hero.rarityString = rarity[hero.info.rarity]
 
-        if(!hero["classString"])
-          // console.info(`Hero class ${hero.info.class}`)
+        hero.classString = mainClass[hero.info.class]
+        hero.professionString = statGenes.profession.charAt(0).toUpperCase() + statGenes.profession.substring(1)
 
-        this.heroes.push(hero)
-        // console.info(hero.info)
+        this.heroes.sd.push(hero)
+
         processedHeroes++
-        this.setHeroProgress(processedHeroes/heroCount * 100.0)
+        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'sd')
       }
 
-      this.setHeroTotal(this.heroTotal)
-      this.setHeroProgress(100)
+      this.setHeroTotal(this.heroTotal, 'sd')
+      this.setHeroProgress(100, 'sd')
     },
 
     async fetchFloor() {
@@ -133,7 +110,7 @@ export default {
       if (response.status !== 200)
           return console.error(response.statusText)
 
-      this.floor = response.data
+      this.floor.sd = response.data
 
       await this.fetchHeroes()
 
@@ -169,44 +146,40 @@ export default {
       let ids = [generation, info.rarity, summonsBucket, mainClass[info.class], profession]
 
       let id = ids.join('-')
-      // console.info(id)
-      if(!isNaN(this.floor[id]))
+      if(!isNaN(this.floor.sd[id]))
         return {
           confidence: generationString + ", R, " + summonsBucket + ", C, P",
-          price: this.floor[id]
+          price: this.floor.sd[id]
         }
 
       id = ids.slice(0, 4).join('-')
-      // console.info(id)
 
-      if(!isNaN(this.floor[id]))
+      if(!isNaN(this.floor.sd[id]))
         return {
           confidence: generationString + ", R, " + summonsBucket + ", C",
-          price: this.floor[id]
+          price: this.floor.sd[id]
         }
 
-
       id = ids.slice(0, 3).join('-')
-      // console.info(id)
 
-      if(!isNaN(this.floor[id]))
+      if(!isNaN(this.floor.sd[id]))
         return {
           confidence: generationString + ", R, " + summonsBucket,
-          price: this.floor[id]
+          price: this.floor.sd[id]
         }
 
       id = ids.slice(0, 2).join('-')
-      if(!isNaN(this.floor[id]))
+      if(!isNaN(this.floor.sd[id]))
         return {
           confidence: generationString + ", R",
-          price: this.floor[id]
+          price: this.floor.sd[id]
         }
 
       id = ids[0]
-      if(!isNaN(this.floor[id]))
+      if(!isNaN(this.floor.sd[id]))
         return {
           confidence: generationString,
-          price: this.floor[id]
+          price: this.floor.sd[id]
         }
 
       return {
@@ -217,10 +190,10 @@ export default {
   },
   computed: {
     priceStamp() {
-      if(!this.floor.timestamp)
+      if(!this.floor.sd.timestamp)
         return ""
 
-      const date = new Date(this.floor.timestamp)
+      const date = new Date(this.floor.sd.timestamp)
 
       return "Floor prices as of " + date.toISOString()
     }

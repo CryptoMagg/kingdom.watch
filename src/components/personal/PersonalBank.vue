@@ -11,11 +11,11 @@
         </thead>
         <tbody>
         <tr>
-          <td class="text-start">x{{ symbol }} Balance</td>
+          <td class="text-start">x{{ symbol }}</td>
           <td class="text-end">{{ formattedUserXBalance(expansion) }}</td>
         </tr>
         <tr>
-          <td class="text-start">{{ symbol }} Balance</td>
+          <td class="text-start">{{ symbol }}</td>
           <td class="text-end">{{ formattedUserBalance(expansion) }}</td>
         </tr>
         <tr>
