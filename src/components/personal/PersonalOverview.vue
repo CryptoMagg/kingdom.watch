@@ -174,7 +174,10 @@
         <tr><td colspan="3"></td></tr>
 
         <tr>
-          <th class="text-start" colspan="3">Pending Unlocked</th>
+          <th class="text-start" colspan="2">Pending Unlocked</th>
+          <th class="text-end">
+            {{ formatNumber((pendingUnlocked('sd')*tokenPrice('sd'))+(pendingUnlocked('cv')*tokenPrice('cv')), '$') }}
+          </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
