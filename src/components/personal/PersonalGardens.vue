@@ -89,7 +89,6 @@ export default {
   inject: ["setBlockNumber", "blockNumber", "epoch", "setPoolCount", "pools", "prices", "setCommonProgress", "blockTime"],
   methods: {
     increaseProgress(expansion) {
-      console.log(expansion, this.progress[expansion], this.maxProgress[expansion])
       this.progress[expansion]++
       const progressPct = this.progress[expansion] / this.maxProgress[expansion] * 100
       this.setCommonProgress(progressPct, expansion)

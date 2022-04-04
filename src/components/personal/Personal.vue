@@ -166,7 +166,6 @@ export default {
   },
   methods: {
     poolDone(poolData, expansion) {
-      console.log("POOL_DONE", expansion, this.poolProgress)
       this.totalPending[expansion] += poolData.pendingRewards
       this.pools[expansion].push(poolData)
 
@@ -176,15 +175,6 @@ export default {
     },
     calcProgressPct() {
       for (const expansion of ["sd", "cv"]) {
-        console.log(
-            "CALCPROGRESSPCT -",
-            "% Done", this.progressPct[expansion],
-            "/ 100% | Common", this.commonProgressPct[expansion] * 0.2,
-            "/ 20% | Pools", ((this.poolProgress[expansion] / this.poolCount[expansion] || 0) * 100) * 0.35,
-            "/ 35% | Bank", this.bankProgressPct[expansion] * 0.1,
-            "/ 10% | Hero", this.heroProgress[expansion] * 0.35,
-            "/ 35%"
-        )
         // weighted progress
         let wCP = this.commonProgressPct[expansion] * 0.2
         let wPP = (this.poolCount[expansion]===0?1:this.poolProgress[expansion]/this.poolCount[expansion])*100*0.35
@@ -222,10 +212,7 @@ export default {
   },
   provide() {
     return {
-      progressPct: (expansion) => {
-        console.log("GETPROGRESSPCT", expansion, this.progressPct[expansion])
-        return this.progressPct[expansion]
-      },
+      progressPct: (expansion) => this.progressPct[expansion],
       epoch: (expansion) => this.epoch[expansion],
       blockTime: (expansion) => this.blockTime[expansion],
       prices: (expansion) => expansion ? this.prices[expansion==="sd"?"JEWEL":"CRYSTAL"] : this.prices,
