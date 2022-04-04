@@ -16,17 +16,17 @@
               <PersonalAPR :expansion="expansion"/>
               </tbody>
             </table>
-            <div v-if="pools(expansion).length < userPools[expansion].length" class="progress">
+            <div v-if="pools(expansion).length < Object.keys(this.userPools[expansion]).length" class="progress">
               <div
                   class="progress-bar progress-bar-striped progress-bar-animated"
                   role="progressbar"
                   aria-valuenow="0"
                   aria-valuemin="0"
-                  :aria-valuemax="userPools[expansion].length"
-                  :style="{width: (pools(expansion).length/userPools[expansion].length * 100) + '%'}">
+                  :aria-valuemax="Object.keys(this.userPools[expansion]).length"
+                  :style="{width: (pools(expansion).length/Object.keys(this.userPools[expansion]).length * 100) + '%'}">
               </div>
             </div>
-            <div v-for="poolId in userPools[expansion]" :key="poolId" class="shit">
+            <div v-for="poolId of userPools[expansion]" :key="poolId" class="shit">
               <PersonalGarden :pool-id="poolId" :user-info="userInfos[expansion][poolId]" :expansion="expansion" :user-address="userAddress"/>
             </div>
           </div>
@@ -44,7 +44,7 @@ const _ = require('lodash')
 import epochs from "@/data/Epochs";
 import PersonalAPR from "@/components/personal/PersonalAPR";
 import PersonalGarden from "@/components/personal/PersonalGarden"
-import {contracts, RPCs, formatUnits, expansionSet, expansionObjSet, formatEther} from "@/utils/ethers"
+import {contracts, RPCs, formatUnits, formatEther} from "@/utils/ethers"
 
 export default {
   name: "PersonalGardens",
@@ -56,12 +56,30 @@ export default {
   data() {
     return {
       error: "",
-      poolCount: {...expansionSet},
-      userInfos: {...expansionObjSet},
-      userPools: {...expansionObjSet},
-      totalAllocPoints: {...expansionSet},
-      totalRewardsPerDay: {...expansionSet},
-      progress: {...expansionSet},
+      poolCount: {
+        sd: 0,
+        cv: 0
+      },
+      userInfos: {
+        sd: {},
+        cv: {}
+      },
+      userPools: {
+        sd: {},
+        cv: {}
+      },
+      totalAllocPoints: {
+        sd: 0,
+        cv: 0
+      },
+      totalRewardsPerDay: {
+        sd: 0,
+        cv: 0
+      },
+      progress: {
+        sd: 0,
+        cv: 0
+      },
       maxProgress: {
         sd: 4,
         cv: 4
@@ -105,8 +123,8 @@ export default {
             multiplier = epoch.multiplier
             rpbRaw = await gardener.REWARD_PER_BLOCK()
           } else {
-            let multiRaw = await gardener.REWARD_MULTIPLIER(epoch.epoch)
-            multiplier = formatUnits(multiRaw, 0)
+            let multiRaw = await gardener.REWARD_MULTIPLIER(epoch.epoch-1)
+            multiplier = Number(formatUnits(multiRaw, 0))
             rpbRaw = await gardener.REWARD_PER_SECOND()
           }
           let rewardPerBlock = Number(formatEther(rpbRaw))
@@ -136,10 +154,10 @@ export default {
       let userRewardsDay = 0
       for (let pool of this.pools(expansion)) {
         userRewardsDay += (
-            pool.allocPoints[expansion]
+            pool.allocPoints
             / this.totalAllocPoints[expansion]
             * this.totalRewardsPerDay[expansion]
-            * pool.userShare[expansion]
+            * pool.userShare
         )
       }
 

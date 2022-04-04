@@ -1,52 +1,52 @@
 <template>
   <tr>
-    <th class="text-start">Total</th>
-    <th class="text-end">Day</th>
-    <th class="text-end">Week</th>
-    <th class="text-end">Year</th>
+    <th className="text-start">Total</th>
+    <th className="text-end">Day</th>
+    <th className="text-end">Week</th>
+    <th className="text-end">Year</th>
   </tr>
   <tr>
-    <td class="text-start">APR</td>
-    <td class="text-end">{{ formatNumber(apr(expansion),'','%') }}</td>
-    <td class="text-end">{{ formatNumber(apr(expansion) * 7,'','%') }}</td>
-    <td class="text-end">{{ formatNumber(apr(expansion) * 365,'','%') }}</td>
+    <td className="text-start">APR</td>
+    <td className="text-end">{{ formatNumber(apr(expansion), '', '% ') }}</td>
+    <td className="text-end">{{ formatNumber(apr(expansion) * 7, '', '% ') }}</td>
+    <td className="text-end">{{ formatNumber(apr(expansion) * 365, '', '% ') }}</td>
   </tr>
   <tr>
-    <td class="text-start">Jewels</td>
-    <td class="text-end">{{ formatNumber(userRewardsPerDay(expansion)) }}</td>
-    <td class="text-end">{{ formatNumber(userRewardsPerDay(expansion) * 7) }}</td>
-    <td class="text-end">{{ formatNumber(userRewardsPerDay(expansion) * 365) }}</td>
+    <td className="text-start">{{ expansion === "sd" ? "Jewel" : "Crystal" }}</td>
+    <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion)) }}</td>
+    <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion) * 7) }}</td>
+    <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion) * 365) }}</td>
   </tr>
   <tr>
-    <td class="text-start">USD</td>
-    <td class="text-end">{{ formatNumber(userRewardsPerDay(expansion) * prices(expansion),'$') }}</td>
-    <td class="text-end">{{ formatNumber(userRewardsPerDay(expansion) * prices(expansion) * 7,'$') }}</td>
-    <td class="text-end">{{ formatNumber(userRewardsPerDay(expansion) * prices(expansion) * 365,'$') }}</td>
+    <td className="text-start">USD</td>
+    <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion) * prices(expansion), '$ ') }}</td>
+    <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion) * prices(expansion) * 7, '$ ') }}</td>
+    <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion) * prices(expansion) * 365, '$ ') }}</td>
   </tr>
   <tr>
-    <th class="text-start">Unlocked ({{ unlock() }}%)</th>
-    <th class="text-end">Day</th>
-    <th class="text-end">Week</th>
-    <th class="text-end">Year</th>
+    <th className="text-start">Unlocked ({{ epoch(expansion).unlock }}%)</th>
+    <th className="text-end">Day</th>
+    <th className="text-end">Week</th>
+    <th className="text-end">Year</th>
   </tr>
   <tr>
-    <td class="text-start">APR</td>
-    <td class="text-end">{{ formatNumber(apr(expansion) * unlock() / 100,'','%') }}</td>
-    <td class="text-end">{{ formatNumber(apr(expansion) * unlock() / 100 * 7,'','%') }}</td>
-    <td class="text-end">{{ formatNumber(apr(expansion) * unlock() / 100 * 365,'','%') }}</td>
+    <td className="text-start">APR</td>
+    <td className="text-end">{{ formatNumber(apr(expansion) * this.epoch(expansion).unlock / 100, '', '% ') }}</td>
+    <td className="text-end">{{ formatNumber(apr(expansion) * this.epoch(expansion).unlock / 100 * 7, '', '% ') }}</td>
+    <td className="text-end">{{ formatNumber(apr(expansion) * this.epoch(expansion).unlock / 100 * 365, '', '% ') }}</td>
   </tr>
 
   <tr>
-    <td class="text-start">Jewels</td>
-    <td class="text-end">{{ formatNumber(unlockedPerDay(expansion)) }}</td>
-    <td class="text-end">{{ formatNumber(unlockedPerDay(expansion) * 7) }}</td>
-    <td class="text-end">{{ formatNumber(unlockedPerDay(expansion) * 365) }}</td>
+    <td className="text-start">{{ expansion === "sd" ? "Jewel" : "Crystal" }}</td>
+    <td className="text-end">{{ formatNumber(unlockedPerDay) }}</td>
+    <td className="text-end">{{ formatNumber(unlockedPerDay * 7) }}</td>
+    <td className="text-end">{{ formatNumber(unlockedPerDay * 365) }}</td>
   </tr>
   <tr>
-    <td class="text-start">USD</td>
-    <td class="text-end">{{ formatNumber(unlockedPerDay(expansion) * prices(expansion),'$') }}</td>
-    <td class="text-end">{{ formatNumber(unlockedPerDay(expansion) * prices(expansion) * 7,'$') }}</td>
-    <td class="text-end">{{ formatNumber(unlockedPerDay(expansion) * prices(expansion) * 365,'$') }}</td>
+    <td className="text-start">USD</td>
+    <td className="text-end">{{ formatNumber(unlockedPerDay * prices(expansion), '$ ') }}</td>
+    <td className="text-end">{{ formatNumber(unlockedPerDay * prices(expansion) * 7, '$ ') }}</td>
+    <td className="text-end">{{ formatNumber(unlockedPerDay * prices(expansion) * 365, '$ ') }}</td>
   </tr>
 
 </template>
@@ -61,15 +61,13 @@ export default {
     formatNumber(num, prefix, suffix) {
       return formatNumber(num, prefix, suffix)
     },
-    unlock() {
-      if (!this.expansion) return 0
-      return this.epoch(this.expansion).unlock
-    },
-    unlockedPerDay(expansion) {
-      return this.userRewardsPerDay(expansion) * this.unlock() / 100
-    },
   },
   inject: ["apr", "userRewardsPerDay", "prices", "epoch"],
+  computed: {
+    unlockedPerDay() {
+      return this.userRewardsPerDay(this.expansion) * this.epoch(this.expansion).unlock / 100
+    },
+  }
 }
 </script>
 

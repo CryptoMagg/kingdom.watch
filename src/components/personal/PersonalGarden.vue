@@ -29,13 +29,13 @@
             <td class="text-start">Pending locked</td>
             <td></td>
             <td class="text-end">{{ formatNumber(pendingLocked) }}</td>
-            <td class="text-end">{{ formatNumber(pendingLocked * this.prices()["JEWEL"],'$') }}</td>
+            <td class="text-end">{{ formatNumber(pendingLocked * this.prices(this.expansion),'$') }}</td>
           </tr>
           <tr>
             <td class="text-start">Pending unlocked</td>
             <td></td>
             <td class="text-end">{{ formatNumber(pendingUnlocked) }}</td>
-            <td class="text-end">{{ formatNumber(pendingUnlocked * this.prices()["JEWEL"],'$') }}</td>
+            <td class="text-end">{{ formatNumber(pendingUnlocked * this.prices(this.expansion),'$') }}</td>
           </tr>
           <tr>
             <td class="text-start">Current withdrawal fee</td>
@@ -52,7 +52,7 @@
             <td colspan="3" class="text-start">USD saved if waiting {{ timeBeforeNextFeeLevel }}</td>
             <td class="text-end">{{ formatNumber(usdSavedBetterFee,'$') }}</td>
           </tr>
-          <PersonalAPR />
+          <PersonalAPR :expansion="expansion"/>
           </tbody>
         </table>
         <div v-if="progress/maxProgress < 1" class="progress">
@@ -77,7 +77,7 @@ import timeString from '../../utils/TimeString'
 import withdrawalFee from '../../data/WithdrawalFees'
 
 import { Contract } from 'ethers'
-import { contractJson, contracts, RPCs } from "@/utils/ethers";
+import { contractJson, contracts, RPCs, formatUnits } from "@/utils/ethers";
 
 export default {
   name: "PersonalGarden",
@@ -122,6 +122,8 @@ export default {
               return this.getErc20Token(tokenAddress)
                   .then(token => {
                     this.token0 = token
+                    if (this.token0.symbol === "WJEWEL")
+                      this.token0.symbol = "JEWEL"
                     this.progress++
                   })
             }),
@@ -131,6 +133,8 @@ export default {
               return this.getErc20Token(tokenAddress)
                   .then(token => {
                     this.token1 = token
+                    if (this.token1.symbol === "WJEWEL")
+                      this.token1.symbol = "JEWEL"
                     this.progress++
                   })
             }),
@@ -169,13 +173,14 @@ export default {
       ])
       this.token0["userBalance"] = (this.token0availableInPool / 10 ** this.token0["decimals"]) * this.userShare
       this.token1["userBalance"] = (this.token1availableInPool / 10 ** this.token1["decimals"]) * this.userShare
+
       this.poolDone({
         poolId: this.poolId,
         poolName: this.poolName,
         pendingRewards: this.pendingRewards,
         usdValue: this.calcUsdShareValue(),
         apr: this.calcApr,
-        allocPoints: this.poolInfo.allocPoint,
+        allocPoints: Number(formatUnits(this.poolInfo.allocPoint, 0)),
         userShare: this.userShare,
         userUnstaked: this.userUnstaked
       }, this.expansion)
@@ -201,27 +206,49 @@ export default {
   },
   computed: {
     currentWithdrawalFee() {
-      if (this.blockNumber() < 1)
+      if (this.blockNumber(this.expansion) < 1)
         return 0
       let lastBlock
-      if (this.userInfo["lastWithdrawBlock"] < 1)
+      let lastTimestamp
+      if (this.userInfo["lastWithdrawTimestamp"] && this.userInfo["lastWithdrawTimestamp"] < 1)
+        lastTimestamp = Number(formatUnits(this.userInfo["firstDepositTimestamp"], 0))
+      else if (this.userInfo["lastWithdrawTimestamp"])
+        lastTimestamp = Number(formatUnits(this.userInfo["lastWithdrawTimestamp"], 0))
+      else if (this.userInfo["lastWithdrawBlock"] < 1)
         lastBlock = this.userInfo["firstDepositBlock"]
       else
         lastBlock = this.userInfo["lastWithdrawBlock"]
-      return withdrawalFee.getFee(this.blockNumber() - lastBlock)
+
+      if (lastTimestamp) {
+        return withdrawalFee.getFee(((Date.now()/1000) - lastTimestamp)/2)
+      }
+      return withdrawalFee.getFee(this.blockNumber(this.expansion) - lastBlock)
     },
     timeBeforeNextFeeLevel() {
-      if (this.blockNumber() < 1)
+      if (this.blockNumber(this.expansion) < 1)
         return ""
       let lastBlock
-      if (this.userInfo["lastWithdrawBlock"] < 1)
+      let lastTimestamp
+      if (this.userInfo["lastWithdrawTimestamp"] && this.userInfo["lastWithdrawTimestamp"] < 1)
+        lastTimestamp = Number(formatUnits(this.userInfo["firstDepositTimestamp"], 0))
+      else if (this.userInfo["lastWithdrawTimestamp"])
+        lastTimestamp = Number(formatUnits(this.userInfo["lastWithdrawTimestamp"], 0))
+      else if (this.userInfo["lastWithdrawBlock"] < 1)
         lastBlock = this.userInfo["firstDepositBlock"]
       else
         lastBlock = this.userInfo["lastWithdrawBlock"]
+
+      if (lastTimestamp) {
+        return timeString.timeSpanStringBlocks(
+            withdrawalFee.blocksBeforeNextLevel(((Date.now()/1000) - lastTimestamp)/2),
+            "At lowest tier",
+            2
+        )
+      }
       return timeString.timeSpanStringBlocks(
-          withdrawalFee.blocksBeforeNextLevel(this.blockNumber() - lastBlock),
+          withdrawalFee.blocksBeforeNextLevel(this.blockNumber(this.expansion) - lastBlock),
           "At lowest tier",
-          this.blockTime()
+          2
       )
     },
     nextBetterFee() {
@@ -246,20 +273,19 @@ export default {
       return this.calcUsdShareValue()
     },
     userRewardsPerDay() {
-      if (this.poolInfo.allocPoint > 0
-          && this.totalAllocPoints() > 0
-          && this.totalRewardsPerDay() > 0
+      let allocPoint = this.poolInfo.allocPoint ? Number(formatUnits(this.poolInfo.allocPoint, 0)) : 0
+      if (allocPoint > 0
+          && this.totalAllocPoints(this.expansion) > 0
+          && this.totalRewardsPerDay(this.expansion) > 0
           && this.userShare > 0) {
-        return this.poolInfo.allocPoint / this.totalAllocPoints() * this.totalRewardsPerDay() * this.userShare
+        return allocPoint / this.totalAllocPoints(this.expansion) * this.totalRewardsPerDay(this.expansion) * this.userShare
       } else
         return 0
     },
     pendingLocked() {
-      if (!this.epoch(this.expansion)) return 0
       return this.pendingRewards * (100 - this.epoch(this.expansion).unlock) / 100
     },
     pendingUnlocked() {
-      if (!this.epoch(this.expansion)) return 0
       return this.pendingRewards * this.epoch(this.expansion).unlock / 100
     },
     poolName() {
@@ -269,9 +295,9 @@ export default {
         return ""
     },
     apr() {
-      if (this.userRewardsPerDay === 0 || this.prices()["JEWEL"] === 0)
+      if (this.userRewardsPerDay === 0 || this.prices(this.expansion) === 0)
         return 0
-      const usdRewardsPerDay = this.userRewardsPerDay * this.prices()["JEWEL"]
+      const usdRewardsPerDay = this.userRewardsPerDay * this.prices(this.expansion)
       const usdValue = this.usdShareValue
       if (usdRewardsPerDay === 0 || usdValue === 0)
         return 0
