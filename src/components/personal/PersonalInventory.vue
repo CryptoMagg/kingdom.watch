@@ -182,22 +182,22 @@ export default {
       const balance = Number(formatUnits(await contract.balanceOf(this.userAddress), decimals))
       if (balance === 0)
         return
-      let jewelPrice = await this.loadPrice(address)
+      let usdPrice = await this.loadPrice(address)
       let preItem = getItem(address)
       if (excludedItems.includes(preItem.symbol)) {
         return
       }
       if (preItem.name === "Ambertaffy") {
-        console.log(jewelPrice, balance)
+        console.log(usdPrice, balance)
       }
       const item = {
         ...preItem,
         balance,
-        jewelPrice,
+        jewelPrice: usdPrice/this.jewelPrice,
         totalGold: balance * (address===GOLD_ADDR?1:preItem.goldPrice),
-        totalJewel: jewelPrice / this.jewelPrice * balance,
-        totalGoldUsd: balance * (address===GOLD_ADDR?1:preItem.goldPrice) * (address===GOLD_ADDR?jewelPrice:this.goldItem.jewelPrice),
-        totalJewelUsd: jewelPrice * balance
+        totalJewel: usdPrice / this.jewelPrice * balance,
+        totalGoldUsd: balance * (address===GOLD_ADDR?1:preItem.goldPrice) * (address===GOLD_ADDR?usdPrice:this.goldItem.usdPrice),
+        totalJewelUsd: usdPrice * balance
       }
       console.log(item)
       this.items.push(item)
