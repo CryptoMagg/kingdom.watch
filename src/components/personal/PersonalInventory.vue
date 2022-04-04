@@ -39,13 +39,11 @@
         <td class="text-end">{{ item.balance }}</td>
         <td class="text-end">{{ formatNumber(item.price) }}</td>
         <td class="text-end">{{ formatNumber(item.jewels) }}</td>
-        <td class="text-end">{{ formatNumber(item.jewels * prices()["JEWEL"], '$') }}</td>
+        <td class="text-end" :class="betterJewelTrade(item)">{{ formatNumber(item.jewels * prices()["JEWEL"], '$') }}</td>
         <td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.goldPrice) }}</span></td>
         <td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.goldPrice * item.balance) }}</span></td>
-        <td class="text-end">
-          <span v-if="item.goldPrice">
-            {{formatNumber(item.goldPrice * item.balance * itemPrices["0x3a4edcf3312f44ef027acfd8c21382a5259936e7"] * prices()["JEWEL"], '$') }}
-          </span>
+        <td :class="betterGoldTrade(item)" class="text-end ">
+          <span v-if="item.goldPrice">{{formatNumber(goldValue(item), '$') }}</span>
         </td>
       </tr>
       </tbody>
@@ -266,7 +264,7 @@ export default {
     },
     totalUsdGold() {
       return this.totalGold * this.itemPrices["0x3a4edcf3312f44ef027acfd8c21382a5259936e7"] * this.prices()["JEWEL"]
-    }
+    },
   },
   methods: {
     formatNumber(num, prefix, suffix, decimals) {
@@ -317,6 +315,15 @@ export default {
       this.itemSort = {...defaultSort}
 
       this.itemSort[field] = currentDir * -1
+    },
+    goldValue(item) {
+      return item.goldPrice * item.balance * this.itemPrices["0x3a4edcf3312f44ef027acfd8c21382a5259936e7"] * this.prices()["JEWEL"]
+    },
+    betterJewelTrade(item) {
+      return ((item.jewels * this.prices()["JEWEL"]) > this.goldValue(item)) ? "Uncommon" : ""
+    },
+    betterGoldTrade(item) {
+      return ((item.jewels * this.prices()["JEWEL"]) < this.goldValue(item)) ? "Uncommon" : ""
     }
   },
   provide() {
@@ -332,5 +339,5 @@ export default {
 </script>
 
 <style scoped>
-
+.Uncommon { color: #14C25A }
 </style>
