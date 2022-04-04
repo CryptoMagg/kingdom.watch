@@ -291,8 +291,9 @@
           </tr>
           <tr v-for="pool in sortedPools(expansion)" :key="pool">
             <td class="text-start">{{ pool.poolName }}
-              <span v-if="pool.userUnstaked >0" class="text-danger">Unstaked LP</span></td>
-            <td class="text-end">{{ formatNumber(pool.apr() * 365) }}%</td>
+              <span v-if="pool.userUnstaked >0" class="text-danger">Unstaked LP</span>
+            </td>
+            <td class="text-end">{{ formatNumber(pool.apr()) }}%</td>
             <td class="text-end">{{ formatNumber(pool.usdValue, '$') }}</td>
           </tr>
         </tbody>
@@ -310,13 +311,6 @@ export default {
   name: "PersonalOverview",
   props: ["userAddress"],
   data() {
-
-    const poolSet = {
-      id: 1,
-      name: 0,
-      apr: 0,
-      usd: 0
-    }
     return {
       lockedBalance: {...expansionSet},
       walletBalance: {...expansionSet},
@@ -325,8 +319,8 @@ export default {
       includeInventory: true,
       includeLocked: true,
       poolSort: {
-        sd: {...poolSet},
-        cv: {...poolSet}
+        sd: { id: 1, name: 0, apr: 0, usd: 0 },
+        cv: { id: 1, name: 0, apr: 0, usd: 0 }
       }
     }
   },
@@ -337,12 +331,11 @@ export default {
     },
     toggleSort(field, dir) {
       this.poolSort = {
-        id: 0,
-        name: 0,
-        apr: 0,
-        usd: 0
+        sd: { id: 1, name: 0, apr: 0, usd: 0 },
+        cv: { id: 1, name: 0, apr: 0, usd: 0 }
       }
-      this.poolSort[field] = dir
+      this.poolSort.sd[field] = dir
+      this.poolSort.cv[field] = dir
     },
     async loadWalletAndLocked() {
       for (const expansion of ["sd", "cv"]) {
