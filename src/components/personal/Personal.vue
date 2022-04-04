@@ -9,26 +9,18 @@
         <table class="table border">
           <thead>
           <tr>
-            <th scope="col" colspan="3">Token</th>
-            <th scope="col" colspan="3">Block</th>
-          </tr>
-          <tr>
             <th scope="col">Symbol</th>
             <th scope="col">Price</th>
-            <th scope="col">Age</th>
-            <th scope="col">#</th>
-            <th scope="col">Time</th>
-            <th scope="col">Period</th>
+            <th scope="col">Update</th>
+            <th scope="col">Block #</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="[symbol, expansion] of [['JEWEL', 'sd'], ['CRYSTAL', 'cv']]" :key="symbol">
             <td>{{ symbol }}</td>
             <td>${{ prices[symbol].toFixed(2) }}</td>
-            <td>{{ ((Date.now() - pricesTimestamp) / 1000).toFixed(0) }} s</td>
+            <td>30s</td>
             <td>{{ blockNumber[expansion] }}</td>
-            <td>{{ blockTime[expansion] }}s</td>
-            <td>{{ blockTimeMeasurementString }}</td>
           </tr>
           </tbody>
         </table>

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service --openssl-legacy-provider serve",
+    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -12,6 +12,7 @@
     "@harmony-js/core": "^0.1.57",
     "@harmony-js/utils": "^0.1.56",
     "@open-rpc/client-js": "^1.7.1",
+    "@popperjs/core": "^2.11.4",
     "axios": "^0.23.0",
     "bootstrap": "^5.1.1",
     "chart.js": "^3.5.1",

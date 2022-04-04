@@ -1,13 +1,13 @@
 <template>
   <div class="border border-dark rounded-3">
     <h3 class="p-3">Overview</h3>
-    <div v-if="progressBarWidth < 100" class="progress">
+    <div v-if="progressBarWidth() < 100" class="progress">
       <div class="progress-bar progress-bar-striped progress-bar-animated"
            role="progressbar"
            aria-valuenow="0"
            aria-valuemin="0"
            aria-valuemax="100"
-           :style="{width: (progressBarWidth) + '%'}">
+           :style="{width: (progressBarWidth()) + '%'}">
       </div>
     </div>
     <div>
@@ -280,11 +280,11 @@ export default {
     async loadWalletAndLocked() {
       for (const expansion of ["sd", "cv"]) {
         let lockedRaw = await contracts[expansion].token.lockOf(this.userAddress)
-        this.lockedBalance[expansion] = formatEther(lockedRaw)
+        this.lockedBalance[expansion] = Number(formatEther(lockedRaw))
         this.localProgress++
 
         let balRaw = await contracts[expansion].token.balanceOf(this.userAddress)
-        this.walletBalance[expansion] = formatEther(balRaw)
+        this.walletBalance[expansion] = Number(formatEther(balRaw))
         this.localProgress++
       }
     },
@@ -296,7 +296,7 @@ export default {
         grandTotal += this.heroTotal(expansion) * this.tokenPrice(expansion)
       if(this.includeInventory)
         grandTotal += this.inventoryTotal(expansion) * this.tokenPrice(expansion)
-      grandTotal += this.totalPoolUsd[expansion]
+      grandTotal += this.totalPoolUsd(expansion)
       return grandTotal
     },
     totalAvailable(expansion) {
@@ -307,8 +307,9 @@ export default {
     },
     totalPoolUsd(expansion) {
       let runningTotal = 0
-      for (let pool of this.pools(expansion))
+      for (let pool of this.pools(expansion)) {
         runningTotal += pool.usdValue
+      }
       return runningTotal
     },
     pendingUnlocked(expansion) {
@@ -340,9 +341,9 @@ export default {
 
       return sp
     },
-    progressBarWidth() {
-      const poolBankPct = this.progressPct() * 0.8
-      const localPct = this.localProgress / 2 * 0.2 * 100
+    progressBarWidth(expansion) {
+      const poolBankPct = this.progressPct(expansion) * 0.8
+      const localPct = this.localProgress[expansion] / 2 * 0.2 * 100
 
       return poolBankPct + localPct
     },
