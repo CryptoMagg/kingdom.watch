@@ -187,11 +187,9 @@ export default {
       if (excludedItems.includes(preItem.symbol)) {
         return
       }
-      if (preItem.name === "Ambertaffy") {
-        console.log(usdPrice, balance)
-      }
       const item = {
         ...preItem,
+        usdPrice,
         balance,
         jewelPrice: usdPrice/this.jewelPrice,
         totalGold: balance * (address===GOLD_ADDR?1:preItem.goldPrice),
@@ -199,7 +197,6 @@ export default {
         totalGoldUsd: balance * (address===GOLD_ADDR?1:preItem.goldPrice) * (address===GOLD_ADDR?usdPrice:this.goldItem.usdPrice),
         totalJewelUsd: usdPrice * balance
       }
-      console.log(item)
       this.items.push(item)
     },
     toggleSort(field) {

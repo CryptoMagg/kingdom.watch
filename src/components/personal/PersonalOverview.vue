@@ -280,14 +280,31 @@
             {{ formatNumber(totalPoolUsd, '$') }}
           </th>
         </tr>
-
-        <tr><td colspan="3"></td></tr>
-
         </thead>
 
         <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tr><td colspan="3"></td></tr>
           <tr>
-            <th class="text-start ps-5" colspan="3">{{ symbol }}</th>
+            <th class="text-start">
+              {{ symbol }}
+              <span @click="toggleSort('name', 1, expansion)">^</span>
+              <span @click="toggleSort('name', -1, expansion)">v</span>
+            </th>
+            <th class="text-end">
+              <span @click="toggleSort('apr', 1, expansion)">^</span>
+              <span @click="toggleSort('apr', -1, expansion)">v</span>
+              APR
+            </th>
+            <th class="text-end">
+              <span @click="toggleSort('usd', 1, expansion)">^</span>
+              <span @click="toggleSort('usd', -1, expansion)">v</span>
+              {{ formatNumber(totalPoolUsd, '$') }}
+            </th>
+          </tr>
+          <tr v-if="sortedPools(expansion).length === 0">
+            <td class="text-start">
+              No pools
+            </td>
           </tr>
           <tr v-for="pool in sortedPools(expansion)" :key="pool">
             <td class="text-start">{{ pool.poolName }}
@@ -329,13 +346,13 @@ export default {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
     },
-    toggleSort(field, dir) {
-      this.poolSort = {
-        sd: { id: 1, name: 0, apr: 0, usd: 0 },
-        cv: { id: 1, name: 0, apr: 0, usd: 0 }
+    toggleSort(field, dir, expansion) {
+      for (const exp of ['sd', 'cv']) {
+        if (expansion === exp || !expansion) {
+          this.poolSort[exp] = { id: 1, name: 0, apr: 0, usd: 0 }
+          this.poolSort[exp][field] = dir
+        }
       }
-      this.poolSort.sd[field] = dir
-      this.poolSort.cv[field] = dir
     },
     async loadWalletAndLocked() {
       for (const expansion of ["sd", "cv"]) {
