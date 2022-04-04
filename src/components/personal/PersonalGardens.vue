@@ -8,7 +8,7 @@
         <div class="border border-dark rounded-3">
           <div v-for="[[exp, symbol], expansion] of [[['Serendale', 'Jewel'], 'sd'], [['Crystalvale', 'Crystal'], 'cv']]" :key="symbol">
             <h3 class="p-3">
-              Total {{ pools(expansion).length>0?"across all":"for" }} {{ pools(expansion).length }}
+              {{ pools(expansion).length>0?"Total across":"" }} {{ pools(expansion).length }}
               {{ exp }} pool{{ pools(expansion).length>1||pools(expansion).length===0?"s":""}}
             </h3>
             <table class="m-auto table table-hover w-100">
@@ -26,8 +26,8 @@
                   :style="{width: (pools(expansion).length/userPools[expansion].length * 100) + '%'}">
               </div>
             </div>
-            <div v-for="poolId in userPools[expansion]" :key="poolId">
-              <PersonalGarden :pool-id="poolId" :user-info="userInfos[expansion][poolId]" :user-address="userAddress"/>
+            <div v-for="poolId in userPools[expansion]" :key="poolId" class="shit">
+              <PersonalGarden :pool-id="poolId" :user-info="userInfos[expansion][poolId]" :expansion="expansion" :user-address="userAddress"/>
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@ const _ = require('lodash')
 import epochs from "@/data/Epochs";
 import PersonalAPR from "@/components/personal/PersonalAPR";
 import PersonalGarden from "@/components/personal/PersonalGarden"
-import {contracts, RPCs, formatUnits, expansionSet, expansionArraySet, formatEther} from "@/utils/ethers"
+import {contracts, RPCs, formatUnits, expansionSet, expansionObjSet, formatEther} from "@/utils/ethers"
 
 export default {
   name: "PersonalGardens",
@@ -57,8 +57,8 @@ export default {
     return {
       error: "",
       poolCount: {...expansionSet},
-      userInfos: {...expansionArraySet},
-      userPools: {...expansionArraySet},
+      userInfos: {...expansionObjSet},
+      userPools: {...expansionObjSet},
       totalAllocPoints: {...expansionSet},
       totalRewardsPerDay: {...expansionSet},
       progress: {...expansionSet},
@@ -84,18 +84,15 @@ export default {
           this.maxProgress[expansion] += this.poolCount[expansion]
           this.increaseProgress(expansion)
 
-          for (let i = 0; i < this.poolCount[expansion]; i++) {
+          for (let i=0;i<this.poolCount[expansion];i++) {
             let userInfo = await gardener.userInfo(i, this.userAddress)
-            if (userInfo.amount > 0) {
+            if (userInfo.amount.gt(0)) {
               this.userInfos[expansion][i] = userInfo
-              if (this.userPools[expansion].indexOf(i) === -1) {
-                console.log(i)
-                this.userPools[expansion].push(i)
-              }
+              this.userPools[expansion][i] = i
             }
             this.increaseProgress(expansion)
           }
-          this.setPoolCount(this.userPools[expansion].length)
+          this.setPoolCount(Object.keys(this.userPools[expansion]).length)
 
           let blockNum = await RPCs[expansion].getBlockNumber()
           this.setBlockNumber(blockNum, expansion)

@@ -1,8 +1,9 @@
 <template>
+
   <div class="row">
-    <div class="col-lg-8 p-2 m-auto">
+    <div class="col-lg-8 p-2 w-100">
       <div class="border border-dark rounded-3">
-        <h3 class="p-3">{{ poolName() }}</h3>
+        <h3 class="p-3">{{ poolName }}</h3>
         <p v-if="userUnstaked > 0" class="text-danger">You have unstaked LP tokens for this pool</p>
         <table class="m-auto table table-hover w-100">
           <tbody>
@@ -10,7 +11,7 @@
             <td class="text-start">Garden Share</td>
             <td></td>
             <td class="text-end">{{ (userShare * 100).toFixed(4) }}%</td>
-            <td class="text-end">{{ formatNumber(usdShareValue(),'$') }}</td>
+            <td class="text-end">{{ formatNumber(usdShareValue,'$') }}</td>
           </tr>
           <tr>
             <td class="text-start">{{ token0.symbol }}</td>
@@ -27,29 +28,29 @@
           <tr>
             <td class="text-start">Pending locked</td>
             <td></td>
-            <td class="text-end">{{ formatNumber(pendingLocked()) }}</td>
-            <td class="text-end">{{ formatNumber(pendingLocked() * this.prices()["JEWEL"],'$') }}</td>
+            <td class="text-end">{{ formatNumber(pendingLocked) }}</td>
+            <td class="text-end">{{ formatNumber(pendingLocked * this.prices()["JEWEL"],'$') }}</td>
           </tr>
           <tr>
             <td class="text-start">Pending unlocked</td>
             <td></td>
-            <td class="text-end">{{ formatNumber(pendingUnlocked()) }}</td>
-            <td class="text-end">{{ formatNumber(pendingUnlocked() * this.prices()["JEWEL"],'$') }}</td>
+            <td class="text-end">{{ formatNumber(pendingUnlocked) }}</td>
+            <td class="text-end">{{ formatNumber(pendingUnlocked * this.prices()["JEWEL"],'$') }}</td>
           </tr>
           <tr>
             <td class="text-start">Current withdrawal fee</td>
             <td class="text-end"></td>
-            <td class="text-end">{{ currentWithdrawalFee() }}%</td>
+            <td class="text-end">{{ currentWithdrawalFee }}%</td>
             <td class="text-end">{{ formatNumber(currentWithdrawalFee * usdShareValue / 100,'$') }}</td>
           </tr>
           <tr>
             <td colspan="2" class="text-start">Next withdrawal fee tier</td>
-            <td class="text-end">{{ nextBetterFee() }}%</td>
-            <td class="text-end">{{ formatNumber(usdShareValue * nextBetterFee() / 100,'$') }}</td>
+            <td class="text-end">{{ nextBetterFee }}%</td>
+            <td class="text-end">{{ formatNumber(usdShareValue * nextBetterFee / 100,'$') }}</td>
           </tr>
           <tr>
-            <td colspan="3" class="text-start">USD saved if waiting {{ timeBeforeNextFeeLevel() }}</td>
-            <td class="text-end">{{ formatNumber(usdSavedBetterFee(),'$') }}</td>
+            <td colspan="3" class="text-start">USD saved if waiting {{ timeBeforeNextFeeLevel }}</td>
+            <td class="text-end">{{ formatNumber(usdSavedBetterFee,'$') }}</td>
           </tr>
           <PersonalAPR />
           </tbody>
@@ -71,22 +72,19 @@
 
 <script>
 import PersonalAPR from "@/components/personal/PersonalAPR";
+const formatNumber = require('../../utils/FormatNumber')
 import timeString from '../../utils/TimeString'
 import withdrawalFee from '../../data/WithdrawalFees'
 
-const formatNumber = require('../../utils/FormatNumber')
-const { Contract } = require('ethers')
-import { RPCs, contracts, contractJson, formatEther } from "@/utils/ethers";
+import { Contract } from 'ethers'
+import { contractJson, contracts, RPCs } from "@/utils/ethers";
 
 export default {
   name: "PersonalGarden",
   components: {PersonalAPR},
   props: ["poolId", "userInfo", "userAddress", "expansion"],
-  data(type = "sd") {
+  data() {
     return {
-      govToken: type === "cv" ? "CRYSTAL" : "JEWEL",
-      rpc: type === "cv" ? RPCs.cv : RPCs.sd,
-      contracts: type === "cv" ? contracts.cv : contracts.sd,
       poolInfo: {},
       progress: 0,
       maxProgress: 10,
@@ -113,11 +111,10 @@ export default {
         return 0.0
     },
     async loadGarden() {
-      this.poolInfo = await this.contracts.gardener.poolInfo(this.poolId)
+      const gardener = contracts[this.expansion].gardener
+      this.poolInfo = await gardener.poolInfo(this.poolId)
       this.progress++
-
-      const contract = new Contract(this.poolInfo.lpToken, contractJson.uni.abi, )
-
+      const contract = new Contract(this.poolInfo.lpToken, contractJson.uni.abi, RPCs[this.expansion])
       await Promise.all([
         contract.token0()
             .then(tokenAddress => {
@@ -128,7 +125,6 @@ export default {
                     this.progress++
                   })
             }),
-
         contract.token1()
             .then(tokenAddress => {
               this.progress++
@@ -138,16 +134,13 @@ export default {
                     this.progress++
                   })
             }),
-
         contract.totalSupply()
             .then(totalSupply => {
               this.progress++
-
-              return contract.balanceOf(this.contracts.gardener.address)
+              return contract.balanceOf(gardener.address)
                   .then(balance => {
                     this.progress++
                     this.userShare = this.userInfo.amount / balance
-
                     return contract.getReserves()
                         .then(reserves => {
                           this.progress++
@@ -157,29 +150,25 @@ export default {
                         })
                   })
             }),
-
         contract.balanceOf(this.userAddress)
             .then(unstaked => {
               this.progress++
-              this.userUnstaked = formatEther(unstaked)
+              this.userUnstaked = unstaked / 1e18
             })
             .catch(err => {
               console.log(err)
             }),
-
-        contract.pendingReward(this.poolId, this.userAddress)
+        gardener.pendingReward(this.poolId, this.userAddress)
             .then(pending => {
               this.progress++
-              this.pendingRewards = formatEther(pending)
+              this.pendingRewards = pending / 1e18
             })
             .catch(err => {
               console.log(err)
             })
-
       ])
       this.token0["userBalance"] = (this.token0availableInPool / 10 ** this.token0["decimals"]) * this.userShare
       this.token1["userBalance"] = (this.token1availableInPool / 10 ** this.token1["decimals"]) * this.userShare
-
       this.poolDone({
         poolId: this.poolId,
         poolName: this.poolName,
@@ -189,53 +178,46 @@ export default {
         allocPoints: this.poolInfo.allocPoint,
         userShare: this.userShare,
         userUnstaked: this.userUnstaked
-      })
-
+      }, this.expansion)
     },
-    async getErc20Token(address) {
-      const contract = new Contract(address, contractJson.erc20.abi, this.rpc)
-      return {
+    async getErc20Token(tokenAddress) {
+      const contract = new Contract(tokenAddress, contractJson.erc20.abi, RPCs[this.expansion])
+      const tokenInfo = {
         name: await contract.name(),
         symbol: await contract.symbol(),
-        decimals: await contract.decimals(),
+        decimals: await contract.decimals()
       }
+      return tokenInfo
     },
     calcApr() {
-      if (this.userRewardsPerDay === 0 || this.prices()[this.govToken] === 0 )
+      if (this.userRewardsPerDay === 0 || this.prices()["JEWEL"] === 0)
         return 0
-
-      const usdRewardsPerDay = this.userRewardsPerDay * this.prices()[this.govToken]
+      const usdRewardsPerDay = this.userRewardsPerDay * this.prices()["JEWEL"]
       const usdValue = this.usdShareValue
-
       if (usdRewardsPerDay === 0 || usdValue === 0)
         return 0
-
       return usdRewardsPerDay / usdValue * 100
-    },
+    }
+  },
+  computed: {
     currentWithdrawalFee() {
-      if (this.blockNumber(this.expansion) < 1)
+      if (this.blockNumber() < 1)
         return 0
-
       let lastBlock
-
       if (this.userInfo["lastWithdrawBlock"] < 1)
         lastBlock = this.userInfo["firstDepositBlock"]
       else
         lastBlock = this.userInfo["lastWithdrawBlock"]
-
       return withdrawalFee.getFee(this.blockNumber() - lastBlock)
     },
     timeBeforeNextFeeLevel() {
       if (this.blockNumber() < 1)
         return ""
-
       let lastBlock
-
       if (this.userInfo["lastWithdrawBlock"] < 1)
         lastBlock = this.userInfo["firstDepositBlock"]
       else
         lastBlock = this.userInfo["lastWithdrawBlock"]
-
       return timeString.timeSpanStringBlocks(
           withdrawalFee.blocksBeforeNextLevel(this.blockNumber() - lastBlock),
           "At lowest tier",
@@ -244,24 +226,20 @@ export default {
     },
     nextBetterFee() {
       const currentFee = this.currentWithdrawalFee
-
       if(!currentFee)
         return 0
-
       return withdrawalFee.nextBetterFee(currentFee)
     },
     usdSavedBetterFee() {
       const currentFee = this.currentWithdrawalFee
       const usdValue = this.usdShareValue
       const nextBetterFee = this.nextBetterFee
-
-      if (!currentFee || !usdValue || !nextBetterFee) return 0
-
+      if (!currentFee || !usdValue || !nextBetterFee)
+        return 0
       const currentFeeUsd = usdValue * currentFee / 100
       const nextBetterFeeUsd = usdValue * nextBetterFee / 100
-
-      if (nextBetterFeeUsd === currentFeeUsd) return 0
-
+      if (nextBetterFeeUsd === currentFeeUsd)
+        return 0
       return currentFeeUsd - nextBetterFeeUsd
     },
     usdShareValue() {
@@ -269,19 +247,19 @@ export default {
     },
     userRewardsPerDay() {
       if (this.poolInfo.allocPoint > 0
-          && this.totalAllocPoints(this.expansion) > 0
-          && this.totalRewardsPerDay(this.expansion) > 0
+          && this.totalAllocPoints() > 0
+          && this.totalRewardsPerDay() > 0
           && this.userShare > 0) {
-
-        return this.poolInfo.allocPoint / this.totalAllocPoints(this.expansion) * this.totalRewardsPerDay(this.expansion) * this.userShare
-      } else return 0
+        return this.poolInfo.allocPoint / this.totalAllocPoints() * this.totalRewardsPerDay() * this.userShare
+      } else
+        return 0
     },
     pendingLocked() {
-      if (!this.expansion) return 0
+      if (!this.epoch(this.expansion)) return 0
       return this.pendingRewards * (100 - this.epoch(this.expansion).unlock) / 100
     },
     pendingUnlocked() {
-      if (!this.expansion) return 0
+      if (!this.epoch(this.expansion)) return 0
       return this.pendingRewards * this.epoch(this.expansion).unlock / 100
     },
     poolName() {
@@ -291,23 +269,20 @@ export default {
         return ""
     },
     apr() {
-      if (this.userRewardsPerDay === 0 || this.prices()[this.govToken] === 0)
+      if (this.userRewardsPerDay === 0 || this.prices()["JEWEL"] === 0)
         return 0
-
-      const usdRewardsPerDay = this.userRewardsPerDay * this.prices()[this.govToken]
+      const usdRewardsPerDay = this.userRewardsPerDay * this.prices()["JEWEL"]
       const usdValue = this.usdShareValue
-
       if (usdRewardsPerDay === 0 || usdValue === 0)
         return 0
-
       return usdRewardsPerDay / usdValue * 100
     },
   },
   inject: ["totalAllocPoints", "totalRewardsPerDay", "epoch", "poolDone", "prices", "blockNumber", "blockTime"],
   provide() {
     return {
-      userRewardsPerDay: this.userRewardsPerDay,
-      apr: this.apr
+      userRewardsPerDay: () => this.userRewardsPerDay,
+      apr: () => this.apr
     }
   },
   mounted() {
@@ -317,5 +292,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
