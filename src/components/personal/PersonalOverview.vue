@@ -312,7 +312,7 @@
             <td class="text-start">{{ pool.poolName }}
               <span v-if="pool.userUnstaked >0" class="text-danger">Unstaked LP</span>
             </td>
-            <td class="text-end">{{ formatNumber(pool.apr()) }}%</td>
+            <td class="text-end">{{ formatNumber(pool.apr() * 365) }}%</td>
             <td class="text-end">{{ formatNumber(pool.usdValue, '$') }}</td>
           </tr>
         </tbody>
