@@ -195,9 +195,10 @@ export default {
       return tokenInfo
     },
     calcApr() {
-      if (this.userRewardsPerDay === 0 || this.prices()["JEWEL"] === 0)
+      console.log(this.prices(this.expansion))
+      if (this.userRewardsPerDay === 0 || this.prices(this.expansion) === 0)
         return 0
-      const usdRewardsPerDay = this.userRewardsPerDay * this.prices()["JEWEL"]
+      const usdRewardsPerDay = this.userRewardsPerDay * this.prices(this.expansion)
       const usdValue = this.usdShareValue
       if (usdRewardsPerDay === 0 || usdValue === 0)
         return 0
