@@ -1,13 +1,15 @@
 <template>
   <div class="border border-dark rounded-3">
     <h3 class="p-3">Overview</h3>
-    <div v-if="progressBarWidth('sd') < 100" class="progress">
-      <div class="progress-bar progress-bar-striped progress-bar-animated"
-           role="progressbar"
-           aria-valuenow="0"
-           aria-valuemin="0"
-           aria-valuemax="100"
-           :style="{width: (progressBarWidth('sd')) + '%'}">
+    <div v-if="anyProgressLeft">
+      <div v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" class="progress" :key="expansion">
+        <div class="progress-bar progress-bar-striped progress-bar-animated text-white" :class="expansion==='sd'?'bg-success':'bg-info'"
+             role="progressbar"
+             aria-valuenow="0"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             :style="{width: (progressBarWidth(expansion)) + '%'}">{{ symbol }}
+        </div>
       </div>
     </div>
     <div>
@@ -280,20 +282,37 @@
             {{ formatNumber(totalPoolUsd, '$') }}
           </th>
         </tr>
-
-        <tr><td colspan="3"></td></tr>
-
         </thead>
 
         <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tr><td colspan="3"></td></tr>
           <tr>
-            <th class="text-start ps-5" colspan="3">{{ symbol }}</th>
+            <th class="text-start">
+              {{ symbol }}
+              <span @click="toggleSort('name', 1, expansion)">^</span>
+              <span @click="toggleSort('name', -1, expansion)">v</span>
+            </th>
+            <th class="text-end">
+              <span @click="toggleSort('apr', 1, expansion)">^</span>
+              <span @click="toggleSort('apr', -1, expansion)">v</span>
+              APR
+            </th>
+            <th class="text-end">
+              <span @click="toggleSort('usd', 1, expansion)">^</span>
+              <span @click="toggleSort('usd', -1, expansion)">v</span>
+              {{ formatNumber(totalPoolUsd, '$') }}
+            </th>
+          </tr>
+          <tr v-if="sortedPools(expansion).length === 0">
+            <td class="text-start">
+              No pools
+            </td>
           </tr>
           <tr v-for="pool in sortedPools(expansion)" :key="pool">
             <td class="text-start">{{ pool.poolName }}
               <span v-if="pool.userUnstaked >0" class="text-danger">Unstaked LP</span>
             </td>
-            <td class="text-end">{{ formatNumber(pool.apr()) }}%</td>
+            <td class="text-end">{{ formatNumber(pool.apr() * 365) }}%</td>
             <td class="text-end">{{ formatNumber(pool.usdValue, '$') }}</td>
           </tr>
         </tbody>
@@ -305,16 +324,16 @@
 <script>
 
 import formatNumber from "@/utils/FormatNumber"
-import { contracts, formatEther, expansionSet } from "@/utils/ethers"
+import { contracts, formatEther } from "@/utils/ethers"
 
 export default {
   name: "PersonalOverview",
   props: ["userAddress"],
   data() {
     return {
-      lockedBalance: {...expansionSet},
-      walletBalance: {...expansionSet},
-      localProgress: {...expansionSet},
+      lockedBalance: { sd: 0, cv: 0 },
+      walletBalance: { sd: 0, cv: 0 },
+      localProgress: { sd: 0, cv: 0 },
       includeHeroes: true,
       includeInventory: true,
       includeLocked: true,
@@ -329,23 +348,23 @@ export default {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
     },
-    toggleSort(field, dir) {
-      this.poolSort = {
-        sd: { id: 1, name: 0, apr: 0, usd: 0 },
-        cv: { id: 1, name: 0, apr: 0, usd: 0 }
+    toggleSort(field, dir, expansion) {
+      for (const exp of ['sd', 'cv']) {
+        if (expansion === exp || !expansion) {
+          this.poolSort[exp] = { id: 1, name: 0, apr: 0, usd: 0 }
+          this.poolSort[exp][field] = dir
+        }
       }
-      this.poolSort.sd[field] = dir
-      this.poolSort.cv[field] = dir
     },
     async loadWalletAndLocked() {
       for (const expansion of ["sd", "cv"]) {
         let lockedRaw = await contracts[expansion].token.lockOf(this.userAddress)
         this.lockedBalance[expansion] = Number(formatEther(lockedRaw))
-        this.localProgress++
+        this.localProgress[expansion]++
 
         let balRaw = await contracts[expansion].token.balanceOf(this.userAddress)
         this.walletBalance[expansion] = Number(formatEther(balRaw))
-        this.localProgress++
+        this.localProgress[expansion]++
       }
     },
     grandTotalUsd(expansion) {
@@ -407,11 +426,14 @@ export default {
 
       return poolBankPct + localPct
     },
-
     tokenPrice(expansion) {
       return this.prices(expansion)
-    },
-
+    }
+  },
+  computed: {
+    anyProgressLeft() {
+      return this.progressBarWidth('sd') < 100 || this.progressBarWidth('cv') < 100
+    }
   },
   mounted() {
     this.loadWalletAndLocked()

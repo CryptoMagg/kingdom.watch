@@ -160,7 +160,7 @@ export default {
       progressPct: { sd: 0, cv: 0 },
       profileName: "",
       heroTotal: { sd: 0, cv: 0 },
-      heroProgress: { sd: 0, cv: 0 },
+      heroProgress: { sd: 0, cv: 100 },
       inventoryTotal: { sd: 0, cv: 0 },
     }
   },
@@ -175,11 +175,12 @@ export default {
     },
     calcProgressPct() {
       for (const expansion of ["sd", "cv"]) {
-        this.progressPct[expansion] = (
-            this.commonProgressPct[expansion] * 0.2
-            + (this.poolProgress[expansion] / this.poolCount[expansion] * 100) * 0.35
-            + this.bankProgressPct[expansion] * 0.1 + this.heroProgress[expansion] * 0.35
-        )
+        // weighted progress
+        let wCP = this.commonProgressPct[expansion] * 0.2
+        let wPP = (this.poolCount[expansion]===0?1:this.poolProgress[expansion]/this.poolCount[expansion])*100*0.35
+        let wBP = this.bankProgressPct[expansion] * 0.1
+        let wHP = this.heroProgress[expansion] * 0.35
+        this.progressPct[expansion] = wCP + wPP + wBP + wHP
       }
     },
     async loadPrices() {

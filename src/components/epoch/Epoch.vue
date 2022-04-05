@@ -6,27 +6,33 @@
         <table class="m-auto table table-hover w-100">
           <tbody>
           <tr>
-            <th colspan="2">Current Epoch</th>
+            <th class="text-start text-nowrap">Current Epoch</th>
+            <th class="text-end">Serendale</th>
+            <th class="text-end">Crystalvale</th>
           </tr>
-          <EpochDetails whichEpoch="current"/>
+          <EpochDetails whichEpoch="current" expansion="sd"/>
           <br />
           <tr>
-            <th colspan="2">Next Epoch</th>
+            <th class="text-start text-nowrap">Next Epoch</th>
+            <th class="text-end">Serendale</th>
+            <th class="text-end">Crystalvale</th>
           </tr>
-          <EpochDetails whichEpoch="next"/>
+          <EpochDetails whichEpoch="next" expansion="sd"/>
           <br />
           <tr>
-            <th colspan="2">Future Epochs</th>
+            <th class="text-start text-nowrap">Future Epochs</th>
+            <th class="text-end">Serendale</th>
+            <th class="text-end">Crystalvale</th>
           </tr>
 
-          <template v-for="epoch in futureEpochsToShow" :key="epoch">
-            <EpochDetails :which-epoch="epoch"/>
-            <tr><td colspan="2">&nbsp;</td></tr>
+          <template v-for="epoch in futureEpochsToShow['sd']" :key="epoch">
+            <EpochDetails :which-epoch="epoch" expansion="sd"/>
+            <tr><td colspan="3">&nbsp;</td></tr>
           </template>
           </tbody>
         </table>
 
-        <p class="m-2">Block number: {{ currentBlockNumber }}</p>
+        <p class="m-2">Block number: {{ currentBlockNumber['sd'] }}</p>
       </div>
 
     </div>
@@ -37,59 +43,46 @@
 import epochFuncs from "../../data/Epochs"
 import EpochDetails from "@/components/epoch/EpochDetails";
 
-const {Harmony} = require('@harmony-js/core');
-const {
-  ChainID,
-  ChainType,
-  hexToNumber
-} = require('@harmony-js/utils');
-
-const hmy = new Harmony(
-    'https://harmony-0-rpc.gateway.pokt.network', //'https://api.harmony.one',
-    {
-      chainType: ChainType.Harmony,
-      chainId: ChainID.HmyMainnet,
-    },
-);
+import {RPCs} from "@/utils/ethers";
 
 export default {
   name: "Epoch",
   components: {EpochDetails},
   data() {
     return {
-      currentEpoch: {},
-      nextEpoch: {},
-      currentBlockNumber: 0,
-      futureEpochs: [],
-      futureEpochsToShow: []
+      currentEpoch: { sd: {}, cv: {} },
+      nextEpoch: { sd: {}, cv: {} },
+      currentBlockNumber: { sd: 0, cv: 0 },
+      futureEpochs: { sd: [], cv: [] },
+      futureEpochsToShow: { sd: [], cv: [] }
 
     }
   },
   methods: {
     async loadEpochs() {
-      this.currentBlockNumber = hexToNumber((await hmy.blockchain.getBlockNumber()).result)
+      for (const expansion of ['sd', 'cv']) {
+        this.currentBlockNumber[expansion] = await RPCs[expansion].getBlockNumber()
+        this.currentEpoch[expansion] = epochFuncs.getCurrentEpoch(this.currentBlockNumber[expansion], expansion)
+        this.nextEpoch[expansion] = epochFuncs.epochData(this.currentEpoch[expansion].epoch + 1, expansion)
 
-      this.currentEpoch = epochFuncs.getCurrentEpoch(this.currentBlockNumber)
-      this.nextEpoch = epochFuncs.epochData(this.currentEpoch.epoch + 1)
-
-      this.nextEpoch["timeLeftString"] = epochFuncs.timeLeftUntilEpochString(this.currentBlockNumber, this.nextEpoch.epoch)
-
-      for(let i = this.nextEpoch.epoch + 1; i < 60;i++) {
-        this.futureEpochs[i] = epochFuncs.epochData(i)
-        this.futureEpochs[i]["timeLeftString"] = epochFuncs.timeLeftUntilEpochString(this.currentBlockNumber,i)
-        this.futureEpochsToShow.push(i)
+        this.nextEpoch[expansion]["timeLeftString"] = epochFuncs.timeLeftUntilEpochString(this.currentBlockNumber[expansion], this.nextEpoch[expansion].epoch, expansion)
+        for(let i = this.nextEpoch[expansion].epoch + 1; i < 60;i++) {
+          this.futureEpochs[expansion][i] = epochFuncs.epochData(i, expansion)
+          this.futureEpochs[expansion][i]["timeLeftString"] = epochFuncs.timeLeftUntilEpochString(this.currentBlockNumber[expansion],i,expansion)
+          this.futureEpochsToShow[expansion].push(i)
+        }
       }
     },
   },
   provide() {
     return {
-      getEpoch: (epoch) => {
+      getEpoch: (epoch, expansion) => {
         if (epoch === "current")
-          return this.currentEpoch
+          return this.currentEpoch[expansion]
         else if (epoch === "next")
-          return this.nextEpoch
-        else if(this.futureEpochs[epoch])
-          return this.futureEpochs[epoch]
+          return this.nextEpoch[expansion]
+        else if(this.futureEpochs[expansion][epoch])
+          return this.futureEpochs[expansion][epoch]
         else
           return "error"
       }

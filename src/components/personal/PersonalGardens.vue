@@ -86,6 +86,7 @@ export default {
       },
     }
   },
+  inject: ["setBlockNumber", "blockNumber", "epoch", "setPoolCount", "pools", "prices", "setCommonProgress", "blockTime"],
   methods: {
     increaseProgress(expansion) {
       this.progress[expansion]++
@@ -98,7 +99,7 @@ export default {
           let gardener = contracts[expansion].gardener
 
           let plRaw = await gardener.poolLength()
-          this.poolCount[expansion] = formatUnits(plRaw, 0)
+          this.poolCount[expansion] = Number(formatUnits(plRaw, 0))
           this.maxProgress[expansion] += this.poolCount[expansion]
           this.increaseProgress(expansion)
 
@@ -110,7 +111,7 @@ export default {
             }
             this.increaseProgress(expansion)
           }
-          this.setPoolCount(Object.keys(this.userPools[expansion]).length)
+          this.setPoolCount(Object.keys(this.userPools[expansion]).length, expansion)
 
           let blockNum = await RPCs[expansion].getBlockNumber()
           this.setBlockNumber(blockNum, expansion)
@@ -168,7 +169,6 @@ export default {
       console.log(err)
     }
   },
-  inject: ["setBlockNumber", "blockNumber", "epoch", "setPoolCount", "pools", "prices", "setCommonProgress", "blockTime"],
   provide() {
     return {
       totalAllocPoints: (expansion) => this.totalAllocPoints[expansion],
