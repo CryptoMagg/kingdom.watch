@@ -22,10 +22,14 @@
       <span v-if="cvEpoch.multiplier > 0">{{ cvEpoch["multiplier"] }}x</span>
     </td>
   </tr>
-  <tr v-if="!!sdEpoch['timeLeftString']">
+  <tr>
     <td class="text-start">Time until</td>
-    <td class="text-end">{{ sdEpoch["timeLeftString"] }}</td>
-    <td class="text-end">{{ cvEpoch["timeLeftString"] }}</td>
+    <td class="text-end">
+      <span v-if="sdEpoch.timeLeftString != ''">{{ sdEpoch["timeLeftString"] }}</span>
+      </td>
+    <td class="text-end">
+      <span v-if="cvEpoch.timeLeftString != ''">{{ cvEpoch["timeLeftString"] }}</span>
+      </td>
   </tr>
 </template>
 

@@ -95,7 +95,6 @@ export default {
     fetchHistory() {
       axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/xJewelRatioHistory") // "http://localhost:7000") //
           .then(response => {
-            console.log(response.data)
             this.history = response.data.reverse()
             this.fetched = true
           })

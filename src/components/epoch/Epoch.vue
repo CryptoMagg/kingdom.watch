@@ -25,7 +25,7 @@
             <th class="text-end">Crystalvale</th>
           </tr>
 
-          <template v-for="epoch in futureEpochsToShow['sd']" :key="epoch">
+          <template v-for="epoch in futureEpochsToShow['cv'].length" :key="epoch">
             <EpochDetails :which-epoch="epoch" expansion="sd"/>
             <tr><td colspan="3">&nbsp;</td></tr>
           </template>
@@ -81,8 +81,8 @@ export default {
           return this.currentEpoch[expansion]
         else if (epoch === "next")
           return this.nextEpoch[expansion]
-        else if(this.futureEpochs[expansion][epoch])
-          return this.futureEpochs[expansion][epoch]
+        else if(this.futureEpochs[expansion][this.nextEpoch[expansion].epoch+epoch])
+          return this.futureEpochs[expansion][this.nextEpoch[expansion].epoch+epoch]
         else
           return "error"
       }
