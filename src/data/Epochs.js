@@ -102,8 +102,20 @@ function epochData(epoch, expansion) {
             100,
             (epoch * unlockWeeklyIncrease[expansion]) + unlockStart[expansion] - 2
         ),
-        multiplier: multiplierSchedule[expansion][epoch<20?epoch:epoch<36?20:36]
+        multiplier: multiplierSchedule[expansion][getEpochMultipler(epoch, expansion)]
     }
+}
+
+function getEpochMultipler(epoch, expansion) {
+    switch(expansion){
+        case 'sd':
+            return epoch<20?epoch:epoch<36?20:36;
+        case 'cv':
+            return epoch<21?epoch:epoch<100?21:101;
+        default:
+            return 0;        
+    }
+        
 }
 
 function timeLeftUntilEpochString(currentBlock, epoch, expansion) {
