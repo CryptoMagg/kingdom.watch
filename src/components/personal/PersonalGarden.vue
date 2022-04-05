@@ -195,7 +195,6 @@ export default {
       return tokenInfo
     },
     calcApr() {
-      console.log(this.prices(this.expansion))
       if (this.userRewardsPerDay === 0 || this.prices(this.expansion) === 0)
         return 0
       const usdRewardsPerDay = this.userRewardsPerDay * this.prices(this.expansion)
