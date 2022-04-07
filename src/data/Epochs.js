@@ -2,6 +2,11 @@ const firstBlock = {
     sd: 16350367,
     cv: 8943
 }
+
+const gardenStartTime = {
+    cv: 1648684800000 //March 30th, 2022 8:00 pm EDT
+}
+
 const blocksPerEpoch = {
     sd: 302400,
     cv: 302400
@@ -72,26 +77,53 @@ const multiplierSchedule = {
 }
 
 const getCurrentEpoch = (currentBlock, expansion) => {
-    const epoch = currentEpoch(currentBlock, expansion)
-
-    return epochData(epoch, expansion)
+    switch(expansion) {
+        case "sd":
+            return epochData(currentEpochByBlock(currentBlock, expansion), expansion)
+        case "cv": {
+            const date = new Date()
+            return epochData(currentEpochByTime(date.getTime(), expansion), expansion)
+        }
+        default:
+            return epochData(currentEpochByBlock(currentBlock, expansion), expansion)
+    }
 }
 
-function currentEpoch(currentBlock, expansion) {
+function currentEpochByBlock(currentBlock, expansion) {
     const diff = currentBlock - firstBlock[expansion]
-
     if(diff < 0)
         throw `Invalid current block ${currentBlock} is less than first block ${firstBlock[expansion]}`
 
     return Math.floor(diff/blocksPerEpoch[expansion]) + 1
 }
 
+function currentEpochByTime(currentTime, expansion) {
+    const diff = currentTime - gardenStartTime[expansion]
+    if(diff < 0)
+        throw `Invalid current block ${currentTime} is less than first block ${firstBlock[expansion]}`
+
+    return Math.floor(diff/(blocksPerEpoch[expansion]*blockSpeedSeconds[expansion]*1000)) + 1
+}
+
 function epochStartBlock(epoch, expansion) {
     return firstBlock[expansion] + (blocksPerEpoch[expansion] * (epoch - 1))
 }
 
+function epochStartTime(epoch, expansion) {
+    return gardenStartTime[expansion] + (blocksPerEpoch[expansion] * blockSpeedSeconds[expansion] * (epoch-1) * 1000)
+}
+
 function secondsLeftUntilEpoch(currentBlock, epoch, expansion) {
-    return (epochStartBlock(epoch, expansion) - currentBlock) * blockSpeedSeconds[expansion]
+    switch(expansion) {
+        case "sd":
+            return (epochStartBlock(epoch, expansion) - currentBlock) * blockSpeedSeconds[expansion]
+        case "cv": {
+            const date = new Date()
+            return ((epochStartTime(epoch, expansion) - date.getTime())/1000)
+        }
+        default:
+            return (epochStartBlock(epoch, expansion) - currentBlock) * blockSpeedSeconds[expansion]
+    }
 }
 
 function epochData(epoch, expansion) {
