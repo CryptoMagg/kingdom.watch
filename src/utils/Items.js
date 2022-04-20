@@ -22,9 +22,10 @@ export function GetTokenList() {
 }
 
 export function getItem(address) {
+    const addressLower = address.toLowerCase();
     const _items = items.size > 0 ? items : mapItems()
     const item = {
-        ..._items.has(address) ? _items.get(address) : {name:"Unknown item", address}
+        ..._items.has(addressLower) ? _items.get(addressLower) : {name:"Unknown item", address}
     }
     const goldPrices = mappedGoldPrices()
 
@@ -50,7 +51,7 @@ export function getAllItemAddresses() {
 
 function mapItems() {
     for (let token of tokens) {
-        items.set(token.address, token)
+        items.set(token.address.toLowerCase(), token)
     }
     return items
 }
