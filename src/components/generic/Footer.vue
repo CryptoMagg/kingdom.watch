@@ -14,15 +14,15 @@
       <span @click="copyTipJarToClipBoard" v-if="copied">Copied!</span>
       <span @click="copyTipJarToClipBoard" v-else>[Click to copy]</span>
       <br/>
-      You can also <span class="font-monospace">!tip</span> on Discord :) My nickname is <em>@Magg | Kingdom.Watch</em>.
+      You can also <span class="font-monospace">/tip</span> on Discord :) My nickname is <em>@Magg | Kingdom.Watch</em>.
       <br />
       <em>(Oh, wow! I've actually gotten some tips! Thank you so much!)</em><br/>
     </div>
 
-    <div class="container">
+    <!--<div class="container">
       <br/>
       Twitter: <a @click="trackClick('Twitter')" target="_blank" href="https://twitter.com/KingdomWatchDFK">https://twitter.com/KingdomWatchDFK</a><br/>
-    </div>
+    </div>-->
 
     <div class="container">
       <br/>
