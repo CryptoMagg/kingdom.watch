@@ -21,7 +21,7 @@
 
     <div class="container">
       <br/>
-      Twitter: <a @click="trackClick('Twitter')" target="_blank" href="https://twitter.com/PineCone_Magg"https://twitter.com/PineCone_Magg</a><br/>
+      Twitter: <a @click="trackClick('Twitter')" target="_blank" href="https://twitter.com/PineCone_Magg">https://twitter.com/PineCone_Magg</a><br/>
     </div>
 
     <div class="container">
