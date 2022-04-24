@@ -19,10 +19,10 @@
       <em>(Oh, wow! I've actually gotten some tips! Thank you so much!)</em><br/>
     </div>
 
-    <!--<div class="container">
+    <div class="container">
       <br/>
-      Twitter: <a @click="trackClick('Twitter')" target="_blank" href="https://twitter.com/KingdomWatchDFK">https://twitter.com/KingdomWatchDFK</a><br/>
-    </div>-->
+      Twitter: <a @click="trackClick('Twitter')" target="_blank" href="https://twitter.com/PineCone_Magg"https://twitter.com/PineCone_Magg</a><br/>
+    </div>
 
     <div class="container">
       <br/>
