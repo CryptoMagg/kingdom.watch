@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 import {mapGetters} from "vuex";
 
 export default {
@@ -106,20 +106,20 @@ export default {
     },
     loadQuestStats() {
 
-      axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/questStats")
-      .then(response => {
-        this.greatestPulls = []
-        console.info(response)
-
-        const questRewards = response.data.questRewards
-
-        for(let reward of questRewards)
-          this.greatestPulls.push({
-            amount: reward.amount,
-            time: new Date(reward.quest.timestamp * 1000).toISOString()
-          })
-      })
-      .catch(err => console.error(err))
+      // axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/questStats")
+      // .then(response => {
+      //   this.greatestPulls = []
+      //   console.info(response)
+      //
+      //   const questRewards = response.data.questRewards
+      //
+      //   for(let reward of questRewards)
+      //     this.greatestPulls.push({
+      //       amount: reward.amount,
+      //       time: new Date(reward.quest.timestamp * 1000).toISOString()
+      //     })
+      // })
+      // .catch(err => console.error(err))
     }
   },
   computed: {
