@@ -43,7 +43,7 @@
 <script>
 import axios from "axios";
 
-import {getAllItemAddresses, getItem} from "@/utils/Items";
+import {getAllItemAddresses, getItem, GetTokenList} from "@/utils/Items";
 import Address from "@/components/generic/Address";
 import QuestsByQuest from "@/components/quest/QuestsByQuest";
 import QuestsByHero from "@/components/quest/QuestsByHero";
@@ -212,9 +212,11 @@ export default {
     }
   },
   created() {
+    GetTokenList()
     if (this.$route.params.userAddress) {
       this.userAddress = this.$route.params.userAddress
       this.loadQuests()
+
     }
   },
 }

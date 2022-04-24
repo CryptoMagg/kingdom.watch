@@ -1,4 +1,5 @@
 import axios from "axios";
+import {ethers} from "ethers";
 
 const goldPriceImport = require("@/data/ItemGoldPrice.json")
 
@@ -22,6 +23,7 @@ export function GetTokenList() {
 }
 
 export function getItem(address) {
+    address = ethers.utils.getAddress(address);
     const _items = items.size > 0 ? items : mapItems()
     const item = {
         ..._items.has(address) ? _items.get(address) : {name:"Unknown item", address}
