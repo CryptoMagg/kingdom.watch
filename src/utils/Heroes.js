@@ -184,7 +184,7 @@ export const mainClass = {
     16: "Paladin",
     17: "DarkKnight",
     18: "Summoner",
-    19: "Ninja",
+    19: "Sage",
     "1c": "DreadKnight",
     24: "Dragoon",
     25: "Sage",
