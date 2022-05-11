@@ -26,7 +26,8 @@
     "vue": "^3.0.0",
     "vue-gtag": "^2.0.1",
     "vue-router": "^4.0.12",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "web3": "^1.7.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

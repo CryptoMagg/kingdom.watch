@@ -5,15 +5,14 @@
     <td class="text-end">
       <img style="width: 16px"
            alt="jewel"
-          :src="require('@/assets/dfk/JEWEL.png')">
+          :src="require('@/assets/dfk/crystal-logo.b0ad245d.png')">
       {{ balance }}
     </td>
     <td class="text-end">
       <img style="width: 16px"
            alt="jewel"
-           :src="require('@/assets/dfk/JEWEL.png')">
-      {{ lockedBalance }}
-    </td>
+           :src="require('@/assets/dfk/crystal-logo.b0ad245d.png')">
+      {{ lockedBalance }}</td>
     <td class="text-start"><em>{{ this.desc }}</em></td>
     <td>
       <a :href="explorerLink" target="_blank">Explorer</a>
@@ -28,21 +27,14 @@ function formatNumber(num) {
 
 import {Client, HTTPTransport, RequestManager} from "@open-rpc/client-js";
 
-const {ContractFactory} = require('@harmony-js/contract');
-const {Wallet} = require('@harmony-js/account');
-const {Messenger, HttpProvider} = require('@harmony-js/network');
-const {ChainID, ChainType, Units, fromWei} = require('@harmony-js/utils');
+// const Web3 = require('web3');
+// const web3 = new Web3("https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc")
 
-const wallet = new Wallet(new Messenger(
-    new HttpProvider('https://api.harmony.one'),
-    ChainType.Harmony,
-    ChainID.HmyMainnet
-));
+const Contract = require('web3-eth-contract');
+Contract.setProvider('https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc');
+const crystalTokenAbi = require("../../data/CrystalToken.json")
+const crystalContract = new Contract(crystalTokenAbi, "0x04b9dA42306B023f3572e106B11D82aAd9D32EBb");
 
-const factory = new ContractFactory(wallet);
-
-const JewelContractJson = require("../../data/Jewel.json");
-const JewelContract = factory.createContract(JewelContractJson.abi, "0x72Cb10C6bfA5624dD07Ef608027E366bd690048F");
 import Address from "@/components/generic/Address";
 
 export default {
@@ -56,18 +48,18 @@ export default {
   ],
   data() {
     return {
-      explorerLink: "https://explorer.harmony.one/address/" + this.address,
+      explorerLink: "https://subnets.avax.network/defi-kingdoms/dfk-chain/explorer/address/" + this.address,
       balance: -1.0,
       lockedBalance: -1.0,
     }
   },
   methods: {
     fetchBalance() {
-      JewelContract.methods
+      crystalContract.methods
           .balanceOf(this.address)
           .call()
           .then(rawbal => {
-            const bal = formatNumber((fromWei(rawbal, Units.one) * 1.0).toFixed(2))
+            const bal = formatNumber(((rawbal / 1e18) * 1.0).toFixed(2))
             console.log(this.tokenName + ' balance: ' + bal);
             this.balance = bal
           })
@@ -75,11 +67,11 @@ export default {
             console.log(err)
           })
 
-      JewelContract.methods
+      crystalContract.methods
           .lockOf(this.address)
           .call()
           .then(rawbal => {
-            const bal = formatNumber((fromWei(rawbal, Units.one) * 1.0).toFixed(2))
+            const bal = formatNumber(((rawbal / 1e18) * 1.0).toFixed(2))
             console.log(this.tokenName + ' balance: ' + bal);
             this.lockedBalance = bal
           })
@@ -91,11 +83,11 @@ export default {
 
     },
     fetchTransactions() {
-      const transport = new HTTPTransport("https://api.harmony.one");
+      const transport = new HTTPTransport("https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc");
       const client = new Client(new RequestManager([transport]));
 
       const request = {
-        method: "hmy_getTransactionsHistory",
+        method: "getTransactionsHistory",
         params: [{
           address: this.address,
           pageIndex: 0,

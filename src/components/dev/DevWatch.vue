@@ -14,14 +14,9 @@
       <p class="text-start">
         The buttons show outgoing funds in the last 100 transactions per wallet.
       </p>
+
       <p class="text-start">
-        The main dev wallet (0xa4b9...dbfb) is a multisig wallet and contains both the Dev Fund and the Quest Rewards.
-        It can also be viewed at the multisig site
-        <a href='https://multisig.harmony.one/#/safes/0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB/transactions'
-           target='_blank'>here</a>.
-      </p>
-      <p class="text-start">
-        There is also a weekly <em>Whale Watch and Key Analytics Report</em> written by <strong>Samichpunch!</strong>&nbsp;
+        <strong>Samichpunch has some more analysis here: </strong>&nbsp;
         <a @click="trackClick('Samichpunch')"  href="https://medium.com/@Samichpunch" target="_blank">https://medium.com/@Samichpunch</a>
       </p>
 
@@ -33,6 +28,7 @@
         <tr>
           <th class="text-start">Wallet name</th>
           <th class="text-end">JEWEL</th>
+          <th class="text-end">Locked JEWEL</th>
           <!--        <th class="text-end">Transactions</th>-->
           <th class="text-start">Wallet description</th>
           <th>Explorer link</th>
@@ -45,17 +41,17 @@
         <TransactionHistory address="0x5ca5bcd91929c7152ca577e8c001c9b5a185f568"/>
 
         <Entity
-            desc="Weekly payouts + Quest Rewards (temporary) (multisig)"
+            desc="Weekly payouts for development (multisig)"
             address="0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB"/>
         <TransactionHistory address="0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB"/>
 
         <Entity
-            desc="Marketing/airdrops/prizes/promotions"
+            desc="Marketing/airdrops/prizes/promotions (multisig)"
             address="0x3875e5398766a29c1B28cC2068A0396cba36eF99"/>
         <TransactionHistory address="0x3875e5398766a29c1B28cC2068A0396cba36eF99"/>
 
         <Entity
-            desc="Short term bonuses for successful launch of Phase 2"
+            desc="Short term bonuses"
             address="0x79F0d0670D17a89f509Ad1c16BB6021187964A29"/>
 
         <TransactionHistory address="0x79F0d0670D17a89f509Ad1c16BB6021187964A29"/>
@@ -86,6 +82,26 @@
             address="0x1e3b6b278ba3b340d4be7321e9be6dfed0121eac"/>
         <TransactionHistory address="0x1e3b6b278ba3b340d4be7321e9be6dfed0121eac"/>
 
+        <EntityCV
+            desc="CRYSTAL VALE DEV FUND"
+            address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
+        <TransactionHistory address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
+
+        <EntityCV
+            desc="CRYSTAL VALE FOUNDERS FUND"
+            address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
+        <TransactionHistory address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
+
+        <EntityCV
+            desc="CRYSTAL VALE MARKETING FUND"
+            address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
+        <TransactionHistory address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
+
+        <EntityCV
+            desc="CRYSTAL VALE QUEST FUND"
+            address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
+        <TransactionHistory address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
+
         </tbody>
       </table>
     </div>
@@ -98,6 +114,7 @@
 
 <script>
 import Entity from "@/components/dev/Entity";
+import EntityCV from "@/components/dev/EntityCV";
 import TransactionHistory from "@/components/dev/TransactionHistory";
 import WalletList from "@/components/dev/WalletList";
 
@@ -105,6 +122,7 @@ export default {
   name: 'DevWatch',
   components: {
     Entity,
+    EntityCV,
     TransactionHistory,
     WalletList
   },

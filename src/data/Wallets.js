@@ -21,6 +21,10 @@ addressMap["0x2b12d9a2480d6dd9f71dabaa366c87134195b679".toLowerCase()] = "Team P
 addressMap["0x72cb10c6bfa5624dd07ef608027e366bd690048f".toLowerCase()] = "Utility wallet"
 addressMap["0xA3F87fbcc69d2f97F528266C35B713e4bB12F962".toLowerCase()] = "Cross-Chain Liquidity Fund"
 
+addressMap["0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD".toLowerCase()] = "CV Dev Fund"
+addressMap["0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8".toLowerCase()] = "CV Founders Fund"
+addressMap["0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9".toLowerCase()] = "CV Marketing Fund"
+addressMap["0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D".toLowerCase()] = "CV Quest Fund"
 
 
 module.exports = addressMap
