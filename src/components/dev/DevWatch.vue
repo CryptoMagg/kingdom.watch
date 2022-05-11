@@ -46,7 +46,7 @@
         <TransactionHistory address="0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB"/>
 
         <Entity
-            desc="Marketing/airdrops/prizes/promotions (multisig)"
+            desc="Marketing and development fund (multisig)"
             address="0x3875e5398766a29c1B28cC2068A0396cba36eF99"/>
         <TransactionHistory address="0x3875e5398766a29c1B28cC2068A0396cba36eF99"/>
 

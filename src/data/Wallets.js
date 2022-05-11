@@ -1,8 +1,8 @@
 const addressMap = {}
 
 addressMap["0x5ca5bcd91929c7152ca577e8c001c9b5a185f568".toLowerCase()] = "Quest Fund"
-addressMap["0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB".toLowerCase()] = "Dev Fund"
-addressMap["0x3875e5398766a29c1B28cC2068A0396cba36eF99".toLowerCase()] = "Marketing Fund"
+addressMap["0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB".toLowerCase()] = "Development Fund"
+addressMap["0x3875e5398766a29c1B28cC2068A0396cba36eF99".toLowerCase()] = "Marketing and Development Fund"
 addressMap["0x79F0d0670D17a89f509Ad1c16BB6021187964A29".toLowerCase()] = "Founders Wallet"
 addressMap["0xA9cE83507D872C5e1273E745aBcfDa849DAA654F".toLowerCase()] = "Bank Wallet"
 addressMap["0x1e3b6b278ba3b340d4be7321e9be6dfed0121eac".toLowerCase()] = "Old Dev Fund"
