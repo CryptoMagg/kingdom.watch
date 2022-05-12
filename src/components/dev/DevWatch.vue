@@ -83,22 +83,22 @@
         <TransactionHistory address="0x1e3b6b278ba3b340d4be7321e9be6dfed0121eac"/>
 
         <EntityCV
-            desc="CRYSTAL VALE DEV FUND"
+            desc="CRYSTALVALE DEV FUND"
             address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
         <TransactionHistory address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
 
         <EntityCV
-            desc="CRYSTAL VALE FOUNDERS FUND"
+            desc="CRYSTALVALE FOUNDERS FUND"
             address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
         <TransactionHistory address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
 
         <EntityCV
-            desc="CRYSTAL VALE MARKETING FUND"
+            desc="CRYSTALVALE MARKETING FUND"
             address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
         <TransactionHistory address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
 
         <EntityCV
-            desc="CRYSTAL VALE QUEST FUND"
+            desc="CRYSTALVALE QUEST FUND"
             address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
         <TransactionHistory address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
 
