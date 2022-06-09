@@ -26,5 +26,9 @@ addressMap["0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8".toLowerCase()] = "CV Fou
 addressMap["0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9".toLowerCase()] = "CV Marketing Fund"
 addressMap["0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D".toLowerCase()] = "CV Quest Fund"
 
+addressMap["0xb4F7C7B864Bf2C17589410AEa22e31f992a849F3".toLowerCase()] = "DFK Wallet"
+addressMap["0x44Ab64D562b381826Ee046dFE7139cE48fBF4C40".toLowerCase()] = "KingdomStudios Ethereum Safe"
+//addressMap["0xb4F7C7B864Bf2C17589410AEa22e31f992a849F3".toLowerCase()] = "AgreementContract"
+
 
 module.exports = addressMap
