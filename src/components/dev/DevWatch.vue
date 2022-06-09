@@ -41,6 +41,11 @@
         <TransactionHistory address="0x5ca5bcd91929c7152ca577e8c001c9b5a185f568"/>
 
         <Entity
+            desc="New DFK Funds Wallet (multisig)"
+            address="0xb4F7C7B864Bf2C17589410AEa22e31f992a849F3"/>
+        <TransactionHistory address="0xb4F7C7B864Bf2C17589410AEa22e31f992a849F3"/>
+
+        <Entity
             desc="Weekly payouts for development (multisig)"
             address="0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB"/>
         <TransactionHistory address="0xa4b9A93013A5590dB92062CF58D4b0ab4F35dBfB"/>
