@@ -18,7 +18,8 @@ addressMap["0x3685Ec75Ea531424Bbe67dB11e07013ABeB95f1e".toLowerCase()] = "Banker
 addressMap["0xa678d193fecc677e137a00fefb43a9ccffa53210".toLowerCase()] = "Airdrop Wallet"
 addressMap["0x6ca68d6df270a047b12ba8405ec688b5df42d50c".toLowerCase()] = "Payment service team and contractors"
 addressMap["0x2b12d9a2480d6dd9f71dabaa366c87134195b679".toLowerCase()] = "Team Payment Portal"
-addressMap["0x72cb10c6bfa5624dd07ef608027e366bd690048f".toLowerCase()] = "Utility wallet"
+addressMap["0xfECBd8Dd13fB958594Ad5d22d477786622A58Bca".toLowerCase()] = "Utility wallet"
+// addressMap["0x72cb10c6bfa5624dd07ef608027e366bd690048f".toLowerCase()] = "Utility wallet"
 addressMap["0xA3F87fbcc69d2f97F528266C35B713e4bB12F962".toLowerCase()] = "Cross-Chain Liquidity Fund"
 
 addressMap["0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD".toLowerCase()] = "CV Dev Fund"
@@ -28,7 +29,7 @@ addressMap["0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D".toLowerCase()] = "CV Que
 
 addressMap["0xb4F7C7B864Bf2C17589410AEa22e31f992a849F3".toLowerCase()] = "DFK Wallet"
 addressMap["0x44Ab64D562b381826Ee046dFE7139cE48fBF4C40".toLowerCase()] = "KingdomStudios Ethereum Safe"
-//addressMap["0xb4F7C7B864Bf2C17589410AEa22e31f992a849F3".toLowerCase()] = "AgreementContract"
+// Utility wallet  addressMap["0xfECBd8Dd13fB958594Ad5d22d477786622A58Bca".toLowerCase()] = "Fund for setting up liquidity"
 
 
 module.exports = addressMap

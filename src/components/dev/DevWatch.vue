@@ -73,6 +73,11 @@
         <TransactionHistory address="0xa3f87fbcc69d2f97f528266c35b713e4bb12f962"/>
 
         <Entity
+            desc="Utility wallet"
+            address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
+        <TransactionHistory address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
+
+        <Entity
             desc="This is the JEWEL in the bank, backing the xJEWEL value"
             address="0xA9cE83507D872C5e1273E745aBcfDa849DAA654F"/>
         <TransactionHistory address="0xA9cE83507D872C5e1273E745aBcfDa849DAA654F"/>
@@ -106,6 +111,13 @@
             desc="CRYSTALVALE QUEST FUND"
             address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
         <TransactionHistory address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
+
+
+        <EntityCV
+            desc="CV Utility wallet"
+            address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
+        <TransactionHistory address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
+
 
         </tbody>
       </table>
