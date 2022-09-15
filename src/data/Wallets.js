@@ -25,7 +25,8 @@ addressMap["0xA3F87fbcc69d2f97F528266C35B713e4bB12F962".toLowerCase()] = "Cross-
 addressMap["0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD".toLowerCase()] = "CV Dev Fund"
 addressMap["0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8".toLowerCase()] = "CV Founders Fund"
 addressMap["0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9".toLowerCase()] = "CV Marketing Fund"
-addressMap["0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D".toLowerCase()] = "CV Quest Fund"
+addressMap["0x1137643FE14b032966a59Acd68EBf3c1271Df316".toLowerCase()] = "CV Quest Fund"
+addressMap["0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D".toLowerCase()] = "CV Old Quest Fund"
 
 addressMap["0xb4F7C7B864Bf2C17589410AEa22e31f992a849F3".toLowerCase()] = "DFK Wallet"
 addressMap["0x44Ab64D562b381826Ee046dFE7139cE48fBF4C40".toLowerCase()] = "KingdomStudios Ethereum Safe"

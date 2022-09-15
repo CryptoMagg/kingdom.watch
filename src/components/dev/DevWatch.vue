@@ -35,6 +35,39 @@
         </tr>
         </thead>
         <tbody>
+
+        <EntityCV
+            desc="New Crystalvale Quest Fund"
+            address="0x1137643fe14b032966a59acd68ebf3c1271df316"/>
+        <TransactionHistory address="0x1137643fe14b032966a59acd68ebf3c1271df316"/>
+
+        <EntityCV
+            desc="Crystalvale Dev Fund"
+            address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
+        <TransactionHistory address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
+
+        <EntityCV
+            desc="Crystalvale Founders Fund"
+            address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
+        <TransactionHistory address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
+
+        <EntityCV
+            desc="Crystalvale Marketing Fund"
+            address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
+        <TransactionHistory address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
+
+        <EntityCV
+            desc="Crystalvale Utility wallet"
+            address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
+        <TransactionHistory address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
+
+        <EntityCV
+            desc="OLD Crystalvale Quest Fund"
+            address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
+        <TransactionHistory address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
+
+
+
         <Entity
             desc="Quest Rewards (multisig)"
             address="0x5ca5bcd91929c7152ca577e8c001c9b5a185f568"/>
@@ -91,32 +124,6 @@
             desc="This is the old dev wallet for reference"
             address="0x1e3b6b278ba3b340d4be7321e9be6dfed0121eac"/>
         <TransactionHistory address="0x1e3b6b278ba3b340d4be7321e9be6dfed0121eac"/>
-
-        <EntityCV
-            desc="CRYSTALVALE DEV FUND"
-            address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
-        <TransactionHistory address="0x33Bb4C3393082245Ea993Bf808b66F90F63dDBBD"/>
-
-        <EntityCV
-            desc="CRYSTALVALE FOUNDERS FUND"
-            address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
-        <TransactionHistory address="0x4f28c8C3c81fB2aE79d09595EDf2C194a0f309B8"/>
-
-        <EntityCV
-            desc="CRYSTALVALE MARKETING FUND"
-            address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
-        <TransactionHistory address="0x249CACA3b06c507aA55A56a9E6D3D3f6F3EBadb9"/>
-
-        <EntityCV
-            desc="CRYSTALVALE QUEST FUND"
-            address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
-        <TransactionHistory address="0x64a3dc745806d9d6e88ea5555F8fdA65B147A31D"/>
-
-
-        <EntityCV
-            desc="CV Utility wallet"
-            address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
-        <TransactionHistory address="0xfecbd8dd13fb958594ad5d22d477786622a58bca"/>
 
 
         </tbody>
