@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import {extractHeroData, getStatGenes, mainClass} from "@/utils/Heroes";
+import {extractHeroData, getStatGenes} from "@/utils/Heroes";
 import HeroStats from "@/components/hero/HeroStats";
 import HeroProfession from "@/components/hero/HeroProfession";
 import HeroTitle from "@/components/hero/HeroTitle";
@@ -45,6 +45,7 @@ import axios from "axios";
 import HeroLoadOther from "@/components/hero/HeroLoadOther";
 import HeroLeaderboards from "@/components/hero/HeroLeaderboards";
 import HeroGenes from "@/components/hero/HeroGenes";
+import {contracts} from "@/utils/ethers";
 
 const {Harmony} = require('@harmony-js/core');
 const {
@@ -60,17 +61,19 @@ const hmy = new Harmony(
     },
 );
 
-const heroesContractJson = require("../../data/heroes.json")
-const heroesContractAddress = "0x5f753dcdf9b1ad9aabc1346614d1f4746fd6ce5c"
-const heroesContract = hmy.contracts.createContract(heroesContractJson.abi, heroesContractAddress)
+// const heroesContractJson = require("../../data/heroes.json")
+// const heroesContractAddress = "0x5f753dcdf9b1ad9aabc1346614d1f4746fd6ce5c"
+// const heroesContract = hmy.contracts.createContract(heroesContractJson.abi, heroesContractAddress)
+const heroesContract = contracts.cv.hero
 
 const profileContractJson = require("../../data/profile.json")
 const profileContractAddress = "0xabd4741948374b1f5dd5dd7599ac1f85a34cacdd"
 const profileContract = hmy.contracts.createContract(profileContractJson.abi, profileContractAddress)
 
-const auctionsContractJson = require("../../data/auctions.json")
-const auctionsContractAddress = "0x13a65B9F8039E2c032Bc022171Dc05B30c3f2892"
-const auctionsContract = hmy.contracts.createContract(auctionsContractJson.abi, auctionsContractAddress)
+// const auctionsContractJson = require("../../data/auctions.json")
+// const auctionsContractAddress = "0x13a65B9F8039E2c032Bc022171Dc05B30c3f2892"
+// const auctionsContract = hmy.contracts.createContract(auctionsContractJson.abi, auctionsContractAddress)
+const auctionsContract = contracts.cv.auction
 
 export default {
   name: "Hero",
@@ -90,30 +93,30 @@ export default {
   },
   methods: {
     async loadLeaderboard() {
-      const response = await axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/getLeaderboard")
-          .catch(err => console.error(err))
-
-      if(response.status === 200) {
-        const leaderBoard = response.data
-
-        this.leaderboard = leaderBoard
-        this.maxScores = {
-          mining: leaderBoard["miners"][0].score,
-          fishing: leaderBoard["fishers"][0].score,
-          gardening: leaderBoard["gardeners"][0].score,
-          foraging: leaderBoard["foragers"][0].score,
-        }
-      } else {
-        console.error(`Got error while loading leaderboard ${response.status}`)
-      }
+      // const response = await axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/getLeaderboard")
+      //     .catch(err => console.error(err))
+      //
+      // if(response.status === 200) {
+      //   const leaderBoard = response.data
+      //
+      //   this.leaderboard = leaderBoard
+      //   this.maxScores = {
+      //     mining: leaderBoard["miners"][0].score,
+      //     fishing: leaderBoard["fishers"][0].score,
+      //     gardening: leaderBoard["gardeners"][0].score,
+      //     foraging: leaderBoard["foragers"][0].score,
+      //   }
+      // } else {
+      //   console.error(`Got error while loading leaderboard ${response.status}`)
+      // }
 
     },
     async loadHeroes() {
       this.heroes = []
 
-      const heroIds = await heroesContract.methods.getUserHeroes(this.userAddress).call()
+      const heroIds = await heroesContract.getUserHeroes(this.userAddress)
 
-      const auctionHeroIds = await auctionsContract.methods.getUserAuctions(this.userAddress).call()
+      const auctionHeroIds = await auctionsContract.getUserAuctions(this.userAddress)
 
       const combinedHeroIds = heroIds.concat(auctionHeroIds)
 
@@ -125,7 +128,7 @@ export default {
       }
     },
     async fetchHeroData(heroId) {
-      const hero = await heroesContract.methods.getHero(heroId).call()
+      const hero = await heroesContract.getHero(heroId)
       console.info(hero)
       const heroData = extractHeroData(hero, this.maxScores)
 
@@ -158,76 +161,7 @@ export default {
 
     },
     floorPrice(hero, profession) {
-      let info = hero.info
-
-      let generation = info.generation * 1
-      let generationString = "G" + generation
-
-      if(generation >= 4) {
-        generation = 4
-        generationString = "G4+"
-      }
-
-      let maxSummons = hero.summoningInfo.maxSummons
-      if(maxSummons === 'a')
-        maxSummons = 10
-
-      let summonsBucket = "S0"
-      let summonsLeft = maxSummons - hero.summoningInfo.summons
-
-      if(generation === 0)
-        summonsBucket = "Si"
-      else if(summonsLeft >= 8)
-        summonsBucket = "S8+"
-      else if(summonsLeft >= 5)
-        summonsBucket = "S5-7"
-      else if(summonsLeft >= 1)
-        summonsBucket = "S1-4"
-
-
-      let ids = [generation, info.rarity, summonsBucket, mainClass[info.class], profession]
-
-      let id = ids.join('-')
-      console.info(id)
-      if(!isNaN(this.floor[id]))
-        return {
-          confidence: generationString + ", R, " + summonsBucket + ", C, P",
-          price: this.floor[id]
-        }
-
-      id = ids.slice(0, 4).join('-')
-      console.info(id)
-
-      if(!isNaN(this.floor[id]))
-        return {
-          confidence: generationString + ", R, " + summonsBucket + ", C",
-          price: this.floor[id]
-        }
-
-
-      id = ids.slice(0, 3).join('-')
-      console.info(id)
-
-      if(!isNaN(this.floor[id]))
-        return {
-          confidence: generationString + ", R, " + summonsBucket,
-          price: this.floor[id]
-        }
-
-      id = ids.slice(0, 2).join('-')
-      if(!isNaN(this.floor[id]))
-        return {
-          confidence: generationString + ", R",
-          price: this.floor[id]
-        }
-
-      id = ids[0]
-      if(!isNaN(this.floor[id]))
-        return {
-          confidence: generationString,
-          price: this.floor[id]
-        }
-
+      console.log(`Not getting the floor price of ${hero} profession ${profession}`)
       return {
         confidence: "None",
         price: 0

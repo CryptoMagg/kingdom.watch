@@ -35,8 +35,8 @@ export const contractAddrs = {
         xCrystal: "0x6e7185872bcdf3f7a6cbbe81356e50daffb002d2",
         gardener: "0x57Dec9cC7f492d6583c773e2E7ad66dcDc6940Fb",
         profile: "",
-        heroes: " ",
-        auctions: " "
+        hero: "0xEb9B61B145D6489Be575D3603F4a704810e143dF",
+        auction: "0xc390fAA4C7f66E4D62E59C231D5beD32Ff77BEf0"
     }
 }
 
@@ -53,9 +53,9 @@ export const contracts = {
         token: new Contract(contractAddrs.cv.crystal,contractJson.crystal.abi, RPCs.cv),
         xToken: new Contract(contractAddrs.cv.xCrystal, contractJson.xCrystal.abi, RPCs.cv),
         gardener: new Contract(contractAddrs.cv.gardener, contractJson.gardenerV2.abi, RPCs.cv),
+        hero: new Contract(contractAddrs.cv.hero, contractJson.hero.abi, RPCs.cv),
         profile: "",
-        hero: "",
-        auction: ""
+        auction: new Contract(contractAddrs.cv.auction, contractJson.auction.abi, RPCs.cv)
     }
 }
 

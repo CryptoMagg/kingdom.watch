@@ -611,7 +611,19 @@ export function extractHeroData(hero, maxScores) {
         heroData["stats"][stat] = hexToNumber("0x" + hero.stats[stat])
     }
 
-    const profScore = valuateAllProfessions(heroData)
+    let profScore = {
+        "mining":0,
+        "fishing":0,
+        "gardening":0,
+        "foraging":0,
+        "error": 0,
+        "bestProfession": "error"
+    }
+    try {
+        profScore = valuateAllProfessions(heroData)
+    } catch (e) {
+        console.log(`Valuation gave excpetion ${e}`)
+    }
     heroData["bestRelativeScore"] = 0
     heroData["bestRelativeProfession"] = ""
 

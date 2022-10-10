@@ -68,10 +68,10 @@ export default {
     },
     async fetchHeroes() {
       this.heroes.sd = []
-      const heroIdsRaw = await contracts.sd.hero.getUserHeroes(this.userAddress)
+      const heroIdsRaw = await contracts.cv.hero.getUserHeroes(this.userAddress)
       const heroIds = heroIdsRaw.map(heroId => Number(formatUnits(heroId, 0)))
 
-      const auctionHeroIdsRaw = await contracts.sd.auction.getUserAuctions(this.userAddress)
+      const auctionHeroIdsRaw = await contracts.cv.auction.getUserAuctions(this.userAddress)
       const auctionHeroIds = auctionHeroIdsRaw.map(heroId => Number(formatUnits(heroId, 0)))
 
       const combinedHeroIds = heroIds.concat(auctionHeroIds)
@@ -83,7 +83,7 @@ export default {
 
       for (let heroId of combinedHeroIds) {
 
-        const rawHero = await contracts.sd.hero.getHero(heroId)
+        const rawHero = await contracts.cv.hero.getHero(heroId)
 
         const [statGenes, ] = getStatGenes(rawHero.info.statGenes)
         const floorData = this.floorPrice(rawHero, statGenes.profession)
@@ -124,71 +124,7 @@ export default {
 
     },
     floorPrice(hero, profession) {
-      let info = hero.info
-
-      let generation = info.generation * 1
-      let generationString = "G" + generation
-
-      if(generation >= 4) {
-        generation = 4
-        generationString = "G4+"
-      }
-
-      let maxSummons = hero.summoningInfo.maxSummons
-      if(maxSummons === 'a')
-        maxSummons = 10
-
-      let summonsBucket = "S0"
-      let summonsLeft = maxSummons - hero.summoningInfo.summons
-
-      if(generation === 0)
-        summonsBucket = "Si"
-      else if(summonsLeft >= 8)
-        summonsBucket = "S8+"
-      else if(summonsLeft >= 5)
-        summonsBucket = "S5-7"
-      else if(summonsLeft >= 1)
-        summonsBucket = "S1-4"
-
-
-      let ids = [generation, info.rarity, summonsBucket, mainClass[info.class], profession]
-
-      let id = ids.join('-')
-      if(!isNaN(this.floor.sd[id]))
-        return {
-          confidence: generationString + ", R, " + summonsBucket + ", C, P",
-          price: this.floor.sd[id]
-        }
-
-      id = ids.slice(0, 4).join('-')
-
-      if(!isNaN(this.floor.sd[id]))
-        return {
-          confidence: generationString + ", R, " + summonsBucket + ", C",
-          price: this.floor.sd[id]
-        }
-
-      id = ids.slice(0, 3).join('-')
-
-      if(!isNaN(this.floor.sd[id]))
-        return {
-          confidence: generationString + ", R, " + summonsBucket,
-          price: this.floor.sd[id]
-        }
-
-      id = ids.slice(0, 2).join('-')
-      if(!isNaN(this.floor.sd[id]))
-        return {
-          confidence: generationString + ", R",
-          price: this.floor.sd[id]
-        }
-
-      id = ids[0]
-      if(!isNaN(this.floor.sd[id]))
-        return {
-          confidence: generationString,
-          price: this.floor.sd[id]
-        }
+      console.log(`Not getting the floor price of ${hero} profession ${profession}`)
 
       return {
         confidence: "None",
