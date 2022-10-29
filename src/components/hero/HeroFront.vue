@@ -75,7 +75,7 @@ export default {
       }
     },
     redirectHero() {
-      if (this.heroId.length < 10 && !isNaN(this.heroId)) {
+      if (this.heroId.length < 14 && !isNaN(this.heroId)) {
         this.buttonText = "Loading.."
         this.$router.push(`/hero/${this.heroId}`)
       } else {

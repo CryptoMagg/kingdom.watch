@@ -98,7 +98,7 @@ export default {
 
         hero.rarityString = rarity[hero.info.rarity]
 
-        hero.classString = mainClass[hero.info.class]
+        hero.classString = mainClass[parseInt(hero.info.class, 16)]
         hero.professionString = statGenes.profession.charAt(0).toUpperCase() + statGenes.profession.substring(1)
 
         this.heroes.sd.push(hero)

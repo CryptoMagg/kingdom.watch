@@ -177,15 +177,13 @@ export const mainClass = {
     5: "Wizard",
     6: "Monk",
     7: "Pirate",
-    10: "Paladin",
-    11: "DarkKnight",
-    12: "Summoner",
-    13: "Ninja",
+    8: "Berserker",
+    9: "Seer",
     16: "Paladin",
     17: "DarkKnight",
     18: "Summoner",
-    19: "Sage",
-    "1c": "DreadKnight",
+    19: "Ninja",
+    20: "Shapeshifter",
     24: "Dragoon",
     25: "Sage",
     28: "DreadKnight"
@@ -582,8 +580,8 @@ export function extractHeroData(hero, maxScores) {
     heroData["xp"] = hero.state.xp * 1
     heroData["rarity"] = rarity[hero.info.rarity]
     heroData["rarityNum"] = hero.info.rarity
-    heroData["mainClass"] = mainClass[hero.info.class]
-    heroData["subClass"] = mainClass[hero.info.subClass]
+    heroData["mainClass"] = mainClass[parseInt(hero.info.class, 16)]
+    heroData["subClass"] = mainClass[parseInt(hero.info.subClass, 16)]
 
     heroData["name"] = `${hero.info.firstName} ${hero.info.lastName}`
 
