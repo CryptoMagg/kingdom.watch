@@ -581,10 +581,10 @@ export function extractHeroData(hero, maxScores) {
     heroData["rarity"] = rarity[hero.info.rarity]
     heroData["rarityNum"] = hero.info.rarity
 
-    console.log(`hero.info.class 10: ${hero.info.class} 16: ${parseInt(hero.info.class, 16)} => ${mainClass[parseInt(hero.info.class, 16)]}`)
+    console.log(`hero.info.class 10: ${hero.info.class} 16: ${parseInt(hero.info.class, 16)} => ${mainClass[hero.info.class]}`)
     heroData["mainClass"] = mainClass[hero.info.class]
 
-    console.log(`hero.info.subClass 10: ${hero.info.subClass} 16: ${parseInt(hero.info.subClass, 16)} => ${mainClass[parseInt(hero.info.subClass, 16)]}`)
+    console.log(`hero.info.subClass 10: ${hero.info.subClass} 16: ${parseInt(hero.info.subClass, 16)} => ${mainClass[hero.info.subClass]}`)
     heroData["subClass"] = mainClass[hero.info.subClass]
 
     heroData["name"] = `${hero.info.firstName} ${hero.info.lastName}`
