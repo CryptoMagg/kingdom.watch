@@ -193,7 +193,7 @@ export default {
     this.userAddress = ""
     this.initialHeroId = 0
 
-    if (id.length < 10 && !isNaN(id)) {
+    if (id.length < 14 && !isNaN(id)) {
       this.initialHeroId = id * 1
     } else if (id) {
       this.userAddress = id

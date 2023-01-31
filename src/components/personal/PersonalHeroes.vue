@@ -98,6 +98,7 @@ export default {
 
         hero.rarityString = rarity[hero.info.rarity]
 
+        console.log(`hero.info.class 10: ${hero.info.class} 16: ${parseInt(hero.info.class, 16)} => ${mainClass[hero.info.class]}`)
         hero.classString = mainClass[hero.info.class]
         hero.professionString = statGenes.profession.charAt(0).toUpperCase() + statGenes.profession.substring(1)
 
