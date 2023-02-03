@@ -83,5 +83,130 @@
     "name": "Silverfin",
     "address": "0x2493cfDAcc0f9c07240B5B1C4BE08c62b8eEff69",
     "gold": 100
-  }
+  },
+  "0xB78d5580d6D897DE60E1A942A5C1dc07Bc716943": {
+	"name": "Ambertaffy",
+	"address": "0xB78d5580d6D897DE60E1A942A5C1dc07Bc716943",
+	"gold": 12.5
+ },
+ "0x848Ac8ddC199221Be3dD4e4124c462B806B6C4Fd": {
+	"name": "Darkweed",
+	"address": "0x848Ac8ddC199221Be3dD4e4124c462B806B6C4Fd",
+	"gold": 10
+ },
+ "0x0096ffda7A8f8E00e9F8Bbd1cF082c14FA9d642e": {
+	"name": "Goldvein",
+	"address": "0x0096ffda7A8f8E00e9F8Bbd1cF082c14FA9d642e",
+	"gold": 100
+ },
+ "0x137995beEEec688296B0118131C1052546475fF3": {
+	"name": "Ragweed",
+	"address": "0x137995beEEec688296B0118131C1052546475fF3",
+	"gold": 2.5
+ },
+ "0x473A41e71618dD0709Ba56518256793371427d79": {
+	"name": "Redleaf",
+	"address": "0x473A41e71618dD0709Ba56518256793371427d79",
+	"gold": 15
+ },
+ "0x60170664b52c035Fcb32CF5c9694b22b47882e5F": {
+	"name": "Rockroot",
+	"address": "0x60170664b52c035Fcb32CF5c9694b22b47882e5F",
+	"gold": 5
+ },
+ "0x97b25DE9F61BBBA2aD51F1b706D4D7C04257f33A": {
+	"name": "Swift-Thistle",
+	"address": "0x97b25DE9F61BBBA2aD51F1b706D4D7C04257f33A",
+	"gold": 75
+ },
+ "0x268CC8248FFB72Cd5F3e73A9a20Fa2FF40EfbA61": {
+	"name": "Bloater",
+	"address": "0x268CC8248FFB72Cd5F3e73A9a20Fa2FF40EfbA61",
+	"gold": 2.5
+ },
+ "0x04B43D632F34ba4D4D72B0Dc2DC4B30402e5Cf88": {
+	"name": "Ironscale",
+	"address": "0x04B43D632F34ba4D4D72B0Dc2DC4B30402e5Cf88",
+	"gold": 5
+ },
+ "0xc2Ff93228441Ff4DD904c60Ecbc1CfA2886C76eB": {
+	"name": "Lanterneye",
+	"address": "0xc2Ff93228441Ff4DD904c60Ecbc1CfA2886C76eB",
+	"gold": 5
+ },
+ "0x68eE50dD7F1573423EE0Ed9c66Fc1A696f937e81": {
+	"name": "Redgill",
+	"address": "0x68eE50dD7F1573423EE0Ed9c66Fc1A696f937e81",
+	"gold": 15
+ },
+ "0x7f46E45f6e0361e7B9304f338404DA85CB94E33D": {
+	"name": "Sailfish",
+	"address": "0x7f46E45f6e0361e7B9304f338404DA85CB94E33D",
+	"gold": 50
+ },
+ "0xd44ee492889C078934662cfeEc790883DCe245f3": {
+	"name": "Shimmerskin",
+	"address": "0xd44ee492889C078934662cfeEc790883DCe245f3",
+	"gold": 60
+ },
+ "0x0776b936344DE7bd58A4738306a6c76835ce5D3F": {
+	"name": "Bluestem",
+	"address": "0x0776b936344DE7bd58A4738306a6c76835ce5D3F",
+	"gold": 5
+ },
+ "0xA2cef1763e59198025259d76Ce8F9E60d27B17B5": {
+	"name": "Milkweed",
+	"address": "0xA2cef1763e59198025259d76Ce8F9E60d27B17B5",
+	"gold": 12.5
+ },
+ "0x3E022D84D397F18743a90155934aBAC421D5FA4C": {
+	"name": "Spiderfruit",
+	"address": "0x3E022D84D397F18743a90155934aBAC421D5FA4C",
+	"gold": 10
+ },
+ "0xA7CFd21223151700FB82684Cd9c693596267375D": {
+	"name": "Silverfin",
+	"address": "0xA7CFd21223151700FB82684Cd9c693596267375D",
+	"gold": 100
+ },
+ "0x3bcb9A3DaB194C6D8D44B424AF383E7Db51C82BD": {
+	"name": "Frost Bloater",
+	"address": "0x3bcb9A3DaB194C6D8D44B424AF383E7Db51C82BD",
+	"gold": 2.5
+ },
+ "0xE7CB27ad646C49dC1671Cb9207176D864922C431": {
+	"name": "Speckle Tail",
+	"address": "0xE7CB27ad646C49dC1671Cb9207176D864922C431",
+	"gold": 15
+ },
+ "0x60A3810a3963f23Fa70591435bbe93BF8786E202": {
+	"name": "King Pincer",
+	"address": "0x60A3810a3963f23Fa70591435bbe93BF8786E202",
+	"gold": 100
+ },
+ "0x6513757978E89e822772c16B60AE033781A29A4F": {
+	"name": "Three Eyed Eel",
+	"address": "0x6513757978E89e822772c16B60AE033781A29A4F",
+	"gold": 75
+ },
+ "0xe7a1B580942148451E47b92e95aEB8d31B0acA37": {
+	"name": "Frost Drum",
+	"address": "0xe7a1B580942148451E47b92e95aEB8d31B0acA37",
+	"gold": 2.5
+ },
+ "0xBcdD90034eB73e7Aec2598ea9082d381a285f63b": {
+	"name": "Knaproot",
+	"address": "0xBcdD90034eB73e7Aec2598ea9082d381a285f63b",
+	"gold": 15
+ },
+ "0x80A42Dc2909C0873294c5E359e8DF49cf21c74E4": {
+	"name": "Shaggy Caps",
+	"address": "0x80A42Dc2909C0873294c5E359e8DF49cf21c74E4",
+	"gold": 100
+ },
+ "0xc6030Afa09EDec1fd8e63a1dE10fC00E0146DaF3": {
+	"name": "Skunk Shade",
+	"address": "0xc6030Afa09EDec1fd8e63a1dE10fC00E0146DaF3",
+	"gold": 75
+ }
 }

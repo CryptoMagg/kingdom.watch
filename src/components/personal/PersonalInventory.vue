@@ -47,7 +47,7 @@
 <script>
 import formatNumber from "@/utils/FormatNumber";
 import SortIcon from "@/components/generic/SortIcon";
-import { getItem, GetTokenList, getAllItemAddresses } from "@/utils/Items";
+import { getItem, GetTokenList, getAllItemDetails } from "@/utils/Items";
 import _ from 'lodash'
 
 import {formatUnits, contractJson, RPCs} from "@/utils/ethers"
@@ -69,7 +69,31 @@ const excludedItems = [
 ]
 
 
-const GOLD_ADDR = "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7"
+
+const GOLD_TOKENS = {
+	"cv" : {
+      "chainId": 53935,
+      "address": "0x576C260513204392F0eC0bc865450872025CB1cA",
+      "symbol": "DFKGOLD",
+      "name": "Gold",
+      "decimals": 3,
+      "logoURI": "https://dfk-hv.b-cdn.net/art-assets/items/gold-bag.png",
+      "tags": [
+        "dfk chain"
+      ]
+    },
+     "sd" : {
+		"chainId": 1666600000,
+		"address": "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7",
+		"symbol": "DFKGOLD",
+		"name": "Gold",
+		"decimals": 3,
+		"logoURI": "https://dfk-hv.b-cdn.net/art-assets/items/gold-bag.png",
+		"tags": [
+			"harmony"
+			]
+		}
+	}
 
 export default {
   name: "PersonalInventory",
@@ -140,14 +164,14 @@ export default {
     },
     totalGoldUsd() {
       return _.sumBy(this.items, "totalGoldUsd")
-    },
-    goldItem() {
-      return this.items.find(item => item.address === GOLD_ADDR)
     }
   },
   methods: {
     formatNumber(num, prefix, suffix, decimals) {
       return formatNumber(num, prefix, suffix, decimals)
+    },
+    goldItem(chainId) {
+      return this.items.find(item => item.address === GOLD_TOKENS[chainId].address);
     },
     async loadPrice(address) {
       const dsPrefix = "https://api.dexscreener.io/latest/dex/tokens/"
@@ -167,38 +191,53 @@ export default {
     async loadInventory() {
       const allItems = []
       // load gold first
-      await this.loadItem(GOLD_ADDR)
-      for (let address of getAllItemAddresses()) {
-        if (address !== GOLD_ADDR) {
-          allItems.push(this.loadItem(address))
+      await this.loadItem(GOLD_TOKENS['sd']);
+      await this.loadItem(GOLD_TOKENS['cv']);
+
+      for (let item of getAllItemDetails()) {
+        if (item.address !== GOLD_TOKENS['sd'].address
+				&& item.address !== GOLD_TOKENS['cv'].address) {
+          allItems.push(this.loadItem(item))
         }
       }
       await Promise.all(allItems)
     },
-    async loadItem(address) {
-      const contract = new Contract(address, contractJson.erc20.abi, RPCs.sd)
-      const decimals = await contract.decimals()
+    async loadItem(itemDetails) {
+		let chainId;
+		if(itemDetails.chainId === 53935){
+			chainId = 'cv';
+		}
+		else if(itemDetails.chainId === 1666600000){
+			chainId = 'sd';
+		}
 
-      const balance = Number(formatUnits(await contract.balanceOf(this.userAddress), decimals))
+      const contract = new Contract(itemDetails.address, contractJson.erc20.abi, RPCs[chainId]);
+      // const decimals = await contract.decimals()
+      const decimals = itemDetails.decimals;
+	
+		const balance = Number(formatUnits(await contract.balanceOf(this.userAddress), decimals))
+		
       if (balance === 0)
         return
-      let usdPrice = await this.loadPrice(address)
-      let preItem = getItem(address)
+      let usdPrice = await this.loadPrice(itemDetails.address)
+      let preItem = getItem(itemDetails.address) 
       if (excludedItems.includes(preItem.symbol)) {
         return
       }
+		
       const item = {
         ...preItem,
         usdPrice,
         balance,
         jewelPrice: usdPrice/this.jewelPrice,
-        totalGold: balance * (address===GOLD_ADDR?1:preItem.goldPrice),
+        totalGold: balance * (itemDetails.address===GOLD_TOKENS[chainId].address?1:preItem.goldPrice),
         totalJewel: usdPrice / this.jewelPrice * balance,
-        totalGoldUsd: balance * (address===GOLD_ADDR?1:preItem.goldPrice) * (address===GOLD_ADDR?usdPrice:this.goldItem.usdPrice),
+        totalGoldUsd: balance * (itemDetails.address===GOLD_TOKENS[chainId].address?1:preItem.goldPrice) * (itemDetails.address===GOLD_TOKENS[chainId].address?usdPrice:this.goldItem(chainId).usdPrice),
         totalJewelUsd: usdPrice * balance
       }
-      this.items.push(item)
-    },
+			this.items.push(item)
+		}
+	,
     toggleSort(field) {
       let currentDir = this.itemSort[field]
 
