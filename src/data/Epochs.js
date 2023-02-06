@@ -1,29 +1,38 @@
 const firstBlock = {
     sd: 16350367,
-    cv: 8943
+    cv: 8943,
+	sd2: 108632736
 }
+//sd2 first block a guess but should be close enough for epoch checks
 
+//cv = March 30th, 2022 8:00 pm EDT
+//sd2 = Dec 08, 2022 5:00pm EST
 const gardenStartTime = {
-    cv: 1648684800000 //March 30th, 2022 8:00 pm EDT
+    cv: 1648684800000,
+	sd2: 1670536800000 
 }
 
 const blocksPerEpoch = {
-    sd: 302400,
-    cv: 302400
+    sd:  302400,
+    cv:  302400,
+    sd2: 302400
 }
 
 const blockSpeedSeconds = {
     sd: 2.0,
-    cv: 2.0
+    cv: 2.0,
+    sd2: 2.0
 }
 
 const unlockStart = {
     sd: 5,
-    cv: 5
+    cv: 5,
+    sd2: 5
 }
 const unlockWeeklyIncrease = {
     sd: 2,
-    cv: 2
+    cv: 2,
+    sd2: 2
 }
 
 const multiplierSchedule = {
@@ -73,6 +82,30 @@ const multiplierSchedule = {
         20: 3,
         21: 2,
         101: 1
+    },
+    sd2: {
+        1: 32,
+        2: 24,
+        3: 20,
+        4: 16,
+        5: 14,
+        6: 12,
+        7: 10,
+        8: 10,
+        9: 8,
+        10: 8,
+        11: 6,
+        12: 6,
+        13: 4,
+        14: 4,
+        15: 4,
+        16: 4,
+        17: 3,
+        18: 3,
+        19: 3,
+        20: 3,
+        21: 2,
+        101: 1
     }
 }
 
@@ -80,7 +113,8 @@ const getCurrentEpoch = (currentBlock, expansion) => {
     switch(expansion) {
         case "sd":
             return epochData(currentEpochByBlock(currentBlock, expansion), expansion)
-        case "cv": {
+				case "cv": 
+				case "sd2": {
             const date = new Date()
             return epochData(currentEpochByTime(date.getTime(), expansion), expansion)
         }
@@ -100,7 +134,7 @@ function currentEpochByBlock(currentBlock, expansion) {
 function currentEpochByTime(currentTime, expansion) {
     const diff = currentTime - gardenStartTime[expansion]
     if(diff < 0)
-        throw `Invalid current block ${currentTime} is less than first block ${firstBlock[expansion]}`
+        throw `Invalid current time ${currentTime} is less than Start time ${gardenStartTime[expansion]}`
 
     return Math.floor(diff/(blocksPerEpoch[expansion]*blockSpeedSeconds[expansion]*1000)) + 1
 }
@@ -117,7 +151,8 @@ function secondsLeftUntilEpoch(currentBlock, epoch, expansion) {
     switch(expansion) {
         case "sd":
             return (epochStartBlock(epoch, expansion) - currentBlock) * blockSpeedSeconds[expansion]
-        case "cv": {
+			case "cv":
+			case "sd2": {
             const date = new Date()
             return ((epochStartTime(epoch, expansion) - date.getTime())/1000)
         }
@@ -142,6 +177,7 @@ function getEpochMultipler(epoch, expansion) {
     switch(expansion){
         case 'sd':
             return epoch<20?epoch:epoch<36?20:36;
+			case 'sd2':
         case 'cv':
             return epoch<21?epoch:epoch<100?21:101;
         default:

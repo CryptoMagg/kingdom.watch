@@ -2,7 +2,7 @@
   <div class="border border-dark rounded-3">
     <h3 class="p-3">Overview</h3>
     <div v-if="anyProgressLeft">
-      <div v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" class="progress" :key="expansion">
+      <div v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" class="progress" :key="expansion">
         <div class="progress-bar progress-bar-striped progress-bar-animated text-white" :class="expansion==='sd'?'bg-success':'bg-info'"
              role="progressbar"
              aria-valuenow="0"
@@ -17,11 +17,11 @@
         <thead>
         <tr>
           <th class="text-start" colspan="2">Grand Total</th>
-          <th class="text-end">{{ formatNumber(grandTotalUsd("sd") + grandTotalUsd('cv'), '$') }}</th>
+          <th class="text-end">{{ formatNumber(grandTotalUsd("sd") + grandTotalUsd('cv')  + grandTotalUsd('sd2'), '$') }}</th>
         </tr>
         </thead>
         <thead>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end" colspan="2">{{ formatNumber(grandTotalUsd(expansion), '$') }}</th>
         </tr>
@@ -36,7 +36,7 @@
             {{ formatNumber((totalAvailable('sd') * tokenPrice('sd')) + (totalAvailable('cv') * tokenPrice('cv')), '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv'],['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(totalAvailable(expansion)) }}</td>
           <td class="text-end">{{ formatNumber(totalAvailable(expansion) * tokenPrice(expansion), '$') }}</td>
@@ -52,10 +52,10 @@
             </span>
           </td>
           <th class="text-end">
-            {{ formatNumber(includeLocked?(totalLocked('sd')*tokenPrice('sd'))+(totalLocked('cv') * tokenPrice('cv')):0, '$') }}
+            {{ formatNumber(includeLocked?(totalLocked('sd2')*tokenPrice('sd2'))+(totalLocked('cv') * tokenPrice('cv')):0, '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Crystal', 'cv'],['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">
             <span>{{ formatNumber(includeLocked ? totalLocked(expansion) : 0) }}</span>
@@ -78,7 +78,7 @@
             {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv') * tokenPrice('cv')):0, '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">
             <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) : 0) }}</span>
@@ -101,7 +101,7 @@
             {{ formatNumber(includeInventory?(inventoryTotal('sd')*tokenPrice('sd'))+(inventoryTotal('cv') * tokenPrice('cv')):0, '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">
             <span>{{ formatNumber(includeInventory ? inventoryTotal(expansion) : 0) }}</span>
@@ -119,7 +119,7 @@
             <span>{{ formatNumber(totalPoolUsd('sd') + totalPoolUsd('cv'), '$') }}</span>
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end" colspan="2">{{ formatNumber(totalPoolUsd(expansion), '$') }}</td>
         </tr>
@@ -137,7 +137,7 @@
         </tr>
         </thead>
         <thead>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end">{{ formatNumber(totalAvailable(expansion)) }}</th>
           <th class="text-end">{{ formatNumber(totalAvailable(expansion) * tokenPrice(expansion), '$') }}</th>
@@ -153,7 +153,7 @@
             {{ formatNumber((walletBalance['sd']*tokenPrice('sd'))+(walletBalance['cv']*tokenPrice('cv')), '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(walletBalance[expansion]) }}</td>
           <td class="text-end">{{ formatNumber(walletBalance[expansion] * tokenPrice(expansion), '$') }}</td>
@@ -167,7 +167,7 @@
             {{ formatNumber((this.bankBalance('sd')*tokenPrice('sd'))+(this.bankBalance('cv')*tokenPrice('cv')), '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(this.bankBalance(expansion)) }}</td>
           <td class="text-end">{{ formatNumber(this.bankBalance(expansion) * tokenPrice(expansion), '$') }}</td>
@@ -178,10 +178,10 @@
         <tr>
           <th class="text-start" colspan="2">Pending Unlocked</th>
           <th class="text-end">
-            {{ formatNumber((pendingUnlocked('sd')*tokenPrice('sd'))+(pendingUnlocked('cv')*tokenPrice('cv')), '$') }}
+            {{ formatNumber((pendingUnlocked('sd2')*tokenPrice('sd2'))+(pendingUnlocked('cv')*tokenPrice('cv')), '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(pendingUnlocked(expansion)) }}</td>
           <td class="text-end">{{ formatNumber(pendingUnlocked(expansion) * tokenPrice(expansion), '$') }}</td>
@@ -195,12 +195,12 @@
         <tr>
           <th class="text-start" colspan="2">Locked</th>
           <th class="text-end">
-            {{ formatNumber((totalLocked('sd')*tokenPrice('sd'))+(totalLocked('cv')*tokenPrice('cv')), '$') }}
+            {{ formatNumber((totalLocked('sd2')*tokenPrice('sd2'))+(totalLocked('cv')*tokenPrice('cv')), '$') }}
           </th>
         </tr>
         </thead>
         <thead>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end">{{ formatNumber(totalLocked(expansion)) }}</th>
           <th class="text-end">{{ formatNumber(totalLocked(expansion) * tokenPrice(expansion), '$') }}</th>
@@ -214,10 +214,10 @@
         <tr>
           <th class="text-start" colspan="2">Currently Locked</th>
           <th class="text-end">
-            {{ formatNumber((lockedBalance['sd']*tokenPrice('sd'))+(lockedBalance['cv']*tokenPrice('cv')), '$') }}
+            {{ formatNumber((lockedBalance['sd2']*tokenPrice('sd2'))+(lockedBalance['cv']*tokenPrice('cv')), '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(lockedBalance[expansion]) }}</td>
           <td class="text-end">{{ formatNumber(lockedBalance[expansion] * tokenPrice(expansion), '$') }}</td>
@@ -228,10 +228,11 @@
         <tr>
           <th class="text-start" colspan="2">Pending Locked</th>
           <th class="text-end">
-            {{ formatNumber((pendingLocked('sd')*tokenPrice('sd'))+(pendingLocked('cv')*tokenPrice('cv')), '$') }}
+            {{ formatNumber(
+					(pendingLocked('sd2')*tokenPrice('sd2'))+(pendingLocked('cv')*tokenPrice('cv')), '$') }}
           </th>
         </tr>
-        <tr v-for="[symbol, expansion] of [['Jewel', 'sd'], ['Crystal', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(pendingLocked(expansion)) }}</td>
           <td class="text-end">{{ formatNumber(pendingLocked(expansion) * tokenPrice(expansion), '$') }}</td>
@@ -254,7 +255,7 @@
 
         <tr><td colspan="3"></td></tr>
 
-        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end">{{ formatNumber(heroTotal(expansion)) }}</th>
           <th class="text-end">{{ formatNumber(heroTotal(expansion) * tokenPrice(expansion), '$') }}</th>
@@ -284,7 +285,7 @@
         </tr>
         </thead>
 
-        <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+        <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
         <tr><td colspan="3"></td></tr>
           <tr>
             <th class="text-start">
@@ -339,7 +340,8 @@ export default {
       includeLocked: true,
       poolSort: {
         sd: { id: 1, name: 0, apr: 0, usd: 0 },
-        cv: { id: 1, name: 0, apr: 0, usd: 0 }
+        cv: { id: 1, name: 0, apr: 0, usd: 0 },
+		sd2: { id: 1, name: 0, apr: 0, usd: 0 }
       }
     }
   },
@@ -349,7 +351,7 @@ export default {
       return formatNumber(num, prefix)
     },
     toggleSort(field, dir, expansion) {
-      for (const exp of ['sd', 'cv']) {
+      for (const exp of ['sd', 'cv','sd2']) {
         if (expansion === exp || !expansion) {
           this.poolSort[exp] = { id: 1, name: 0, apr: 0, usd: 0 }
           this.poolSort[exp][field] = dir
@@ -357,9 +359,14 @@ export default {
       }
     },
     async loadWalletAndLocked() {
-      for (const expansion of ["sd", "cv"]) {
-        let lockedRaw = await contracts[expansion].token.lockOf(this.userAddress)
-        this.lockedBalance[expansion] = Number(formatEther(lockedRaw))
+      for (const expansion of ["sd", "cv", "sd2"]) {
+			let lockedRaw = await contracts[expansion].token.lockOf(this.userAddress)
+			if(expansion === "sd"){
+				this.lockedBalance[expansion] = 0;
+			}
+			else{
+				this.lockedBalance[expansion] = Number(formatEther(lockedRaw))
+			}
         this.localProgress[expansion]++
 
         let balRaw = await contracts[expansion].token.balanceOf(this.userAddress)
@@ -432,7 +439,7 @@ export default {
   },
   computed: {
     anyProgressLeft() {
-      return this.progressBarWidth('sd') < 100 || this.progressBarWidth('cv') < 100
+      return this.progressBarWidth('sd') < 100 || this.progressBarWidth('cv') < 100 || this.progressBarWidth('sd2') < 100
     }
   },
   mounted() {
