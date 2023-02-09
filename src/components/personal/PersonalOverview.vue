@@ -255,7 +255,7 @@
 
         <tr><td colspan="3"></td></tr>
 
-        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Jade', 'sd2']]" :key="symbol">
+        <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end">{{ formatNumber(heroTotal(expansion)) }}</th>
           <th class="text-end">{{ formatNumber(heroTotal(expansion) * tokenPrice(expansion), '$') }}</th>

@@ -1,53 +1,90 @@
 <template>
   <div>
-    <table class="table table-hover w-100">
-      <thead>
-      <tr>
-        <th/>
-        <th class="text-start">Item<SortIcon field="name"/></th>
-        <th class="text-end">Balance<SortIcon field="balance"/></th>
-        <th class="text-end">Jewel Price<SortIcon field="price"/></th>
-        <th class="text-end">Jewels<SortIcon field="jewels"/></th>
-        <th class="text-end">Jewel USD</th>
-        <th class="text-end">Gold Price<SortIcon field="priceGold"/></th>
-        <th class="text-end">Gold<SortIcon field="gold"/></th>
-        <th class="text-end">Gold USD</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="item in sortedItems" :key="item">
+	<div v-for="[symbol, expansion] of [['Serendale (Harmony)', 'sd'], ['Crystalvale (DFKChain)', 'cv'], ['Serendale 2.0 (Klatyn)', 'sd2']]" :key="symbol">
+		<h3>{{symbol}}</h3>
+		<hr/>
+		<div v-if="items[expansion].length > 0">
+			<table class="table table-hover w-100">
+				<thead>
+					<tr>
+						<th/>
+						<th class="text-start">Item<SortIcon field="name"/></th>
+						<th class="text-end">Balance<SortIcon field="balance"/></th>
+						<th class="text-end">Jewel Price<SortIcon field="price"/></th>
+						<th class="text-end">Jewels<SortIcon field="jewels"/></th>
+						<th class="text-end">Jewel USD</th>
+						<th class="text-end">Gold Price<SortIcon field="priceGold"/></th>
+						<th class="text-end">Gold<SortIcon field="gold"/></th>
+						<th class="text-end">Gold USD</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="item in sortedItems(expansion)" :key="item">
         <td><img height="25" width="25" :src="item.logoURI" :alt="item.name" /></td>
         <td class="text-start">{{ item.name }}</td>
         <td class="text-end">{{ item.balance }}</td>
         <td class="text-end"><span v-if="item.jewelPrice">{{ formatNumber(item.jewelPrice) }}</span></td>
         <td class="text-end"><span v-if="item.jewelPrice">{{ formatNumber(item.totalJewel) }}</span></td>
         <td class="text-end" :class="betterJewelTrade(item)">
-          <span v-if="item.jewelPrice">{{ formatNumber(item.totalJewelUsd, '$') }}</span>
-        </td>
-        <td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.goldPrice) }}</span></td>
-        <td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.totalGold) }}</span></td>
-        <td :class="betterGoldTrade(item)" class="text-end ">
-          <span v-if="item.goldPrice">{{formatNumber(item.totalGoldUsd, '$') }}</span>
-        </td>
+			<span v-if="item.jewelPrice">{{ formatNumber(item.totalJewelUsd, '$') }}</span>
+			</td>
+			<td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.goldPrice) }}</span></td>
+			<td class="text-end"><span v-if="item.goldPrice">{{ formatNumber(item.totalGold) }}</span></td>
+			<td :class="betterGoldTrade(item)" class="text-end ">
+				<span v-if="item.goldPrice">{{formatNumber(item.totalGoldUsd, '$') }}</span>
+			</td>
       </tr>
       </tbody>
       <tfoot>
       <tr>
-        <th class="text-end" colspan="5">{{ formatNumber(totalJewels) }}</th>
-        <th class="text-end">{{ formatNumber(totalJewelUsd, '$') }}</th>
-        <th class="text-end" colspan="2">{{ formatNumber(totalGold) }}</th>
-        <th class="text-end">{{ formatNumber(totalGoldUsd, '$') }}</th>
+			<th class="text-end" colspan="5">{{ formatNumber(totalJewels(expansion)) }}</th>
+			<th class="text-end">{{ formatNumber(totalJewelUsd(expansion), '$') }}</th>
+			<th class="text-end" colspan="2">{{ formatNumber(totalGold(expansion)) }}</th>
+			<th class="text-end">{{ formatNumber(totalGoldUsd(expansion), '$') }}</th>
       </tr>
-      </tfoot>
+	</tfoot>
+	
+</table>
+</div>
+<div v-if="items[expansion].length == 0">
+	No items found.
+	<hr/>
+</div>
+</div>
+</div>
 
-    </table>
-  </div>
+<div>
+	<h2>Inventory totals</h2>
+	<table class="table table-hover w-100">
+		<thead>
+			<tr>
+				<th/>
+				<th class="text-start">Item<SortIcon field="name"/></th>
+				<th class="text-end">Balance<SortIcon field="balance"/></th>
+				<th class="text-end">Jewel Price<SortIcon field="price"/></th>
+				<th class="text-end">Jewels<SortIcon field="jewels"/></th>
+				<th class="text-end">Jewel USD</th>
+				<th class="text-end">Gold Price<SortIcon field="priceGold"/></th>
+				<th class="text-end">Gold<SortIcon field="gold"/></th>
+				<th class="text-end">Gold USD</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th class="text-end" colspan="5">{{ formatNumber(totalJewels('sd') + totalJewels('cv') + totalJewels('sd2')) }}</th>
+				<th class="text-end">{{ formatNumber(totalJewelUsd('sd') + totalJewelUsd('cv') + totalJewelUsd('sd2'), '$') }}</th>
+				<th class="text-end" colspan="2">{{ formatNumber(totalGold('sd') + totalGold('cv') + totalGold('sd2')) }}</th>
+				<th class="text-end">{{ formatNumber(totalGoldUsd('sd') + totalGoldUsd('cv') + totalGoldUsd('sd2'), '$') }}</th>
+			</tr>
+		</tfoot>
+	</table>
+</div>
 </template>
 
 <script>
 import formatNumber from "@/utils/FormatNumber";
 import SortIcon from "@/components/generic/SortIcon";
-import { getItem, GetTokenList, getAllItemDetails } from "@/utils/Items";
+import { mappedGoldPrices, GetTokenList, getAllItemDetails } from "@/utils/Items";
 import _ from 'lodash'
 
 import {formatUnits, contractJson, RPCs} from "@/utils/ethers"
@@ -92,6 +129,17 @@ const GOLD_TOKENS = {
 		"tags": [
 			"harmony"
 			]
+		},
+     "sd2" : {
+		"chainId": 8217,
+		"address": "0xe7a1B580942148451E47b92e95aEB8d31B0acA37",
+		"symbol": "DFKGOLD",
+		"name": "Gold",
+		"decimals": 3,
+		"logoURI": "https://dfk-hv.b-cdn.net/art-assets/items/gold-bag.png",
+		"tags": [
+			"harmony"
+			]
 		}
 	}
 
@@ -102,14 +150,39 @@ export default {
   inject: ["prices", "setInventoryTotal"],
   data() {
     return {
-      items: [],
+      items: {'sd': [],
+					'cv': [],
+					'sd2': []
+				},
       itemSort: {...defaultSort}
     }
   },
   computed: {
-    sortedItems() {
+   
+    
+    jewelPrice() {
+      return this.prices()["JEWEL"]
+    }
+  },
+  methods: {
+	totalJewels(expansion) {
+      let jewels = _.sumBy(this.items[expansion], "totalJewel")
+
+      this.setInventoryTotal(jewels, expansion)
+      return jewels
+    },
+    totalGold(expansion) {
+      return _.sumBy(this.items[expansion], "totalGold")
+    },
+    totalJewelUsd(expansion) {
+      return _.sumBy(this.items[expansion], "totalJewelUsd")
+    },
+    totalGoldUsd(expansion) {
+      return _.sumBy(this.items[expansion], "totalGoldUsd")
+    },
+	sortedItems(expansion) {
       const sortOrder = this.itemSort
-      const items = [...this.items]
+      const items = [...this.items[expansion]];
 
       if (sortOrder.balance > 0)
         items.sort((a, b) => a.balance - b.balance)
@@ -143,43 +216,36 @@ export default {
 
       else
         items.sort((a, b) => a.name.localeCompare(b.name))
-
-
-      return items
+	
+      return items;
     },
-    totalJewels() {
-      let jewels = _.sumBy(this.items, "totalJewel")
-
-      this.setInventoryTotal(jewels, 'sd')
-      return jewels
-    },
-    totalGold() {
-      return _.sumBy(this.items, "totalGold")
-    },
-    jewelPrice() {
-      return this.prices()["JEWEL"]
-    },
-    totalJewelUsd() {
-      return _.sumBy(this.items, "totalJewelUsd")
-    },
-    totalGoldUsd() {
-      return _.sumBy(this.items, "totalGoldUsd")
-    }
-  },
-  methods: {
     formatNumber(num, prefix, suffix, decimals) {
       return formatNumber(num, prefix, suffix, decimals)
     },
-    goldItem(chainId) {
-      return this.items.find(item => item.address === GOLD_TOKENS[chainId].address);
+    goldItem(expansion) {
+      return this.items[expansion].find(item => item.address === GOLD_TOKENS[expansion].address);
     },
-    async loadPrice(address) {
+    async loadPrice(itemDetails) {
+		let chainId;
+		switch (itemDetails.chainId) {
+			case 53935:
+				chainId = 'avalanchedfk';
+			break;
+			case 1666600000:
+				chainId = 'harmony';
+			break;
+			case 8217:
+				chainId = 'klaytn';
+			break;
+		}
       const dsPrefix = "https://api.dexscreener.io/latest/dex/tokens/"
-      let r = await axios.get(dsPrefix + address)
+      let r = await axios.get(dsPrefix + itemDetails.address)
       if (r.status === 200) {
         let pairs = r.data.pairs.filter(pair =>
             pair.dexId === "defikingdoms"
             && Number(pair.priceUsd) > 0
+				&& pair.chainId === chainId
+				&& pair.priceUsd
         )
         if (pairs.length > 0)
           return Number(pairs[0].priceUsd)
@@ -193,49 +259,52 @@ export default {
       // load gold first
       await this.loadItem(GOLD_TOKENS['sd']);
       await this.loadItem(GOLD_TOKENS['cv']);
+      await this.loadItem(GOLD_TOKENS['sd2']);
 
       for (let item of getAllItemDetails()) {
-        if (item.address !== GOLD_TOKENS['sd'].address
-				&& item.address !== GOLD_TOKENS['cv'].address) {
+        if (item.symbol !== 'DFKGOLD') {
           allItems.push(this.loadItem(item))
         }
       }
       await Promise.all(allItems)
     },
     async loadItem(itemDetails) {
-		let chainId;
-		if(itemDetails.chainId === 53935){
-			chainId = 'cv';
-		}
-		else if(itemDetails.chainId === 1666600000){
-			chainId = 'sd';
-		}
-
-      const contract = new Contract(itemDetails.address, contractJson.erc20.abi, RPCs[chainId]);
-      // const decimals = await contract.decimals()
-      const decimals = itemDetails.decimals;
+			let expansion;
+			switch (itemDetails.chainId) {
+				case 53935:
+					expansion = 'cv';
+					break;
+				case 1666600000:
+					expansion = 'sd';
+					break;
+				case 8217:
+					expansion = 'sd2';
+				break;
+			}
+			const contract = new Contract(itemDetails.address, contractJson.erc20.abi, RPCs[expansion]);
+			const balance = Number(formatUnits(await contract.balanceOf(this.userAddress), itemDetails.decimals))
+			
+			if (balance === 0)
+				return
+			let usdPrice = await this.loadPrice(itemDetails)
+			// let preItem = getItem(itemDetails.address) 
+			if (excludedItems.includes(itemDetails.symbol)) {
+				return
+			}
+			const goldPrices = mappedGoldPrices();
+			itemDetails.goldPrice = itemDetails.address && goldPrices[itemDetails.symbol] ? goldPrices[itemDetails.symbol]["gold"]: 0;
 	
-		const balance = Number(formatUnits(await contract.balanceOf(this.userAddress), decimals))
-		
-      if (balance === 0)
-        return
-      let usdPrice = await this.loadPrice(itemDetails.address)
-      let preItem = getItem(itemDetails.address) 
-      if (excludedItems.includes(preItem.symbol)) {
-        return
-      }
-		
-      const item = {
-        ...preItem,
-        usdPrice,
-        balance,
-        jewelPrice: usdPrice/this.jewelPrice,
-        totalGold: balance * (itemDetails.address===GOLD_TOKENS[chainId].address?1:preItem.goldPrice),
-        totalJewel: usdPrice / this.jewelPrice * balance,
-        totalGoldUsd: balance * (itemDetails.address===GOLD_TOKENS[chainId].address?1:preItem.goldPrice) * (itemDetails.address===GOLD_TOKENS[chainId].address?usdPrice:this.goldItem(chainId).usdPrice),
-        totalJewelUsd: usdPrice * balance
-      }
-			this.items.push(item)
+			const item = {
+				...itemDetails,
+				usdPrice,
+				balance,
+				jewelPrice: usdPrice/this.jewelPrice,
+				totalGold: balance * (itemDetails.address===GOLD_TOKENS[expansion].address?1:itemDetails.goldPrice),
+				totalJewel: usdPrice / this.jewelPrice * balance,
+				totalGoldUsd: balance * (itemDetails.address===GOLD_TOKENS[expansion].address?1:itemDetails.goldPrice) * (itemDetails.address===GOLD_TOKENS[expansion].address?usdPrice:this.goldItem(expansion).usdPrice),
+				totalJewelUsd: usdPrice * balance
+			}
+				this.items[expansion].push(item)
 		}
 	,
     toggleSort(field) {

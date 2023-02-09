@@ -4,6 +4,7 @@ import {ethers} from "ethers";
 const goldPriceImport = require("@/data/ItemGoldPrice.json")
 const TokenListData_Harmony = require("@/data/dfk.tokenlist.harmony.json");
 const TokenListData_DFKChain = require("@/data/dfk.tokenlist.dfkchain.json");
+const TokenListData_Klaytn = require("@/data/dfk.tokenlist.klaytn.json");
 
 let tokens = []
 const items = new Map()
@@ -13,8 +14,8 @@ const goldPricesMapped = {}
 
 export function GetTokenList() {
    if (tokens.length > 0) return
-	// tokens = TokenListData_Harmony.tokens;
-	tokens = TokenListData_Harmony.tokens.concat(TokenListData_DFKChain.tokens);
+	// tokens = TokenListData_DFKChain.tokens;
+	tokens = TokenListData_Harmony.tokens.concat(TokenListData_DFKChain.tokens).concat(TokenListData_Klaytn.tokens);
 }
 
 export function getItem(address) {
@@ -25,8 +26,8 @@ export function getItem(address) {
     }
     const goldPrices = mappedGoldPrices()
 
-    item["goldPrice"] = item.address && goldPrices[item.address]
-        ? goldPrices[item.address]["gold"]
+    item["goldPrice"] = item.address && goldPrices[item.symbol]
+        ? goldPrices[item.symbol]["gold"]
         : 0
     if(item.name === "Unknown item") console.info(address)
     return item
@@ -60,12 +61,12 @@ export function getAllItemDetails(){
 
 function mapItems() {
     for (let token of tokens) {
-        items.set(token.address, token)
+        items.set(token.address + token.chainId, token)
     }
     return items
 }
 
-function mappedGoldPrices() {
+export function mappedGoldPrices() {
     if(goldPricesMapped.size > 0)
         return goldPricesMapped
 
