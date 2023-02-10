@@ -9,6 +9,7 @@
             <th class="text-start text-nowrap">Current Epoch</th>
             <th class="text-end">Serendale</th>
             <th class="text-end">Crystalvale</th>
+            <th class="text-end">Serendale 2.0</th>
           </tr>
           <EpochDetails whichEpoch="current" expansion="sd"/>
           <br />
@@ -16,6 +17,7 @@
             <th class="text-start text-nowrap">Next Epoch</th>
             <th class="text-end">Serendale</th>
             <th class="text-end">Crystalvale</th>
+            <th class="text-end">Serendale 2.0</th>
           </tr>
           <EpochDetails whichEpoch="next" expansion="sd"/>
           <br />
@@ -23,16 +25,17 @@
             <th class="text-start text-nowrap">Future Epochs</th>
             <th class="text-end">Serendale</th>
             <th class="text-end">Crystalvale</th>
+            <th class="text-end">Serendale 2.0</th>
           </tr>
 
           <template v-for="epoch in futureEpochsToShow['cv'].length" :key="epoch">
-            <EpochDetails :which-epoch="epoch" expansion="sd"/>
+            <EpochDetails :which-epoch="epoch" expansion="cv"/>
             <tr><td colspan="3">&nbsp;</td></tr>
           </template>
           </tbody>
         </table>
 
-        <p class="m-2">Block number: {{ currentBlockNumber['sd'] }}</p>
+        <p class="m-2">Block number: {{ currentBlockNumber['sd2'] }}</p>
       </div>
 
     </div>
@@ -60,7 +63,7 @@ export default {
   },
   methods: {
     async loadEpochs() {
-      for (const expansion of ['sd', 'cv']) {
+      for (const expansion of ['sd', 'cv', 'sd2']) {
         this.currentBlockNumber[expansion] = await RPCs[expansion].getBlockNumber()
         this.currentEpoch[expansion] = epochFuncs.getCurrentEpoch(this.currentBlockNumber[expansion], expansion)
         this.nextEpoch[expansion] = epochFuncs.epochData(this.currentEpoch[expansion].epoch + 1, expansion)

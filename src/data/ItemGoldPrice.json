@@ -1,87 +1,127 @@
 {
-  "0x6e1bC01Cc52D165B357c42042cF608159A2B81c1": {
+  "DFKAMBRTFY": {
     "name": "Ambertaffy",
     "address": "0x6e1bC01Cc52D165B357c42042cF608159A2B81c1",
     "gold": 12.5
   },
-  "0x68EA4640C5ce6cC0c9A1F17B7b882cB1cBEACcd7": {
+  "DFKDRKWD": {
     "name": "Darkweed",
     "address": "0x68EA4640C5ce6cC0c9A1F17B7b882cB1cBEACcd7",
     "gold": 10
   },
-  "0x600541aD6Ce0a8b5dae68f086D46361534D20E80": {
+  "DFKGLDVN": {
     "name": "Goldvein",
     "address": "0x600541aD6Ce0a8b5dae68f086D46361534D20E80",
     "gold": 100
   },
-  "0x043F9bd9Bb17dFc90dE3D416422695Dd8fa44486": {
+  "DFKRGWD": {
     "name": "Ragweed",
     "address": "0x043F9bd9Bb17dFc90dE3D416422695Dd8fa44486",
     "gold": 2.5
   },
-  "0x094243DfABfBB3E6F71814618ace53f07362a84c": {
+  "DFKRDLF": {
     "name": "Redleaf",
     "address": "0x094243DfABfBB3E6F71814618ace53f07362a84c",
     "gold": 15
   },
-  "0x6B10Ad6E3b99090De20bF9f95F960addC35eF3E2": {
+  "DFKRCKRT": {
     "name": "Rockroot",
     "address": "0x6B10Ad6E3b99090De20bF9f95F960addC35eF3E2",
     "gold": 5
   },
-  "0xCdfFe898E687E941b124dfB7d24983266492eF1d": {
+  "DFKSWFTHSL": {
     "name": "Swift-Thistle",
     "address": "0xCdfFe898E687E941b124dfB7d24983266492eF1d",
     "gold": 75
   },
-  "0x78aED65A2Cc40C7D8B0dF1554Da60b38AD351432": {
+  "DFKBLOATER": {
     "name": "Bloater",
     "address": "0x78aED65A2Cc40C7D8B0dF1554Da60b38AD351432",
     "gold": 2.5
   },
-  "0xe4Cfee5bF05CeF3418DA74CFB89727D8E4fEE9FA": {
+  "DFKIRONSCALE": {
     "name": "Ironscale",
     "address": "0xe4Cfee5bF05CeF3418DA74CFB89727D8E4fEE9FA",
     "gold": 5
   },
-  "0x8Bf4A0888451C6b5412bCaD3D9dA3DCf5c6CA7BE": {
+  "DFKLANTERNEYE": {
     "name": "Lanterneye",
     "address": "0x8Bf4A0888451C6b5412bCaD3D9dA3DCf5c6CA7BE",
     "gold": 5
   },
-  "0xc5891912718ccFFcC9732D1942cCD98d5934C2e1": {
+  "DFKREDGILL": {
     "name": "Redgill",
     "address": "0xc5891912718ccFFcC9732D1942cCD98d5934C2e1",
     "gold": 15
   },
-  "0xb80A07e13240C31ec6dc0B5D72Af79d461dA3A70": {
+  "DFKSAILFISH": {
     "name": "Sailfish",
     "address": "0xb80A07e13240C31ec6dc0B5D72Af79d461dA3A70",
     "gold": 50
   },
-  "0x372CaF681353758f985597A35266f7b330a2A44D": {
+  "DFKSHIMMERSKIN": {
     "name": "Shimmerskin",
     "address": "0x372CaF681353758f985597A35266f7b330a2A44D",
     "gold": 60
   },
-  "0xac5c49ff7e813de1947dc74bbb1720c353079ac9": {
+  "DFKBLUESTEM": {
     "name": "Bluestem",
     "address": "0xac5c49ff7e813de1947dc74bbb1720c353079ac9",
     "gold": 5
   },
-  "0xc0214b37fcd01511e6283af5423cf24c96bb9808": {
-    "name": "milkweed",
+  "DFKMILKWEED": {
+    "name": "Milkweed",
     "address": "0xc0214b37fcd01511e6283af5423cf24c96bb9808",
     "gold": 12.5
   },
-  "0x19b9f05cde7a61ab7aae5b0ed91aa62ff51cf881": {
+  "DFKSPIDRFRT": {
     "name": "spiderfruit",
     "address": "0x19b9f05cde7a61ab7aae5b0ed91aa62ff51cf881",
     "gold": 10
   },
-  "0x2493cfDAcc0f9c07240B5B1C4BE08c62b8eEff69": {
+  "DFKSILVERFIN": {
     "name": "Silverfin",
     "address": "0x2493cfDAcc0f9c07240B5B1C4BE08c62b8eEff69",
     "gold": 100
-  }
+  },
+ "DFKFBLOATER": {
+	"name": "Frost Bloater",
+	"address": "0x3bcb9A3DaB194C6D8D44B424AF383E7Db51C82BD",
+	"gold": 2.5
+ },
+ "DFKSPCKLTL": {
+	"name": "Speckle Tail",
+	"address": "0xE7CB27ad646C49dC1671Cb9207176D864922C431",
+	"gold": 15
+ },
+ "DFKKINGPNCR": {
+	"name": "King Pincer",
+	"address": "0x60A3810a3963f23Fa70591435bbe93BF8786E202",
+	"gold": 100
+ },
+ "DFKTHREEL": {
+	"name": "Three Eyed Eel",
+	"address": "0x6513757978E89e822772c16B60AE033781A29A4F",
+	"gold": 75
+ },
+ "DFKFROSTDRM": {
+	"name": "Frost Drum",
+	"address": "0xe7a1B580942148451E47b92e95aEB8d31B0acA37",
+	"gold": 2.5
+ },
+ "DFKKNAPROOT": {
+	"name": "Knaproot",
+	"address": "0xBcdD90034eB73e7Aec2598ea9082d381a285f63b",
+	"gold": 15
+ },
+ "DFKSHAGCAP": {
+	"name": "Shaggy Caps",
+	"address": "0x80A42Dc2909C0873294c5E359e8DF49cf21c74E4",
+	"gold": 100
+ },
+ "DFKSKNSHADE": {
+	"name": "Skunk Shade",
+	"address": "0xc6030Afa09EDec1fd8e63a1dE10fC00E0146DaF3",
+	"gold": 75
+ }
 }
