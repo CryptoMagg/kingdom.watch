@@ -154,12 +154,20 @@ export default {
 					'cv': [],
 					'sd2': []
 				},
-      itemSort: {...defaultSort}
+      itemSort: {...defaultSort},
+		chainIdMap : {
+			53935: 'avalanchedfk',
+			1666600000: 'harmony',
+			8217: 'klaytn'
+		},
+		chainIdExpansionMap: {
+			53935: 'cv',
+			1666600000: 'sd',
+			8217: 'sd2'
+		}
     }
   },
   computed: {
-   
-    
     jewelPrice() {
       return this.prices()["JEWEL"]
     }
@@ -226,18 +234,7 @@ export default {
       return this.items[expansion].find(item => item.address === GOLD_TOKENS[expansion].address);
     },
     async loadPrice(itemDetails) {
-		let chainId;
-		switch (itemDetails.chainId) {
-			case 53935:
-				chainId = 'avalanchedfk';
-			break;
-			case 1666600000:
-				chainId = 'harmony';
-			break;
-			case 8217:
-				chainId = 'klaytn';
-			break;
-		}
+		let chainId = this.chainIdMap[itemDetails.chainId];
       const dsPrefix = "https://api.dexscreener.io/latest/dex/tokens/"
       let r = await axios.get(dsPrefix + itemDetails.address)
       if (r.status === 200) {
@@ -257,10 +254,9 @@ export default {
     async loadInventory() {
       const allItems = []
       // load gold first
-      await this.loadItem(GOLD_TOKENS['sd']);
-      await this.loadItem(GOLD_TOKENS['cv']);
-      await this.loadItem(GOLD_TOKENS['sd2']);
-
+		for(const exp in GOLD_TOKENS){
+			await this.loadItem(GOLD_TOKENS[exp]);
+		}
       for (let item of getAllItemDetails()) {
         if (item.symbol !== 'DFKGOLD') {
           allItems.push(this.loadItem(item))
@@ -269,25 +265,14 @@ export default {
       await Promise.all(allItems)
     },
     async loadItem(itemDetails) {
-			let expansion;
-			switch (itemDetails.chainId) {
-				case 53935:
-					expansion = 'cv';
-					break;
-				case 1666600000:
-					expansion = 'sd';
-					break;
-				case 8217:
-					expansion = 'sd2';
-				break;
-			}
+			let expansion = this.chainIdExpansionMap[itemDetails.chainId];
+		
 			const contract = new Contract(itemDetails.address, contractJson.erc20.abi, RPCs[expansion]);
 			const balance = Number(formatUnits(await contract.balanceOf(this.userAddress), itemDetails.decimals))
 			
 			if (balance === 0)
 				return
 			let usdPrice = await this.loadPrice(itemDetails)
-			// let preItem = getItem(itemDetails.address) 
 			if (excludedItems.includes(itemDetails.symbol)) {
 				return
 			}

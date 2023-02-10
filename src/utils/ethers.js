@@ -36,11 +36,12 @@ export const contractAddrs = {
     },
     cv: {
         crystal: "0x04b9dA42306B023f3572e106B11D82aAd9D32EBb",
+        wjewel: "0xCCb93dABD71c8Dad03Fc4CE5559dC3D89F67a260",
         xCrystal: "0x6e7185872bcdf3f7a6cbbe81356e50daffb002d2",
         gardener: "0x57Dec9cC7f492d6583c773e2E7ad66dcDc6940Fb",
         profile: "0xC4cD8C09D1A90b21Be417be91A81603B03993E81",
         hero: "0xEb9B61B145D6489Be575D3603F4a704810e143dF",
-        auction: "0xc390fAA4C7f66E4D62E59C231D5beD32Ff77BEf0"
+        auction: "0xc390fAA4C7f66E4D62E59C231D5beD32Ff77BEf0",
     },
     sd2: {
 			jade: "0xB3F5867E277798b50ba7A71C0b24FDcA03045eDF",
@@ -72,6 +73,7 @@ export const contracts = {
     },
     sd2: {
         token: new Contract(contractAddrs.sd2.jade,contractJson.crystal.abi, RPCs.sd2),
+        jewel: new Contract(contractAddrs.sd2.jewel,contractJson.uni.abi, RPCs.sd2),
         gardener: new Contract(contractAddrs.sd2.gardener, contractJson.gardenerV3.abi, RPCs.sd2),
         hero: new Contract(contractAddrs.sd2.hero, contractJson.hero.abi, RPCs.sd2),
         profile: new Contract(contractAddrs.sd2.profile, contractJson.profile.abi, RPCs.sd2),
