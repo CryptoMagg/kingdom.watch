@@ -12,6 +12,9 @@
     <td class="text-end">
       <span v-if="cvEpoch.unlock >0">{{ cvEpoch["unlock"] }}%</span>
     </td>
+	<td class="text-end">
+      <span v-if="sd2Epoch.unlock >0">{{ sd2Epoch["unlock"] }}%</span>
+    </td>
   </tr>
   <tr>
     <td class="text-start">Multiplier</td>
@@ -20,6 +23,9 @@
     </td>
     <td class="text-end">
       <span v-if="cvEpoch.multiplier > 0">{{ cvEpoch["multiplier"] }}x</span>
+    </td>
+	<td class="text-end">
+      <span v-if="sd2Epoch.unlock >0">{{ sd2Epoch["multiplier"] }}%</span>
     </td>
   </tr>
   <tr>
@@ -30,6 +36,9 @@
     <td class="text-end">
       <span v-if="cvEpoch.timeLeftString != ''">{{ cvEpoch["timeLeftString"] }}</span>
       </td>
+		<td class="text-end">
+			<span v-if="sd2Epoch.unlock >0">{{ sd2Epoch["timeLeftString"] }}%</span>
+		</td>
   </tr>
 </template>
 
@@ -44,6 +53,9 @@ export default {
     },
     cvEpoch() {
       return this.getEpoch(this.whichEpoch, 'cv')
+    },
+	sd2Epoch() {
+      return this.getEpoch(this.whichEpoch, 'sd2')
     }
   }
 }

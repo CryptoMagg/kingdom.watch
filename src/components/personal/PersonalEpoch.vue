@@ -2,7 +2,7 @@
   <div class="col-lg-8 m-auto border border-dark rounded-3">
     <h3 class="p-3">Epoch</h3>
     <router-link to="/epochs">more epochs</router-link>
-    <table class="m-auto table table-hover w-100" v-for="[[exp, symbol], expansion] of [[['Serendale', 'Jewel'], 'sd'], [['Crystalvale', 'Crystal'], 'cv']]" :key="symbol">
+    <table class="m-auto table table-hover w-100" v-for="[[exp, symbol], expansion] of [[['Serendale', 'Jewel'], 'sd'], [['Crystalvale', 'Crystal'], 'cv'],[['Serendale 2.0', 'Jade'], 'sd2']]" :key="symbol">
       <thead>
       <tr>
         <th colspan="4" class="text-start">{{ exp }}</th>

@@ -16,7 +16,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="[symbol, expansion] of [['JEWEL', 'sd'], ['CRYSTAL', 'cv']]" :key="symbol">
+          <tr v-for="[symbol, expansion] of [['JEWEL', 'sd'], ['CRYSTAL', 'cv'],['JADE', 'sd2']]" :key="symbol">
             <td>{{ symbol }}</td>
             <td>${{ prices[symbol].toFixed(2) }}</td>
             <td>30s</td>
@@ -134,34 +134,37 @@ export default {
   data() {
     return {
       userAddress: "",
-      bankBalance: { sd: 0, cv: 0 },
-      totalPending: { sd: 0, cv: 0 },
-      blockNumber: { sd: 0, cv: 0 },
+      bankBalance: { sd: 0, cv: 0, sd2: 0  },
+      totalPending: { sd: 0, cv: 0, sd2: 0  },
+      blockNumber: { sd: 0, cv: 0, sd2: 0 },
       blockTime: {
         sd: 2,
-        cv: 1
+        cv: 1,
+		sd2: 1
       },
       blockTimeMeasureDuration: {
-        sd: 604800,
-        cv: 604800
+			sd: 604800,
+			cv: 604800,
+			sd2: 604800 
       },
-      epoch: { sd: {}, cv: {} },
+      epoch: { sd: {}, cv: {}, sd2:{} },
       prices: {
         JEWEL: 0.0,
         CRYSTAL: 0.0,
+			JADE: 0.0
       },
       pricesTimestamp: 0,
       priceGeneratedStamp: 0,
-      pools: { sd: [], cv: [] },
-      poolCount: { sd: 0, cv: 0 },
-      commonProgressPct: { sd: 0, cv: 0 },
-      poolProgress: { sd: 0, cv: 0 },
-      bankProgressPct: { sd: 0, cv: 0 },
-      progressPct: { sd: 0, cv: 0 },
+      pools: { sd: [], cv: [], sd2: []},
+      poolCount: { sd: 0, cv: 0, sd2: 0 },
+      commonProgressPct: { sd: 0, cv: 0, sd2: 0 },
+      poolProgress: { sd: 0, cv: 0, sd2: 0 },
+      bankProgressPct: { sd: 0, cv: 0, sd2: 0 },
+      progressPct: { sd: 0, cv: 0, sd2: 0 },
       profileName: "",
-      heroTotal: { sd: 0, cv: 0 },
-      heroProgress: { sd: 0, cv: 100 },
-      inventoryTotal: { sd: 0, cv: 0 },
+      heroTotal: { sd: 0, cv: 0, sd2: 0 },
+      heroProgress: { sd: 0, cv: 100, sd2: 0 },
+      inventoryTotal: { sd: 0, cv: 0, sd2: 0 },
     }
   },
   methods: {
@@ -174,7 +177,7 @@ export default {
       this.calcProgressPct()
     },
     calcProgressPct() {
-      for (const expansion of ["sd", "cv"]) {
+      for (const expansion of ["sd", "cv", "sd2"]) {
         // weighted progress
         let wCP = this.commonProgressPct[expansion] * 0.2
         let wPP = (this.poolCount[expansion]===0?1:this.poolProgress[expansion]/this.poolCount[expansion])*100*0.35
@@ -191,7 +194,8 @@ export default {
       const dsPrefix = "https://api.dexscreener.io/latest/dex/tokens/"
       const expSet = [
         ["JEWEL", contractAddrs.sd.jewel],
-        ["CRYSTAL", contractAddrs.cv.crystal]
+        ["CRYSTAL", contractAddrs.cv.crystal],
+        ["JADE", contractAddrs.sd2.jade]
       ]
       for (const [symbol, addr] of expSet) {
         let r = await axios.get(dsPrefix + addr)
@@ -215,7 +219,7 @@ export default {
       progressPct: (expansion) => this.progressPct[expansion],
       epoch: (expansion) => this.epoch[expansion],
       blockTime: (expansion) => this.blockTime[expansion],
-      prices: (expansion) => expansion ? this.prices[expansion==="sd"?"JEWEL":"CRYSTAL"] : this.prices,
+      prices: (expansion) => expansion ? this.prices[expansion==="sd"?"JEWEL":expansion==="cv"?"CRYSTAL":"JADE"] : this.prices,
       setBlockNumber: (blockNum, expansion) => {
         this.blockNumber[expansion] = blockNum
         this.epoch[expansion] = epochs.getCurrentEpoch(blockNum, expansion)

@@ -166,6 +166,76 @@ statGrowth.set("DreadKnight", {
     endurance: 75,
     dexterity: 75
 })
+statGrowth.set("Berserker", {
+	strength: 80,
+	intelligence: 20,
+	wisdom: 20,
+	luck: 40,
+	agility: 55,
+	vitality: 65,
+	endurance: 60,
+	dexterity: 60
+})
+statGrowth.set("Seer", {
+	strength: 30,
+	intelligence: 70,
+	wisdom: 80,
+	luck: 35,
+	agility: 55,
+	vitality: 50,
+	endurance: 50,
+	dexterity: 30
+})
+statGrowth.set("Legionnaire", {
+	strength: 75,
+	intelligence: 20,
+	wisdom: 25,
+	luck: 25,
+	agility: 35,
+	vitality: 75,
+	endurance: 80,
+	dexterity: 65
+})
+statGrowth.set("Scholar", {
+	strength: 30,
+	intelligence: 80,
+	wisdom: 70,
+	luck: 50,
+	agility: 30,
+	vitality: 55,
+	endurance: 55,
+	dexterity: 30
+})
+statGrowth.set("Shapeshifter", {
+	strength: 65,
+	intelligence: 25,
+	wisdom: 45,
+	luck: 45,
+	agility: 80,
+	vitality: 55,
+	endurance: 55,
+	dexterity: 70
+})
+statGrowth.set("Bard", {
+	strength: 50,
+	intelligence: 50,
+	wisdom: 60,
+	luck: 65,
+	agility: 65,
+	vitality: 50,
+	endurance: 40,
+	dexterity: 70
+})
+statGrowth.set("SpellBow", {
+	strength: 40,
+	intelligence: 85,
+	wisdom: 60,
+	luck: 60,
+	agility: 60,
+	vitality: 60,
+	endurance: 45,
+	dexterity: 90
+})
 
 export const rarity = ["Common", "Uncommon", "Rare", "Legendary", "Mythic"]
 export const mainClass = {
@@ -179,13 +249,17 @@ export const mainClass = {
     7: "Pirate",
     8: "Berserker",
     9: "Seer",
+    10: "Legionnaire",
+    11: "Scholar",
     16: "Paladin",
     17: "DarkKnight",
     18: "Summoner",
     19: "Ninja",
     20: "Shapeshifter",
+    21: "Bard",
     24: "Dragoon",
     25: "Sage",
+    26: "SpellBow",
     28: "DreadKnight"
 }
 
@@ -225,12 +299,19 @@ const choices = {
         5: 'wizard',
         6: 'monk',
         7: 'pirate',
+        8: 'berserker',
+        9: 'seer',
+        10: 'legionnaire',
+        11: 'scholar',
         16: 'paladin',
         17: 'darkKnight',
         18: 'summoner',
         19: 'ninja',
+        20: 'shapeshifter',
+        21: 'bard',
         24: 'dragoon',
         25: 'sage',
+        26: 'spellbow',
         28: 'dreadKnight'
     },
     skinColor: {
@@ -340,21 +421,28 @@ const choices = {
         28: 28
     },
     subClass: {
-        0: 'warrior',
-        1: 'knight',
-        2: 'thief',
-        3: 'archer',
-        4: 'priest',
-        5: 'wizard',
-        6: 'monk',
-        7: 'pirate',
-        16: 'paladin',
-        17: 'darkKnight',
-        18: 'summoner',
-        19: 'ninja',
-        24: 'dragoon',
-        25: 'sage',
-        28: 'dreadKnight'
+		0: 'warrior',
+		1: 'knight',
+		2: 'thief',
+		3: 'archer',
+		4: 'priest',
+		5: 'wizard',
+		6: 'monk',
+		7: 'pirate',
+		8: 'berserker',
+		9: 'seer',
+		10: 'legionnaire',
+		11: 'scholar',
+		16: 'paladin',
+		17: 'darkKnight',
+		18: 'summoner',
+		19: 'ninja',
+		20: 'shapeshifter',
+		21: 'bard',
+		24: 'dragoon',
+		25: 'sage',
+		26: 'spellbow',
+		28: 'dreadKnight'
     },
     profession: {
         0: 'mining',
