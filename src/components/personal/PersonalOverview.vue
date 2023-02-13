@@ -3,7 +3,7 @@
     <h3 class="p-3">Overview</h3>
     <div v-if="anyProgressLeft">
       <div v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" class="progress" :key="expansion">
-        <div class="progress-bar progress-bar-striped progress-bar-animated text-white" :class="expansion==='sd'?'bg-success':'bg-info'"
+        <div class="progress-bar progress-bar-striped progress-bar-animated text-white" :class="expansion==='sd'?'bg-success':expansion==='cv'?'bg-info':'bg-danger'"
              role="progressbar"
              aria-valuenow="0"
              aria-valuemin="0"
@@ -153,11 +153,11 @@
             {{ formatNumber((TotalJewelHeld * tokenPrice('sd'))+(walletBalance['sd2']*tokenPrice('sd2'))+(walletBalance['cv']*tokenPrice('cv')), '$') }}
           </th>
         </tr>
-		<tr>
-			<td class="text-start ps-5">Jewel</td>
-         <td class="text-end">{{ formatNumber(TotalJewelHeld) }}</td>
-         <td class="text-end">{{ formatNumber(TotalJewelHeld * tokenPrice('sd'), '$') }}</td>
-		</tr>
+        <tr>
+          <td class="text-start ps-5">Jewel</td>
+          <td class="text-end">{{ formatNumber(TotalJewelHeld) }}</td>
+          <td class="text-end">{{ formatNumber(TotalJewelHeld * tokenPrice('sd'), '$') }}</td>
+        </tr>
         <tr v-for="[symbol, expansion] of [['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">{{ formatNumber(walletBalance[expansion]) }}</td>
@@ -233,8 +233,7 @@
         <tr>
           <th class="text-start" colspan="2">Pending Locked</th>
           <th class="text-end">
-            {{ formatNumber(
-					(pendingLocked('sd2')*tokenPrice('sd2'))+(pendingLocked('cv')*tokenPrice('cv')), '$') }}
+            {{ formatNumber((pendingLocked('sd2')*tokenPrice('sd2'))+(pendingLocked('cv')*tokenPrice('cv')), '$') }}
           </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Crystal', 'cv'], ['Jade', 'sd2']]" :key="symbol">
@@ -337,17 +336,17 @@ export default {
   props: ["userAddress"],
   data() {
     return {
-      lockedBalance: { sd: 0, cv: 0 },
-      walletBalance: { sd: 0, cv: 0 },
-      localProgress: { sd: 0, cv: 0 },
-		TotalJewelHeld: 0,
+      lockedBalance: { sd: 0, cv: 0, sd2:0 },
+      walletBalance: { sd: 0, cv: 0, sd2:0 },
+      localProgress: { sd: 0, cv: 0, sd2:0 },
+      TotalJewelHeld: 0,
       includeHeroes: true,
       includeInventory: true,
       includeLocked: true,
       poolSort: {
         sd: { id: 1, name: 0, apr: 0, usd: 0 },
         cv: { id: 1, name: 0, apr: 0, usd: 0 },
-		sd2: { id: 1, name: 0, apr: 0, usd: 0 }
+        sd2: { id: 1, name: 0, apr: 0, usd: 0 }
       }
     }
   },
@@ -366,60 +365,55 @@ export default {
     },
     async loadWalletAndLocked() {
       for (const expansion of ["sd", "cv", "sd2"]) {
-			let lockedRaw = await contracts[expansion].token.lockOf(this.userAddress)
-			if(expansion === "sd"){
-				this.lockedBalance[expansion] = 0;
-			}
-			else{
-				this.lockedBalance[expansion] = Number(formatEther(lockedRaw))
-			}
-			this.localProgress[expansion]++
+        let lockedRaw = await contracts[expansion].token.lockOf(this.userAddress)
+        this.lockedBalance[expansion] = expansion === "sd" ? 0 : Number(formatEther(lockedRaw));
+        this.localProgress[expansion]++
 
-			let balRaw = await contracts[expansion].token.balanceOf(this.userAddress)
-			this.walletBalance[expansion] = Number(formatEther(balRaw))
-			this.TotalJewelHeld = await this.calcJewelHeld();
-			this.localProgress[expansion]++
+        let balRaw = await contracts[expansion].token.balanceOf(this.userAddress)
+        this.walletBalance[expansion] = Number(formatEther(balRaw))
+        this.TotalJewelHeld = await this.calcJewelHeld();
+        this.localProgress[expansion]++
       }
     },
     grandTotalUsd(expansion) {
       let grandTotal;
-		if(expansion==='sd'){
-			grandTotal = this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
-		}
-		else{
-			grandTotal = this.totalAvailable(expansion) * this.tokenPrice(expansion)
-		}
+      if(expansion==='sd'){
+        grandTotal = this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
+      }
+      else{
+        grandTotal = this.totalAvailable(expansion) * this.tokenPrice(expansion)
+      }
       if (this.includeLocked)
         grandTotal += this.totalLocked(expansion) * this.tokenPrice(expansion)
       if (this.includeHeroes)
         grandTotal += this.heroTotal(expansion) * this.tokenPrice(expansion)
       if(this.includeInventory)
         grandTotal += this.inventoryTotal(expansion) * this.tokenPrice('sd') // all demoninated in JEWEL atm - maybe change this
-      grandTotal += this.totalPoolUsd(expansion)
+        grandTotal += this.totalPoolUsd(expansion)
       return grandTotal
     },
     totalAvailable(expansion) {
-		if(expansion === 'sd'){
-			let totJewel =  this.TotalJewelHeld; 
-			return totJewel;
-		}
-		else{
-			return this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
-		}
+      if(expansion === 'sd'){
+        let totJewel =  this.TotalJewelHeld; 
+        return totJewel;
+      }
+      else{
+        return this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
+      }
     },
-	async calcJewelHeld() {
-		let totalJewel = 0;
-		//sd
-		let balRaw = await contracts['sd'].token.balanceOf(this.userAddress);
-		totalJewel = Number(formatEther(balRaw));
-		//cv
-		let cvRawBal = await RPCs['cv'].getBalance(this.userAddress);
-		totalJewel += Number(formatEther(cvRawBal));
-		//sd2
-		let klayBalRaw = await contracts['sd2'].jewel.balanceOf(this.userAddress);
-		totalJewel += Number(formatEther(klayBalRaw));
-		return totalJewel;
-	},
+    async calcJewelHeld() {
+      let totalJewel = 0;
+      //sd
+      let balRaw = await contracts['sd'].token.balanceOf(this.userAddress);
+      totalJewel = Number(formatEther(balRaw));
+      //cv
+      let cvRawBal = await RPCs['cv'].getBalance(this.userAddress);
+      totalJewel += Number(formatEther(cvRawBal));
+      //sd2
+      let klayBalRaw = await contracts['sd2'].jewel.balanceOf(this.userAddress);
+      totalJewel += Number(formatEther(klayBalRaw));
+      return totalJewel;
+    },
     totalLocked(expansion) {
       return this.lockedBalance[expansion] + this.pendingLocked(expansion)
     },

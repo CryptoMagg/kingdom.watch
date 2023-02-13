@@ -12,7 +12,7 @@
     <td className="text-end">{{ formatNumber(apr(expansion) * 365, '', '% ') }}</td>
   </tr>
   <tr>
-    <td className="text-start">{{ getRealmtoken(expansion) }}</td>
+    <td className="text-start">{{ expansionTokenMap[expansion] }}</td>
     <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion)) }}</td>
     <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion) * 7) }}</td>
     <td className="text-end">{{ formatNumber(userRewardsPerDay(expansion) * 365) }}</td>
@@ -37,7 +37,7 @@
   </tr>
 
   <tr>
-    <td className="text-start">{{ getRealmtoken(expansion) }}</td>
+    <td className="text-start">{{ expansionTokenMap[expansion] }}</td>
     <td className="text-end">{{ formatNumber(unlockedPerDay) }}</td>
     <td className="text-end">{{ formatNumber(unlockedPerDay * 7) }}</td>
     <td className="text-end">{{ formatNumber(unlockedPerDay * 365) }}</td>
@@ -61,16 +61,15 @@ export default {
     formatNumber(num, prefix, suffix) {
       return formatNumber(num, prefix, suffix)
     },
-	getRealmtoken (expansion) {
-			switch(expansion) {
-				case 'sd':
-					return 'Jewel';
-				case 'cv':
-					return 'Crystal';
-				case 'sd2':
-					return 'Jade';
-			}
-	}
+  },
+  data() {
+    return {
+      expansionTokenMap : {
+        'sd': 'Jewel',
+        'cv': 'Crystal',
+        'sd2': 'Jade'
+      }
+    }
   },
   inject: ["apr", "userRewardsPerDay", "prices", "epoch"],
   computed: {
