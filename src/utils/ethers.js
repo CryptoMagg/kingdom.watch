@@ -44,13 +44,13 @@ export const contractAddrs = {
         auction: "0xc390fAA4C7f66E4D62E59C231D5beD32Ff77BEf0",
     },
     sd2: {
-			jade: "0xB3F5867E277798b50ba7A71C0b24FDcA03045eDF",
-			jewel: "0x30C103f8f5A3A732DFe2dCE1Cc9446f545527b43",
-			sjewel: "0xaA8548665bCC12C202d5d0C700093123F2463EA6",
-			gardener: "0xad2ea7b7e49be15918E4917736E86ff7feA57a6A",
-			profile: "0xe1b8C354BE50357c2ab90A962254526d08aF0D2D",
-			hero: "0x268CC8248FFB72Cd5F3e73A9a20Fa2FF40EfbA61",
-			auction: "0x7F2B66DB2D02f642a9eb8d13Bc998d441DDe17A8"
+        jade: "0xB3F5867E277798b50ba7A71C0b24FDcA03045eDF",
+        jewel: "0x30C103f8f5A3A732DFe2dCE1Cc9446f545527b43",
+        sjewel: "0xaA8548665bCC12C202d5d0C700093123F2463EA6",
+        gardener: "0xad2ea7b7e49be15918E4917736E86ff7feA57a6A",
+        profile: "0xe1b8C354BE50357c2ab90A962254526d08aF0D2D",
+        hero: "0x268CC8248FFB72Cd5F3e73A9a20Fa2FF40EfbA61",
+        auction: "0x7F2B66DB2D02f642a9eb8d13Bc998d441DDe17A8"
     }
 }
 
@@ -84,17 +84,17 @@ export const contracts = {
 export const expansionSet = {
     sd: 0,
     cv: 0,
-	sd2: 0
+    sd2: 0
 }
 
 export const expansionArraySet = {
     sd: [],
     cv: [],
-	sd2: []
+    sd2: []
 }
 
 export const expansionObjSet = {
     sd: {},
     cv: {},
-	sd2: {}
+    sd2: {}
 }

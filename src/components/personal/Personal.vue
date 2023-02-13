@@ -140,18 +140,18 @@ export default {
       blockTime: {
         sd: 2,
         cv: 1,
-		sd2: 1
+        sd2: 1
       },
       blockTimeMeasureDuration: {
-			sd: 604800,
-			cv: 604800,
-			sd2: 604800 
+        sd: 604800,
+        cv: 604800,
+        sd2: 604800 
       },
       epoch: { sd: {}, cv: {}, sd2:{} },
       prices: {
         JEWEL: 0.0,
         CRYSTAL: 0.0,
-			JADE: 0.0
+        JADE: 0.0
       },
       pricesTimestamp: 0,
       priceGeneratedStamp: 0,
@@ -159,11 +159,11 @@ export default {
       poolCount: { sd: 0, cv: 0, sd2: 0 },
       commonProgressPct: { sd: 0, cv: 0, sd2: 0 },
       poolProgress: { sd: 0, cv: 0, sd2: 0 },
-      bankProgressPct: { sd: 0, cv: 0, sd2: 0 },
+      bankProgressPct: { sd: 0, cv: 0, sd2: 100 },
       progressPct: { sd: 0, cv: 0, sd2: 0 },
       profileName: "",
       heroTotal: { sd: 0, cv: 0, sd2: 0 },
-      heroProgress: { sd: 0, cv: 100, sd2: 0 },
+      heroProgress: { sd: 0, cv: 100, sd2: 100 },
       inventoryTotal: { sd: 0, cv: 0, sd2: 0 },
     }
   },

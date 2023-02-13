@@ -84,44 +84,44 @@
     "address": "0x2493cfDAcc0f9c07240B5B1C4BE08c62b8eEff69",
     "gold": 100
   },
- "DFKFBLOATER": {
-	"name": "Frost Bloater",
-	"address": "0x3bcb9A3DaB194C6D8D44B424AF383E7Db51C82BD",
-	"gold": 2.5
- },
- "DFKSPCKLTL": {
-	"name": "Speckle Tail",
-	"address": "0xE7CB27ad646C49dC1671Cb9207176D864922C431",
-	"gold": 15
- },
- "DFKKINGPNCR": {
-	"name": "King Pincer",
-	"address": "0x60A3810a3963f23Fa70591435bbe93BF8786E202",
-	"gold": 100
- },
- "DFKTHREEL": {
-	"name": "Three Eyed Eel",
-	"address": "0x6513757978E89e822772c16B60AE033781A29A4F",
-	"gold": 75
- },
- "DFKFROSTDRM": {
-	"name": "Frost Drum",
-	"address": "0xe7a1B580942148451E47b92e95aEB8d31B0acA37",
-	"gold": 2.5
- },
- "DFKKNAPROOT": {
-	"name": "Knaproot",
-	"address": "0xBcdD90034eB73e7Aec2598ea9082d381a285f63b",
-	"gold": 15
- },
- "DFKSHAGCAP": {
-	"name": "Shaggy Caps",
-	"address": "0x80A42Dc2909C0873294c5E359e8DF49cf21c74E4",
-	"gold": 100
- },
- "DFKSKNSHADE": {
-	"name": "Skunk Shade",
-	"address": "0xc6030Afa09EDec1fd8e63a1dE10fC00E0146DaF3",
-	"gold": 75
- }
+  "DFKFBLOATER": {
+    "name": "Frost Bloater",
+    "address": "0x3bcb9A3DaB194C6D8D44B424AF383E7Db51C82BD",
+    "gold": 2.5
+  },
+  "DFKSPCKLTL": {
+    "name": "Speckle Tail",
+    "address": "0xE7CB27ad646C49dC1671Cb9207176D864922C431",
+    "gold": 15
+  },
+  "DFKKINGPNCR": {
+    "name": "King Pincer",
+    "address": "0x60A3810a3963f23Fa70591435bbe93BF8786E202",
+    "gold": 100
+  },
+  "DFKTHREEL": {
+    "name": "Three Eyed Eel",
+    "address": "0x6513757978E89e822772c16B60AE033781A29A4F",
+    "gold": 75
+  },
+  "DFKFROSTDRM": {
+    "name": "Frost Drum",
+    "address": "0xe7a1B580942148451E47b92e95aEB8d31B0acA37",
+    "gold": 2.5
+  },
+  "DFKKNAPROOT": {
+    "name": "Knaproot",
+    "address": "0xBcdD90034eB73e7Aec2598ea9082d381a285f63b",
+    "gold": 15
+  },
+  "DFKSHAGCAP": {
+    "name": "Shaggy Caps",
+    "address": "0x80A42Dc2909C0873294c5E359e8DF49cf21c74E4",
+    "gold": 100
+  },
+  "DFKSKNSHADE": {
+    "name": "Skunk Shade",
+    "address": "0xc6030Afa09EDec1fd8e63a1dE10fC00E0146DaF3",
+    "gold": 75
+  }
 }
