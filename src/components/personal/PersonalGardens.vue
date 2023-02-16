@@ -11,14 +11,14 @@
               {{ pools(expansion).length>0?"Total across":"" }} {{ pools(expansion).length }}
               {{ exp }} pool{{ pools(expansion).length>1||pools(expansion).length===0?"s":""}}
             </h3>
-				<hr/>
-				<div v-if="pools(expansion).length > 0">
-					<table class="m-auto table table-hover w-100">
-						<tbody>
-							<PersonalAPR :expansion="expansion"/>
-						</tbody>
-					</table>
-				</div>
+            <hr/>
+            <div v-if="pools(expansion).length > 0">
+              <table class="m-auto table table-hover w-100">
+                <tbody>
+                  <PersonalAPR :expansion="expansion"/>
+                </tbody>
+              </table>
+            </div>
             <div v-if="pools(expansion).length < Object.keys(this.userPools[expansion]).length" class="progress">
               <div
                   class="progress-bar progress-bar-striped progress-bar-animated"
@@ -60,39 +60,39 @@ export default {
     return {
       error: "",
       poolCount: {
-			sd: 0,
-			cv: 0,
-			sd2: 0
+        sd: 0,
+        cv: 0,
+        sd2: 0
       },
       userInfos: {
-			sd: {},
-			cv: {},
-			sd2: {}
+        sd: {},
+        cv: {},
+        sd2: {}
       },
       userPools: {
         sd: {},
         cv: {},
-			sd2: {}
+        sd2: {}
       },
       totalAllocPoints: {
         sd: 0,
         cv: 0,
-			sd2: 0
+        sd2: 0
       },
       totalRewardsPerDay: {
         sd: 0,
         cv: 0,
-			sd2: 0
+        sd2: 0
       },
       progress: {
         sd: 0,
         cv: 0,
-			sd2: 0
+        sd2: 0
       },
       maxProgress: {
         sd: 4,
         cv: 4,
-		sd2: 4
+        sd2: 4
       },
     }
   },

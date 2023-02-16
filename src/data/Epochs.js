@@ -1,7 +1,7 @@
 const firstBlock = {
     sd: 16350367,
     cv: 8943,
-	sd2: 108632736
+    sd2: 108632736
 }
 //sd2 first block a guess but should be close enough for epoch checks
 
@@ -9,7 +9,7 @@ const firstBlock = {
 //sd2 = Dec 08, 2022 5:00pm EST
 const gardenStartTime = {
     cv: 1648684800000,
-	sd2: 1670536800000 
+    sd2: 1670536800000 
 }
 
 const blocksPerEpoch = {
@@ -113,8 +113,8 @@ const getCurrentEpoch = (currentBlock, expansion) => {
     switch(expansion) {
         case "sd":
             return epochData(currentEpochByBlock(currentBlock, expansion), expansion)
-				case "cv": 
-				case "sd2": {
+        case "cv": 
+        case "sd2": {
             const date = new Date()
             return epochData(currentEpochByTime(date.getTime(), expansion), expansion)
         }
@@ -151,8 +151,8 @@ function secondsLeftUntilEpoch(currentBlock, epoch, expansion) {
     switch(expansion) {
         case "sd":
             return (epochStartBlock(epoch, expansion) - currentBlock) * blockSpeedSeconds[expansion]
-			case "cv":
-			case "sd2": {
+        case "cv":
+        case "sd2": {
             const date = new Date()
             return ((epochStartTime(epoch, expansion) - date.getTime())/1000)
         }
@@ -177,7 +177,7 @@ function getEpochMultipler(epoch, expansion) {
     switch(expansion){
         case 'sd':
             return epoch<20?epoch:epoch<36?20:36;
-			case 'sd2':
+        case 'sd2':
         case 'cv':
             return epoch<21?epoch:epoch<100?21:101;
         default:

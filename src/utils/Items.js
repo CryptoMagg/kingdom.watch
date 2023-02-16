@@ -13,9 +13,9 @@ const itemDetails = []
 const goldPricesMapped = {}
 
 export function GetTokenList() {
-   if (tokens.length > 0) return
-	// tokens = TokenListData_DFKChain.tokens;
-	tokens = TokenListData_Harmony.tokens.concat(TokenListData_DFKChain.tokens).concat(TokenListData_Klaytn.tokens);
+  if (tokens.length > 0) return
+  // tokens = TokenListData_DFKChain.tokens;
+  tokens = TokenListData_Harmony.tokens.concat(TokenListData_DFKChain.tokens).concat(TokenListData_Klaytn.tokens);
 }
 
 export function getItem(address) {
@@ -34,29 +34,29 @@ export function getItem(address) {
 }
 
 export function getAllItemAddresses() {
-    if (itemAddresses.length > 0) {
-        return itemAddresses
-    }
+  if (itemAddresses.length > 0) {
+      return itemAddresses
+  }
 
-    const _items = items.size > 0 ? items : mapItems()
+  const _items = items.size > 0 ? items : mapItems()
 
-    for (const address of _items.keys()) {
-        itemAddresses.push(address)
-    }
-    return itemAddresses
+  for (const address of _items.keys()) {
+      itemAddresses.push(address)
+  }
+  return itemAddresses
 }
 
 export function getAllItemDetails(){
-	if (itemDetails.length > 0) {
-        return itemDetails;
-    }
+  if (itemDetails.length > 0) {
+      return itemDetails;
+  }
 
-    const _items = items.size > 0 ? items : mapItems();
+  const _items = items.size > 0 ? items : mapItems();
 
-    for (let item of _items.values()) {
-        itemDetails.push(item);
-    }
-    return itemDetails;
+  for (let item of _items.values()) {
+      itemDetails.push(item);
+  }
+  return itemDetails;
 }
 
 function mapItems() {
