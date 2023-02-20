@@ -49,6 +49,18 @@
       </div>
     </div>
 
+   <div class="row">
+      <div class="col">
+        <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseJeweler" aria-expanded="false" aria-controls="collapseJeweler">
+                  Jeweler
+        </button>
+        <div class="collapse" id="collapseJeweler">
+          <PersonalJeweler :user-address="userAddress"/>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col">
         <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
@@ -116,6 +128,7 @@ import { contractAddrs } from "@/utils/ethers"
 import Address from "@/components/generic/Address"
 import PersonalOverview from "@/components/personal/PersonalOverview"
 import PersonalBank from "@/components/personal/PersonalBank"
+import PersonalJeweler from "@/components/personal/PersonalJeweler"
 import PersonalGardens from "@/components/personal/PersonalGardens"
 import PersonalEpoch from "@/components/personal/PersonalEpoch";
 import PersonalInventory from "@/components/personal/PersonalInventory";
@@ -128,6 +141,7 @@ export default {
     PersonalOverview,
     Address,
     PersonalBank,
+    PersonalJeweler,
     PersonalGardens,
     PersonalEpoch
   },
@@ -135,6 +149,18 @@ export default {
     return {
       userAddress: "",
       bankBalance: { sd: 0, cv: 0, sd2: 0  },
+      jewelerBalance: { 
+        cv:{
+          jewelBalance: 0,
+          JewelerTokenBal: 0,
+          usdValue: 0
+        },
+        sd2:{
+          jewelBalance: 0,
+          JewelerTokenBal: 0,
+          usdValue: 0
+        }
+      },
       totalPending: { sd: 0, cv: 0, sd2: 0  },
       blockNumber: { sd: 0, cv: 0, sd2: 0 },
       blockTime: {
@@ -159,7 +185,7 @@ export default {
       poolCount: { sd: 0, cv: 0, sd2: 0 },
       commonProgressPct: { sd: 0, cv: 0, sd2: 0 },
       poolProgress: { sd: 0, cv: 0, sd2: 0 },
-      bankProgressPct: { sd: 0, cv: 0, sd2: 100 },
+      bankProgressPct: { sd: 100, cv: 0, sd2: 0 },
       progressPct: { sd: 0, cv: 0, sd2: 0 },
       profileName: "",
       heroTotal: { sd: 0, cv: 0, sd2: 0 },
@@ -227,10 +253,18 @@ export default {
 
       blockNumber: (expansion) => this.blockNumber[expansion],
       bankBalance: (expansion) => this.bankBalance[expansion],
+			jewelerBalance : (expansion) => this.jewelerBalance[expansion],
 
       setBankBalance: (balance, expansion) => {
         this.bankBalance[expansion] = balance
-        this.bankProgressPct[expansion] = 100
+        // this.bankProgressPct[expansion] = 100
+        // this.calcProgressPct()
+      },
+      setJewelerbalance: (expansion, jewelBalance, tokenBalance, usdValue) => {
+        this.jewelerBalance[expansion].jewelBalance = jewelBalance;
+        this.jewelerBalance[expansion].JewelerTokenBal = tokenBalance;
+        this.jewelerBalance[expansion].usdValue = usdValue;
+        this.bankProgressPct[expansion] = 100 // logging under bank progress for now but will amend later
         this.calcProgressPct()
       },
       setPoolCount: (count, expansion) => {

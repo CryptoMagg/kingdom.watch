@@ -181,6 +181,33 @@
         <tr><td colspan="3"></td></tr>
 
         <tr>
+          <th class="text-start" colspan="2">Jeweler</th>
+          <th class="text-end">
+            {{ formatNumber((this.jewelerBalance('sd2').usdValue)+(this.jewelerBalance('cv').usdValue), '$') }}
+          </th>
+        </tr>
+        <tr>
+          <td class="text-start ps-5">cJewel</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('cv').JewelerTokenBal) }}</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('cv').usdValue, '$') }}</td>
+        </tr>
+        <tr>
+          <td class="text-start ps-5">sJewel</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').JewelerTokenBal) }}</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').usdValue, '$') }}</td>
+        </tr>
+
+        <tr><td colspan="3"></td></tr>
+
+        <tr>
+          <td class="text-start ps-5">Staked Jewel</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').jewelBalance + this.jewelerBalance('cv').jewelBalance) }}</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').usdValue + (this.jewelerBalance('cv').usdValue), '$') }}</td>
+        </tr>
+
+        <tr><td colspan="3"></td></tr>
+
+        <tr>
           <th class="text-start" colspan="2">Pending Unlocked</th>
           <th class="text-end">
             {{ formatNumber((pendingUnlocked('sd2')*tokenPrice('sd2'))+(pendingUnlocked('cv')*tokenPrice('cv')), '$') }}
@@ -350,7 +377,7 @@ export default {
       }
     }
   },
-  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal" ],
+  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal", "jewelerBalance"],
   methods: {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
@@ -381,7 +408,7 @@ export default {
         grandTotal = this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
       }
       else{
-        grandTotal = this.totalAvailable(expansion) * this.tokenPrice(expansion)
+        grandTotal = (this.totalAvailable(expansion) * this.tokenPrice(expansion)) + this.jewelerBalance(expansion).usdValue;
       }
       if (this.includeLocked)
         grandTotal += this.totalLocked(expansion) * this.tokenPrice(expansion)
@@ -398,7 +425,7 @@ export default {
         return totJewel;
       }
       else{
-        return this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
+        return this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion) 
       }
     },
     async calcJewelHeld() {
