@@ -113,6 +113,29 @@
 
         <tr><td colspan="3"></td></tr>
 
+				<tr>
+          <td class="text-start" colspan="2">
+            <span class="form-check form-switch">
+              <input v-model="includeJeweler" class="form-check-input" type="checkbox" role="switch" id="flexSwitchInventory">
+               <label class="form-check-label" for="flexSwitchInventory">Jeweler</label>
+            </span>
+          </td>
+          <th class="text-end">
+            {{ formatNumber(includeJeweler?((this.jewelerBalance('cv').jewelBalance + this.jewelerBalance('cv').pendingRewards)+(this.jewelerBalance('sd2').jewelBalance + this.jewelerBalance('sd2').pendingRewards)) * tokenPrice('sd'):0, '$') }}
+          </th>
+        </tr>
+        <tr v-for="[symbol, expansion] of [['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
+          <td class="text-start ps-5">{{ symbol }}</td>
+          <td class="text-end">
+            <span>{{ formatNumber(includeJeweler ? this.jewelerBalance(expansion).jewelBalance + this.jewelerBalance(expansion).pendingRewards  : 0) }}</span>
+          </td>
+          <td class="text-end">
+            <span>{{ formatNumber(includeJeweler ? (this.jewelerBalance(expansion).jewelBalance + this.jewelerBalance(expansion).pendingRewards) * tokenPrice('sd') : 0, '$') }}</span>
+          </td>
+        </tr>
+
+        <tr><td colspan="3"></td></tr>
+
         <tr>
           <td class="text-start" colspan="2">Gardens</td>
           <th class="text-end">
@@ -183,26 +206,35 @@
         <tr>
           <th class="text-start" colspan="2">Jeweler</th>
           <th class="text-end">
-            {{ formatNumber((this.jewelerBalance('sd2').usdValue)+(this.jewelerBalance('cv').usdValue), '$') }}
+            {{ formatNumber((this.jewelerBalance('sd2').jewelBalance + this.jewelerBalance('cv').jewelBalance + this.jewelerBalance('cv').pendingRewards + this.jewelerBalance('sd2').pendingRewards) * tokenPrice('sd'), '$') }}
           </th>
         </tr>
         <tr>
           <td class="text-start ps-5">cJewel</td>
           <td class="text-end">{{ formatNumber(this.jewelerBalance('cv').JewelerTokenBal) }}</td>
-          <td class="text-end">{{ formatNumber(this.jewelerBalance('cv').usdValue, '$') }}</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('cv').jewelBalance * tokenPrice('sd') , '$') }}</td>
+        </tr>
+        <tr>
+          <td class="text-end">Pending Rewards:</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('cv').pendingRewards) }}</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('cv').pendingRewards * tokenPrice('sd') , '$') }}</td>
         </tr>
         <tr>
           <td class="text-start ps-5">sJewel</td>
           <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').JewelerTokenBal) }}</td>
-          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').usdValue, '$') }}</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').jewelBalance * tokenPrice('sd'), '$') }}</td>
         </tr>
-
+        <tr>
+          <td class="text-end">Pending Rewards:</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').pendingRewards) }}</td>
+          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').pendingRewards * tokenPrice('sd') , '$') }}</td>
+        </tr>
         <tr><td colspan="3"></td></tr>
 
         <tr>
           <td class="text-start ps-5">Staked Jewel</td>
           <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').jewelBalance + this.jewelerBalance('cv').jewelBalance) }}</td>
-          <td class="text-end">{{ formatNumber(this.jewelerBalance('sd2').usdValue + (this.jewelerBalance('cv').usdValue), '$') }}</td>
+          <td class="text-end">{{ formatNumber((this.jewelerBalance('sd2').jewelBalance + this.jewelerBalance('cv').jewelBalance) * tokenPrice('sd'), '$') }}</td>
         </tr>
 
         <tr><td colspan="3"></td></tr>
@@ -370,6 +402,7 @@ export default {
       includeHeroes: true,
       includeInventory: true,
       includeLocked: true,
+		includeJeweler: true,
       poolSort: {
         sd: { id: 1, name: 0, apr: 0, usd: 0 },
         cv: { id: 1, name: 0, apr: 0, usd: 0 },
@@ -408,7 +441,7 @@ export default {
         grandTotal = this.walletBalance[expansion] + this.bankBalance(expansion) + this.pendingUnlocked(expansion)
       }
       else{
-        grandTotal = (this.totalAvailable(expansion) * this.tokenPrice(expansion)) + this.jewelerBalance(expansion).usdValue;
+        grandTotal = this.totalAvailable(expansion) * this.tokenPrice(expansion);
       }
       if (this.includeLocked)
         grandTotal += this.totalLocked(expansion) * this.tokenPrice(expansion)
@@ -417,6 +450,9 @@ export default {
       if(this.includeInventory)
         grandTotal += this.inventoryTotal(expansion) * this.tokenPrice('sd') // all demoninated in JEWEL atm - maybe change this
         grandTotal += this.totalPoolUsd(expansion)
+			if(this.includeJeweler && expansion!='sd'){
+        grandTotal += (this.jewelerBalance(expansion).jewelBalance + this.jewelerBalance(expansion).pendingRewards) * this.tokenPrice('sd');
+			}
       return grandTotal
     },
     totalAvailable(expansion) {

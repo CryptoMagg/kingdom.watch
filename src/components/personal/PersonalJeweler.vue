@@ -7,7 +7,7 @@
         <thead>
         <tr>
           <th class="text-start">{{exp}}</th>
-          <th class="text-end">Total: ${{formatNumber(this.usdValue[expansion] + this.pendingRewardUSD[expansion])}}</th>
+          <th class="text-end">Total: ${{formatNumber((this.jewelAmount[expansion] + this.pendingReward[expansion]) * this.jewelPrice)}}</th>
         </tr>
         </thead>
         <tbody>
@@ -21,7 +21,7 @@
         </tr>
         <tr>
           <td class="text-start">USD Value</td>
-          <td class="text-end">${{ formatNumber(this.usdValue[expansion]) }}</td>
+          <td class="text-end">${{ formatNumber(this.jewelAmount[expansion] * this.jewelPrice)}}</td>
         </tr>
         <tr>
           <td class="text-start">Unlock Time</td>
@@ -29,7 +29,7 @@
         </tr>
         <tr>
           <td class="text-start">Pending Rewards</td>
-          <td class="text-end">{{ formatNumber(this.pendingReward[expansion]) }} Jewel (${{formatNumber(this.pendingRewardUSD[expansion])}})</td>
+          <td class="text-end">{{ formatNumber(this.pendingReward[expansion]) }} Jewel (${{formatNumber(this.pendingReward[expansion]* this.jewelPrice)}})</td>
         </tr>
         </tbody>
       </table>
@@ -44,15 +44,13 @@ import { expansionSet, contracts, formatEther } from "@/utils/ethers"
 
 export default {
   name: "PersonalJeweler",
-  props: ["userAddress"],
+  props: ["userAddress", "jewelPrice"],
   data() {
     return {
       jewelAmount: {...expansionSet},
-      usdValue: {...expansionSet},
       tokenBalance: {...expansionSet},
       unlockTime: {...expansionSet},
       pendingReward: {...expansionSet},
-      pendingRewardUSD: {...expansionSet},
       error: "",
       loading: true,
       progress: {...expansionSet},
@@ -68,8 +66,6 @@ export default {
         let info = await contracts[expansion].jeweler.userInfo(this.userAddress);
         this.progress[expansion]++
         this.jewelAmount[expansion]  = Number(formatEther(info[0]));
-	
-        this.usdValue[expansion]  = this.jewelAmount[expansion] * this.prices('sd');
   
         this.tokenBalance[expansion] = Number(formatEther(info[1]));
         this.unlockTime[expansion]   = new Date(info[2] * 1000);
@@ -78,9 +74,8 @@ export default {
         this.progress[expansion]++
 
         this.pendingReward[expansion] = Number(formatEther(pendingReward));
-        this.pendingRewardUSD[expansion] = this.pendingReward[expansion] * this.prices('sd');
 
-        this.setJewelerbalance(expansion, this.jewelAmount[expansion] + this.pendingReward[expansion], this.tokenBalance[expansion] , this.usdValue[expansion] + this.pendingRewardUSD[expansion]  );
+        this.setJewelerbalance(expansion, this.jewelAmount[expansion], this.tokenBalance[expansion] , this.pendingReward[expansion]  );
       }
     },
     formatNumber(num, prefix) {

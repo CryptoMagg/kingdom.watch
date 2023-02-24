@@ -56,7 +56,7 @@
                   Jeweler
         </button>
         <div class="collapse" id="collapseJeweler">
-          <PersonalJeweler :user-address="userAddress"/>
+          <PersonalJeweler :user-address="userAddress" :jewel-price="jewelPrice"/>
         </div>
       </div>
     </div>
@@ -153,7 +153,7 @@ export default {
         cv:{
           jewelBalance: 0,
           JewelerTokenBal: 0,
-          usdValue: 0
+          pendingRewards: 0
         },
         sd2:{
           jewelBalance: 0,
@@ -191,6 +191,7 @@ export default {
       heroTotal: { sd: 0, cv: 0, sd2: 0 },
       heroProgress: { sd: 0, cv: 100, sd2: 100 },
       inventoryTotal: { sd: 0, cv: 0, sd2: 0 },
+			jewelPrice: 0
     }
   },
   methods: {
@@ -233,7 +234,8 @@ export default {
         }
       }
       this.pricesTimestamp = Date.now()
-    },
+			this.jewelPrice = this.prices["JEWEL"];    
+		},
   },
   computed: {
     blockTimeMeasurementString() {
@@ -260,10 +262,10 @@ export default {
         // this.bankProgressPct[expansion] = 100
         // this.calcProgressPct()
       },
-      setJewelerbalance: (expansion, jewelBalance, tokenBalance, usdValue) => {
+      setJewelerbalance: (expansion, jewelBalance, tokenBalance, pendingRewards) => {
         this.jewelerBalance[expansion].jewelBalance = jewelBalance;
         this.jewelerBalance[expansion].JewelerTokenBal = tokenBalance;
-        this.jewelerBalance[expansion].usdValue = usdValue;
+        this.jewelerBalance[expansion].pendingRewards = pendingRewards;
         this.bankProgressPct[expansion] = 100 // logging under bank progress for now but will amend later
         this.calcProgressPct()
       },
