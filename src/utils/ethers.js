@@ -22,7 +22,8 @@ export const contractJson = {
     erc20: require("../data/ERC20.json"),
     profile: require("../data/profile.json"),
     hero: require("../data/heroes.json"),
-    auction: require("../data/auctions.json")
+    auction: require("../data/auctions.json"),
+    jewellerToken: require("../data/VoteEscrowRewardPool.json"),
 }
 
 export const contractAddrs = {
@@ -42,11 +43,12 @@ export const contractAddrs = {
         profile: "0xC4cD8C09D1A90b21Be417be91A81603B03993E81",
         hero: "0xEb9B61B145D6489Be575D3603F4a704810e143dF",
         auction: "0xc390fAA4C7f66E4D62E59C231D5beD32Ff77BEf0",
+        cJewel: "0x9ed2c155632C042CB8bC20634571fF1CA26f5742"
     },
     sd2: {
         jade: "0xB3F5867E277798b50ba7A71C0b24FDcA03045eDF",
         jewel: "0x30C103f8f5A3A732DFe2dCE1Cc9446f545527b43",
-        sjewel: "0xaA8548665bCC12C202d5d0C700093123F2463EA6",
+        sJewel: "0xaA8548665bCC12C202d5d0C700093123F2463EA6",
         gardener: "0xad2ea7b7e49be15918E4917736E86ff7feA57a6A",
         profile: "0xe1b8C354BE50357c2ab90A962254526d08aF0D2D",
         hero: "0x268CC8248FFB72Cd5F3e73A9a20Fa2FF40EfbA61",
@@ -61,7 +63,8 @@ export const contracts = {
         gardener: new Contract(contractAddrs.sd.gardener, contractJson.gardener.abi, RPCs.sd),
         profile: new Contract(contractAddrs.sd.profile, contractJson.profile.abi, RPCs.sd),
         hero: new Contract(contractAddrs.sd.hero, contractJson.hero.abi, RPCs.sd),
-        auction: new Contract(contractAddrs.sd.auction, contractJson.auction.abi, RPCs.sd)
+        auction: new Contract(contractAddrs.sd.auction, contractJson.auction.abi, RPCs.sd),
+        jeweler: null
     },
     cv: {
         token: new Contract(contractAddrs.cv.crystal,contractJson.crystal.abi, RPCs.cv),
@@ -69,7 +72,8 @@ export const contracts = {
         gardener: new Contract(contractAddrs.cv.gardener, contractJson.gardenerV2.abi, RPCs.cv),
         hero: new Contract(contractAddrs.cv.hero, contractJson.hero.abi, RPCs.cv),
         profile: new Contract(contractAddrs.cv.profile, contractJson.profile.abi, RPCs.cv),
-        auction: new Contract(contractAddrs.cv.auction, contractJson.auction.abi, RPCs.cv)
+        auction: new Contract(contractAddrs.cv.auction, contractJson.auction.abi, RPCs.cv),
+        jeweler: new Contract(contractAddrs.cv.cJewel, contractJson.jewellerToken.abi, RPCs.cv)
     },
     sd2: {
         token: new Contract(contractAddrs.sd2.jade,contractJson.crystal.abi, RPCs.sd2),
@@ -77,7 +81,8 @@ export const contracts = {
         gardener: new Contract(contractAddrs.sd2.gardener, contractJson.gardenerV3.abi, RPCs.sd2),
         hero: new Contract(contractAddrs.sd2.hero, contractJson.hero.abi, RPCs.sd2),
         profile: new Contract(contractAddrs.sd2.profile, contractJson.profile.abi, RPCs.sd2),
-        auction: new Contract(contractAddrs.sd2.auction, contractJson.auction.abi, RPCs.sd2)
+        auction: new Contract(contractAddrs.sd2.auction, contractJson.auction.abi, RPCs.sd2),
+        jeweler: new Contract(contractAddrs.sd2.sJewel, contractJson.jewellerToken.abi, RPCs.sd2),
     }
 }
 
