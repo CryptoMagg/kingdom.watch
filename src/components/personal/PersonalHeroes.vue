@@ -15,27 +15,26 @@
         <th class="text-start"><router-link to="/about/floorprice">Confidence</router-link></th>
       </tr>
       </thead>
-      <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv']]" :key="symbol">
+      <tbody v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
+				<tr>
+					<th>{{ symbol }} </th>
+					<td class="text-start" colspan="7">{{ heroes[expansion].length }} Heroes total. {{ priceStamp }}</td>
+					<th class="text-end">{{ formatNumber(heroTotal[expansion])}}</th>
+					<th/>
+				</tr>
         <tr v-for="hero of heroes[expansion]" :key="hero">
           <td class="text-start">{{ hero.id }}</td>
-          <td class="text-end">{{ hero.info.generation }}</td>
-          <td class="text-end">{{ hero.state.level }}</td>
+          <td class="text-end">{{ hero.generation }}</td>
+          <td class="text-end">{{ hero.level }}</td>
           <td class="text-start" :class="hero.rarityString">{{ hero.rarityString }}</td>
           <td class="text-start">{{ hero.classString }}</td>
           <td class="text-start">{{ hero.professionString }}</td>
-          <td class="text-start d-flex"><div class="Uncommon">{{ hero.statBoost1 }}</div> / <div class="Rare">{{ hero.statBoost2 }}</div></td>
-          <td class="text-start">{{ hero.summoningInfo.maxSummons - hero.summoningInfo.summons }}/{{ hero.summoningInfo.maxSummons }}</td>
+          <td class="text-start d-flex"><div class="Uncommon">{{  hero.statBoost1String }}</div> / <div class="Rare">{{ hero.statBoost2String }}</div></td>
+          <td class="text-start">{{ hero.maxSummons == 11 ? hero.summons :  hero.summonsRemaining }}/{{ hero.maxSummons == 11 ? "∞" : hero.maxSummons }}</td>
           <td class="text-end">{{ formatNumber(hero.floorPrice, null, null, 0)}}</td>
           <td class="text-start">{{ hero.floorConfidence }}</td>
-        </tr>
+				</tr>
       </tbody>
-      <tfoot>
-      <tr>
-        <td class="text-start" colspan="8">{{ heroes.sd.length }} Heroes total. {{ priceStamp }}</td>
-        <th class="text-end">{{ formatNumber(heroTotal.sd)}}</th>
-        <th />
-      </tr>
-      </tfoot>
 
     </table>
   </div>
@@ -44,12 +43,16 @@
 <script>
 import axios from "axios";
 import formatNumber from "@/utils/FormatNumber";
-import {getStatGenes, mainClass} from "@/utils/Heroes";
+import {rarity, mainClass, choices, queryHeros, professionsMap, findHeroKey} from "@/utils/Heroes";
 
-import {contracts, expansionSet, expansionObjSet, expansionArraySet, formatUnits} from "@/utils/ethers";
+import { expansionSet, expansionObjSet, expansionArraySet} from "@/utils/ethers";
 
-const rarity = ["Common", "Uncommon", "Rare", "Legendary", "Mythic"]
 
+const networkMap = {
+	"hmy": "sd",
+	"dfk": "cv",
+	"kla": "sd2"
+}
 
 export default {
   name: "PersonalHeroes",
@@ -59,7 +62,7 @@ export default {
     return {
       heroes: {...expansionArraySet},
       floor: {...expansionObjSet},
-      heroTotal: {...expansionSet}
+      heroTotal: {...expansionSet},
     }
   },
   methods: {
@@ -67,71 +70,74 @@ export default {
       return formatNumber(num, prefix, suffix, decimals)
     },
     async fetchHeroes() {
-      this.heroes.sd = []
-      const heroIdsRaw = await contracts.cv.hero.getUserHeroes(this.userAddress)
-      const heroIds = heroIdsRaw.map(heroId => Number(formatUnits(heroId, 0)))
+			const heroKeySet = [];
 
-      const auctionHeroIdsRaw = await contracts.cv.auction.getUserAuctions(this.userAddress)
-      const auctionHeroIds = auctionHeroIdsRaw.map(heroId => Number(formatUnits(heroId, 0)))
+			for(let expansion in expansionSet){
+				this.heroTotal[expansion] = 0;
+				this.heroes[expansion] = [];
+			}
+			
+			let queryresults = await queryHeros(this.userAddress);
 
-      const combinedHeroIds = heroIds.concat(auctionHeroIds)
+			const heroCount = queryresults.heroes.length;
 
-      const heroCount = combinedHeroIds.length
+			let processedHeroes = 0
+			
+			for(let heroData of queryresults.heroes){
+				let hero = {...heroData};
+				// console.log(JSON.stringify(hero));
+				//set expansion
+				hero.expansion = networkMap[hero.network];
+				// map values to user friendly strings
+				hero.rarityString = rarity[hero.rarity];
+				hero.classString = mainClass[hero.mainClass];
+				hero.professionString = professionsMap[hero.profession];
+				hero.statBoost1String = choices.statBoost1[hero.statBoost1];
+				hero.statBoost2String = choices.statBoost2[hero.statBoost2];
 
-      let processedHeroes = 0
-      this.heroTotal.sd = 0
+				//defaults for floor data
+				hero.floorPrice = 0;
+				hero.confidence = 'None';
+				//if for sale show that as value rather than floor
+				if(hero.salePrice) hero.floorPrice = hero.salePrice;
+       
+				//add to set for aggregated query
+				hero.heroKey = findHeroKey(hero);
+				heroKeySet.push(hero.heroKey);
 
-      for (let heroId of combinedHeroIds) {
-
-        const rawHero = await contracts.cv.hero.getHero(heroId)
-
-        const [statGenes, ] = getStatGenes(rawHero.info.statGenes)
-        const floorData = this.floorPrice(rawHero, statGenes.profession)
-
-        this.heroTotal.sd += floorData.price
-
-        let hero = {...rawHero}
-        hero.statBoost1 = statGenes.statBoost1
-        hero.statBoost2 = statGenes.statBoost2
-        hero.floorPrice = floorData.price
-        hero.floorConfidence = floorData.confidence
-
-        hero.rarityString = rarity[hero.info.rarity]
-
-        console.log(`hero.info.class 10: ${hero.info.class} 16: ${parseInt(hero.info.class, 16)} => ${mainClass[hero.info.class]}`)
-        hero.classString = mainClass[hero.info.class]
-        hero.professionString = statGenes.profession.charAt(0).toUpperCase() + statGenes.profession.substring(1)
-
-        this.heroes.sd.push(hero)
+				// console.log(JSON.stringify(hero));
+				this.heroes[hero.expansion].push(hero)
 
         processedHeroes++
-        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'sd')
+ //do this better later
+        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'sd');
+        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'cv');
+        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'sd2');
       }
-
-      this.setHeroTotal(this.heroTotal.sd, 'sd')
-      this.setHeroProgress(100, 'sd')
+			
+		this.fetchFloors(heroKeySet);
     },
 
-    async fetchFloor() {
-      const response = await axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/heroFloor")
-          .catch(err => console.error(err))
-
-      if (response.status !== 200)
-          return console.error(response.statusText)
-
-      this.floor.sd = response.data
-
-      await this.fetchHeroes()
-
-    },
-    floorPrice(hero, profession) {
-      console.log(`Not getting the floor price of ${hero} profession ${profession}`)
-
-      return {
-        confidence: "None",
-        price: 0
-      }
-    },
+	async fetchFloors(keys){
+		const response = await axios.post("http://localhost:8081/herofloorBulk" 
+														, {"keys": keys} ,
+														{	headers: {
+																"Content-Type": "application/json",
+																'Access-Control-Allow-Origin': '*',
+															},
+														}
+													).catch(err => console.error(err))
+					console.log(response);								
+			for(let expansion of ['sd', 'cv', 'sd2']){
+				this.heroes[expansion].forEach(hero => {
+					hero.floorPrice = response.data[hero.heroKey].floorPrice;
+					hero.floorConfidence = response.data[hero.heroKey].confidence;
+					this.heroTotal[expansion] += hero.floorPrice;
+				});
+				this.setHeroTotal(this.heroTotal[expansion], [expansion])
+				this.setHeroProgress(100, [expansion])
+			}
+	},
   },
   computed: {
     priceStamp() {
@@ -144,7 +150,8 @@ export default {
     }
   },
   mounted() {
-    this.fetchFloor()
+   //  this.fetchFloor()
+    this.fetchHeroes();
   }
 }
 </script>

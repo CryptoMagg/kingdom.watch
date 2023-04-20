@@ -1,5 +1,7 @@
 import {hexToNumber} from "@harmony-js/utils";
 import {valuateAllProfessions} from "@/utils/HeroValuation";
+import { GraphQLClient, gql } from 'graphql-request';
+
 
 export const stats = new Map()
 stats.set("AGI", "agility")
@@ -278,7 +280,7 @@ const statsGenesMap = {
     10: 'element',
     11: 'statsUnknown2'
 }
-const choices = {
+export const choices = {
     gender: {1: 'male', 3: 'female'},
     background: {
         0: 'desert',
@@ -598,6 +600,116 @@ const choices = {
         25: 25,
         28: 28
     }
+}
+
+export const professionsMap = {
+	0: 'Mining',
+	2: 'Gardening',
+	4: 'Fishing',
+	6: 'Foraging'
+}
+
+
+const graphqlapiUrl = 'https://defi-kingdoms-community-api-gateway-co06z8vi.uc.gateway.dev/graphql';
+
+const heroQuery =  
+									gql`
+										query getHeroes($ownerAddress: String!){
+											heroes(
+											where: {
+												owner: $ownerAddress
+											}) {
+												id
+												firstName
+												lastName
+												mainClass
+												rarity
+												level
+												generation
+												network
+												summonsRemaining
+												maxSummons
+												summons
+												profession
+												salePrice
+												statBoost1
+												statBoost2
+												nextSummonTime
+												staminaFullAt
+												xp
+											}
+										}`;
+
+export async function queryHeros(address){
+	const client = new GraphQLClient(graphqlapiUrl);
+	return await client.request(heroQuery, {ownerAddress: address});
+}
+
+export function mainClassType(classId){
+	if(classId < 16){
+		return "basic";
+	}
+	else if(classId < 24){
+		return "advanced";
+	}
+	else if(classId < 28){
+		return "elite";
+	}
+	else if(classId === 28){
+		return "exalted";
+	}
+}
+
+export function findSummonsbucket(summons, classtype){
+	if(classtype==="basic"){
+		switch(summons){
+			case 0:
+				return "0";
+			case 1:
+			case 2:
+				return "1-2";
+			case 3:
+			case 4:
+			case 5:
+				return "3-5";
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				return "6-9";
+			case 10:
+				return "10";
+		}
+	}
+	else if(classtype==="advanced"){
+		switch(summons){
+			case 0:
+				return "0";
+			case 1:
+				return "1";
+			case 2:
+			case 3:
+			case 4:
+				return "2-4";
+			case 5:
+				return "5";
+		}
+	}
+	else if(classtype==="elite" || classtype==="exalted"){
+		return summons.toString();
+	}
+}
+
+export function findHeroKey(hero){
+	if(hero.generation == 0){
+		//gen0s assessed differently
+		return "gen0:" + hero.mainClass + ':' + hero.rarity;
+	}
+	else{
+		// key for api = mainClass:profession:rarity:summons
+		let summonkey = findSummonsbucket(hero.summonsRemaining, mainClassType( hero.mainClass));
+		return hero.mainClass + ':' + hero.profession + ':' + hero.rarity + ":" + summonkey;
+	}
 }
 
 function kai2dec(kai) {

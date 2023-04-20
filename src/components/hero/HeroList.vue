@@ -61,15 +61,15 @@
         <!--        <td class="text-start">{{ hero.info.firstName }} {{ hero.info.lastName }} </td>-->
         <td class="text-end">{{ hero.generation }}</td>
         <td class="text-end">{{ hero.level }}</td>
-        <td class="text-start" :class="hero.rarity">{{ hero.rarity }}</td>
-        <td class="text-start">{{ hero.mainClass }}</td>
-        <td class="text-start">{{ cap(hero.profession) }}</td>
+        <td class="text-start" :class="hero.rarityString">{{ hero.rarityString }}</td>
+        <td class="text-start">{{ hero.classString }}</td>
+        <td class="text-start">{{ hero.professionString }}</td>
         <td class="text-start">{{ cap(hero.bestProfession) }}</td>
         <td class="text-end">{{ hero.bestProfessionScore }}</td>
         <td class="text-start">{{ cap(hero.bestRelativeProfession) }}</td>
         <td class="text-end">{{ hero.bestRelativeScore.toFixed(1) }} %</td>
         <td class="text-end">
-          <span v-if="hero.generation > 0">{{ hero.summonsLeft }}</span>
+          <span v-if="hero.generation > 0">{{ hero.summonsRemaining }}</span>
           <span v-else>&nbsp;&infin;</span>
         </td>
         <td class="text-end">
@@ -81,7 +81,7 @@
           <span v-else>Full</span>
         </td>
         <td class="text-end">{{ hero.xp }}</td>
-        <td class="text-end">{{ formatNumber(hero.floor.price) }}</td>
+        <td class="text-end">{{ formatNumber(hero.floorPrice) }}</td>
       </tr>
       </tbody>
       <tfoot>
@@ -136,7 +136,7 @@ export default {
       else
         return heroData.id
     },
-    sortedHeroes() {
+		sortedHeroes() {
       const sortOrder = this.heroSort
       const heroes = [...this.heroes()]
 
@@ -156,19 +156,19 @@ export default {
         heroes.sort((a, b) => b.level - a.level)
 
       if (sortOrder.rarity > 0)
-        heroes.sort((a, b) => a.rarityNum - b.rarityNum)
+        heroes.sort((a, b) => a.rarity - b.rarity)
       else if (sortOrder.rarity < 0)
-        heroes.sort((a, b) => b.rarityNum - a.rarityNum)
+        heroes.sort((a, b) => b.rarity - a.rarity)
 
       if (sortOrder.class> 0)
-        heroes.sort((a, b) => a.mainClass.localeCompare(b.mainClass))
+        heroes.sort((a, b) => a.classString.localeCompare(b.classString))
       else if (sortOrder.class < 0)
-        heroes.sort((a, b) => b.mainClass.localeCompare(a.mainClass))
+        heroes.sort((a, b) => b.classString.localeCompare(a.classString))
 
       if (sortOrder.greenProf> 0)
-        heroes.sort((a, b) => a.profession.localeCompare(b.profession))
+        heroes.sort((a, b) => a.professionString.localeCompare(b.professionString))
       else if (sortOrder.greenProf < 0)
-        heroes.sort((a, b) => b.profession.localeCompare(a.profession))
+        heroes.sort((a, b) => b.professionString.localeCompare(a.professionString))
 
       if (sortOrder.bestProf> 0)
         heroes.sort((a, b) => a.bestProfession.localeCompare(b.bestProfession))
@@ -212,9 +212,9 @@ export default {
         heroes.sort((a, b) => b.xp - a.xp)
 
       if (sortOrder.floor > 0)
-        heroes.sort((a, b) => a.floor.price - b.floor.price)
+        heroes.sort((a, b) => a.floorPrice - b.floorPrice)
       else if (sortOrder.floor < 0)
-        heroes.sort((a, b) => b.floor.price - a.floor.price)
+        heroes.sort((a, b) => b.floorPrice - a.floorPrice)
 
       return heroes
     },
@@ -226,7 +226,7 @@ export default {
 
       let total = 0
       for(const hero of heroes)
-        total += hero.floor.price
+        total += hero.floorPrice
 
       return total
     }

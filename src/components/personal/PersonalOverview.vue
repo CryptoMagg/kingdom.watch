@@ -75,7 +75,7 @@
             </span>
           </td>
           <th class="text-end">
-            {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv') * tokenPrice('cv')):0, '$') }}
+            {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('cv'))+(heroTotal('cv') * tokenPrice('cv')+(heroTotal('sd2') * tokenPrice('cv'))):0, '$') }}
           </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
@@ -84,7 +84,7 @@
             <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) : 0) }}</span>
           </td>
           <td class="text-end">
-            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
+            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) * tokenPrice('cv') : 0, '$') }}</span>
           </td>
         </tr>
 
@@ -309,7 +309,7 @@
         <tr>
           <th class="text-start" colspan="2">Hero Floor</th>
           <th class="text-end">
-            {{ formatNumber((heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv')*tokenPrice('cv')), '$') }}
+            {{ formatNumber((heroTotal('sd')*tokenPrice('cv'))+(heroTotal('cv')*tokenPrice('cv'))+(heroTotal('sd2')*tokenPrice('cv')), '$') }}
           </th>
         </tr>
         </thead>
@@ -321,7 +321,7 @@
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end">{{ formatNumber(heroTotal(expansion)) }}</th>
-          <th class="text-end">{{ formatNumber(heroTotal(expansion) * tokenPrice(expansion), '$') }}</th>
+          <th class="text-end">{{ formatNumber(heroTotal(expansion) * tokenPrice('cv'), '$') }}</th>
         </tr>
         <tr>
           <td colspan="3">&nbsp;</td>
@@ -446,7 +446,7 @@ export default {
       if (this.includeLocked)
         grandTotal += this.totalLocked(expansion) * this.tokenPrice(expansion)
       if (this.includeHeroes)
-        grandTotal += this.heroTotal(expansion) * this.tokenPrice(expansion)
+        grandTotal += this.heroTotal(expansion) * this.tokenPrice('cv') // all heroes priced in crystal atm
       if(this.includeInventory)
         grandTotal += this.inventoryTotal(expansion) * this.tokenPrice('sd') // all demoninated in JEWEL atm - maybe change this
         grandTotal += this.totalPoolUsd(expansion)
