@@ -49,6 +49,7 @@
         <th class="text-start">Stat growth</th>
         <th class="text-end">Primary</th>
         <th class="text-end">Secondary</th>
+        <th class="text-end">Total</th>
       </tr>
       </thead>
       <tbody>
@@ -56,41 +57,49 @@
         <td class="text-start">{{ cap("agility")}}</td>
         <td class="text-end">{{ growth["p"]["agility"] }} %</td>
         <td class="text-end">{{ growth["s"]["agility"] }} %</td>
+        <td class="text-end">{{ growth["t"]["agility"] }} %</td>
       </tr>
       <tr>
         <td class="text-start">{{ cap("dexterity")}}</td>
         <td class="text-end">{{ growth["p"]["dexterity"] }} %</td>
         <td class="text-end">{{ growth["s"]["dexterity"] }} %</td>
+        <td class="text-end">{{ growth["t"]["dexterity"] }} %</td>
       </tr>
       <tr>
         <td class="text-start">{{ cap("endurance")}}</td>
         <td class="text-end">{{ growth["p"]["endurance"] }} %</td>
         <td class="text-end">{{ growth["s"]["endurance"] }} %</td>
+        <td class="text-end">{{ growth["t"]["endurance"] }} %</td>
       </tr>
       <tr>
         <td class="text-start">{{ cap("intelligence")}}</td>
         <td class="text-end">{{ growth["p"]["intelligence"] }} %</td>
         <td class="text-end">{{ growth["s"]["intelligence"] }} %</td>
+        <td class="text-end">{{ growth["t"]["intelligence"] }} %</td>
       </tr>
       <tr>
         <td class="text-start">{{ cap("luck")}}</td>
         <td class="text-end">{{ growth["p"]["luck"] }} %</td>
         <td class="text-end">{{ growth["s"]["luck"] }} %</td>
+        <td class="text-end">{{ growth["t"]["luck"] }} %</td>
       </tr>
       <tr>
         <td class="text-start">{{ cap("strength")}}</td>
         <td class="text-end">{{ growth["p"]["strength"] }} %</td>
         <td class="text-end">{{ growth["s"]["strength"] }} %</td>
+        <td class="text-end">{{ growth["t"]["strength"] }} %</td>
       </tr>
       <tr>
         <td class="text-start">{{ cap("vitality")}}</td>
         <td class="text-end">{{ growth["p"]["vitality"] }} %</td>
         <td class="text-end">{{ growth["s"]["vitality"] }} %</td>
+        <td class="text-end">{{ growth["t"]["vitality"] }} %</td>
       </tr>
       <tr>
         <td class="text-start">{{ cap("wisdom")}}</td>
         <td class="text-end">{{ growth["p"]["wisdom"] }} %</td>
         <td class="text-end">{{ growth["s"]["wisdom"] }} %</td>
+        <td class="text-end">{{ growth["t"]["wisdom"] }} %</td>
       </tr>
 
       </tbody>
@@ -118,20 +127,26 @@ export default {
       if(!heroData.id)
         return {
           p: {},
-          s: {}
+          s: {},
+					t: {}
         }
 
       const p = {}
       for (const [stat,growth] of Object.entries(heroData.pStatGrowth)) {
-        p[stat] = (growth / 100).toFixed(0)
+        p[stat] = (growth / 100).toFixed(2);
       }
 
       const s = {}
       for (const [stat,growth] of Object.entries(heroData.sStatGrowth)) {
-        s[stat] = (growth / 100).toFixed(0)
+        s[stat] = (growth / 100).toFixed(2);
       }
 
-      return {p,s}
+			const t = {}
+			for(const stat in p){
+				t[stat] = ((heroData.pStatGrowth[stat] + heroData.sStatGrowth[stat])/ 100).toFixed(2);
+			}
+
+      return {p,s,t}
 
     }
   },

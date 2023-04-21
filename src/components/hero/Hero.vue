@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import {extractHeroData, getStatGenes} from "@/utils/Heroes";
+import {extractHeroData, getStatGenes, queryHeros, professionsMap, rarity, mainClass, findHeroKey} from "@/utils/Heroes";
 import HeroStats from "@/components/hero/HeroStats";
 import HeroProfession from "@/components/hero/HeroProfession";
 import HeroTitle from "@/components/hero/HeroTitle";
@@ -73,7 +73,7 @@ const profileContract = hmy.contracts.createContract(profileContractJson.abi, pr
 // const auctionsContractJson = require("../../data/auctions.json")
 // const auctionsContractAddress = "0x13a65B9F8039E2c032Bc022171Dc05B30c3f2892"
 // const auctionsContract = hmy.contracts.createContract(auctionsContractJson.abi, auctionsContractAddress)
-const auctionsContract = contracts.cv.auction
+// const auctionsContract = contracts.cv.auction
 
 export default {
   name: "Hero",
@@ -112,21 +112,52 @@ export default {
 
     },
     async loadHeroes() {
-      this.heroes = []
+      this.heroes = [];
+			const heroKeySet = [];
 
-      const heroIds = await heroesContract.getUserHeroes(this.userAddress)
+			let queryresults = await queryHeros(this.userAddress);
+			
+			this.heroTotal = 0;
 
-      const auctionHeroIds = await auctionsContract.getUserAuctions(this.userAddress)
+			for(let heroData of queryresults.heroes){
+				let hero = {...heroData};
 
-      const combinedHeroIds = heroIds.concat(auctionHeroIds)
+				hero.rarityString = rarity[hero.rarity];
+				hero.classString = mainClass[hero.mainClass];
+				hero.professionString = professionsMap[hero.profession];
+				
+				hero["minBeforeSummon"] = ((hero.nextSummonTime.valueOf() * 1000  - Date.now()) / 60000).toFixed(0);
+				hero["staminaFullIn"] = ((hero.staminaFullAt * 1000 - Date.now()) / 60000).toFixed(0)
+				hero["name"] = hero.firstName + " " + hero.lastName;
+				hero["bestProfession"] = "-";
+				hero["bestProfessionScore"] = 0;
+				hero["bestRelativeScore"] = 0;
+				hero["bestRelativeProfession"] = "-";
 
-      this.heroTotal = 0
+				hero["floorPrice"] = 0;
+				hero.heroKey = findHeroKey(hero);
+				heroKeySet.push(hero.heroKey);
+				
+        this.heroes.push(hero);
+			}
+			this.fetchFloors(heroKeySet);
 
-      for (let heroId of combinedHeroIds) {
-        const heroData = await this.fetchHeroData(heroId)
-        this.heroes.push(heroData)
-      }
     },
+		async fetchFloors(keys){
+		const response = await axios.post("http://34.141.228.218:8081/herofloorBulk" 
+														, {"keys": keys} ,
+														{	headers: {
+																"Content-Type": "application/json",
+																'Access-Control-Allow-Origin': '*',
+															},
+														}
+													).catch(err => console.error(err));
+				this.heroes.forEach(hero => {
+					hero.floorPrice = response.data[hero.heroKey].floorPrice;
+					hero.floorConfidence = response.data[hero.heroKey].confidence;
+					this.heroTotal += hero.floorPrice;
+				});
+	},
     async fetchHeroData(heroId) {
       const hero = await heroesContract.getHero(heroId)
       console.info(hero)
@@ -147,19 +178,19 @@ export default {
       console.info(heroData)
       this.heroData = heroData
     },
-    async fetchFloor(loadHeroes) {
-      const response = await axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/heroFloor")
-          .catch(err => console.error(err))
+    // async fetchFloor(loadHeroes) {
+    //   const response = await axios.get("https://us-east1-dfkwatch-328521.cloudfunctions.net/heroFloor")
+    //       .catch(err => console.error(err))
 
-      if (response.status !== 200)
-        return console.error(response.statusText)
+    //   if (response.status !== 200)
+    //     return console.error(response.statusText)
 
-      this.floor = response.data
+    //   this.floor = response.data
 
-      if(loadHeroes)
-        await this.loadHeroes()
+    //   if(loadHeroes)
+    //     await this.loadHeroes()
 
-    },
+    // },
     floorPrice(hero, profession) {
       console.log(`Not getting the floor price of ${hero} profession ${profession}`)
       return {
@@ -201,7 +232,7 @@ export default {
   },
   mounted() {
 
-    this.loadLeaderboard()
+   //  this.loadLeaderboard()
 
     if (this.userAddress.length > 0) {
       profileContract.methods.getProfileByAddress(this.userAddress)
@@ -210,9 +241,11 @@ export default {
             this.profileName = profile._name
           })
 
-      this.fetchFloor(true)
+      // this.fetchFloor(true)
+			this.loadHeroes()
+
     } else {
-      this.fetchFloor(false)
+      // this.fetchFloor(false)
     }
 
     if (this.initialHeroId)

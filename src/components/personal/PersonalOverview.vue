@@ -68,23 +68,26 @@
         <tr><td colspan="3"></td></tr>
 
         <tr>
-          <td class="text-start" colspan="2">
+          <td class="text-start" >
             <span class="form-check form-switch">
               <input v-model="includeHeroes" class="form-check-input" type="checkbox" role="switch" id="flexSwitchHeroes">
               <label class="form-check-label" for="flexSwitchHeroes">Heroes</label>
             </span>
           </td>
+					<th class="text-end">
+            <span>{{  includeHeroes ? (heroNumberof('sd')+heroNumberof('cv')+heroNumberof('sd2')) : "" }}</span>
+          </th>
           <th class="text-end">
-            {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv') * tokenPrice('cv')):0, '$') }}
+            {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('cv'))+(heroTotal('cv') * tokenPrice('cv')+(heroTotal('sd2') * tokenPrice('cv'))):0, '$') }}
           </th>
         </tr>
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">
-            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) : 0) }}</span>
+            <span>{{ includeHeroes ? heroNumberof(expansion) : 0 }}</span>
           </td>
           <td class="text-end">
-            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) * tokenPrice(expansion) : 0, '$') }}</span>
+            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) * tokenPrice('cv') : 0, '$') }}</span>
           </td>
         </tr>
 
@@ -309,7 +312,7 @@
         <tr>
           <th class="text-start" colspan="2">Hero Floor</th>
           <th class="text-end">
-            {{ formatNumber((heroTotal('sd')*tokenPrice('sd'))+(heroTotal('cv')*tokenPrice('cv')), '$') }}
+            {{ formatNumber((heroTotal('sd')*tokenPrice('cv'))+(heroTotal('cv')*tokenPrice('cv'))+(heroTotal('sd2')*tokenPrice('cv')), '$') }}
           </th>
         </tr>
         </thead>
@@ -321,7 +324,7 @@
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <th class="text-start ps-5">{{ symbol }}</th>
           <th class="text-end">{{ formatNumber(heroTotal(expansion)) }}</th>
-          <th class="text-end">{{ formatNumber(heroTotal(expansion) * tokenPrice(expansion), '$') }}</th>
+          <th class="text-end">{{ formatNumber(heroTotal(expansion) * tokenPrice('cv'), '$') }}</th>
         </tr>
         <tr>
           <td colspan="3">&nbsp;</td>
@@ -410,7 +413,7 @@ export default {
       }
     }
   },
-  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal", "jewelerBalance"],
+  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal", "jewelerBalance","heroNumberof"],
   methods: {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
@@ -446,7 +449,7 @@ export default {
       if (this.includeLocked)
         grandTotal += this.totalLocked(expansion) * this.tokenPrice(expansion)
       if (this.includeHeroes)
-        grandTotal += this.heroTotal(expansion) * this.tokenPrice(expansion)
+        grandTotal += this.heroTotal(expansion) * this.tokenPrice('cv') // all heroes priced in crystal atm
       if(this.includeInventory)
         grandTotal += this.inventoryTotal(expansion) * this.tokenPrice('sd') // all demoninated in JEWEL atm - maybe change this
         grandTotal += this.totalPoolUsd(expansion)
