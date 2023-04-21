@@ -19,7 +19,7 @@
 				<tr>
 					<th>{{ symbol }} </th>
 					<td class="text-start" colspan="7">{{ heroes[expansion].length }} Heroes total. {{ priceStamp }}</td>
-					<th class="text-end">{{ formatNumber(heroTotal[expansion])}}</th>
+					<th class="text-end"><img src="@/assets/dfk/crystal-logo.b0ad245d.png" style="width:22px !important"/><span>{{ formatNumber(heroTotal[expansion])}}</span></th>
 					<th/>
 				</tr>
         <tr v-for="hero of heroes[expansion]" :key="hero">
@@ -57,12 +57,13 @@ const networkMap = {
 export default {
   name: "PersonalHeroes",
   props: ["userAddress"],
-  inject: ["setHeroTotal", "setHeroProgress"],
+  inject: ["setHeroTotal", "setHeroProgress","setHeroNumberof"],
   data() {
     return {
       heroes: {...expansionArraySet},
       floor: {...expansionObjSet},
       heroTotal: {...expansionSet},
+		heroNumberof:{...expansionSet}
     }
   },
   methods: {
@@ -109,11 +110,13 @@ export default {
 				this.heroes[hero.expansion].push(hero)
 
         processedHeroes++
- //do this better later
-        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'sd');
-        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'cv');
-        this.setHeroProgress(processedHeroes/heroCount * 100.0, 'sd2');
+				
       }
+			for(let expansion of ["sd","cv","sd2"]){
+				
+				this.setHeroProgress(processedHeroes/heroCount * 100.0, expansion);
+				this.setHeroNumberof(this.heroes[expansion].length, [expansion])
+			}
 			
 		this.fetchFloors(heroKeySet);
     },

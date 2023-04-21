@@ -68,12 +68,15 @@
         <tr><td colspan="3"></td></tr>
 
         <tr>
-          <td class="text-start" colspan="2">
+          <td class="text-start" >
             <span class="form-check form-switch">
               <input v-model="includeHeroes" class="form-check-input" type="checkbox" role="switch" id="flexSwitchHeroes">
               <label class="form-check-label" for="flexSwitchHeroes">Heroes</label>
             </span>
           </td>
+					<th class="text-end">
+            <span>{{  includeHeroes ? (heroNumberof('sd')+heroNumberof('cv')+heroNumberof('sd2')) : "" }}</span>
+          </th>
           <th class="text-end">
             {{ formatNumber(includeHeroes?(heroTotal('sd')*tokenPrice('cv'))+(heroTotal('cv') * tokenPrice('cv')+(heroTotal('sd2') * tokenPrice('cv'))):0, '$') }}
           </th>
@@ -81,7 +84,7 @@
         <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
           <td class="text-start ps-5">{{ symbol }}</td>
           <td class="text-end">
-            <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) : 0) }}</span>
+            <span>{{ includeHeroes ? heroNumberof(expansion) : 0 }}</span>
           </td>
           <td class="text-end">
             <span>{{ formatNumber(includeHeroes ? heroTotal(expansion) * tokenPrice('cv') : 0, '$') }}</span>
@@ -410,7 +413,7 @@ export default {
       }
     }
   },
-  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal", "jewelerBalance"],
+  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal", "jewelerBalance","heroNumberof"],
   methods: {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
