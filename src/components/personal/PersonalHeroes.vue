@@ -119,7 +119,7 @@ export default {
     },
 
 	async fetchFloors(keys){
-		const response = await axios.post("http://localhost:8081/herofloorBulk" 
+		const response = await axios.post("http://34.141.228.218:8081/herofloorBulk" 
 														, {"keys": keys} ,
 														{	headers: {
 																"Content-Type": "application/json",
@@ -127,7 +127,7 @@ export default {
 															},
 														}
 													).catch(err => console.error(err))
-					console.log(response);								
+													
 			for(let expansion of ['sd', 'cv', 'sd2']){
 				this.heroes[expansion].forEach(hero => {
 					hero.floorPrice = response.data[hero.heroKey].floorPrice;
