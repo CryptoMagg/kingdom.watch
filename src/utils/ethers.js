@@ -3,7 +3,7 @@ const { JsonRpcProvider } = providers
 export const { formatUnits, formatEther } = utils
 
 export const RPCs = {
-    sd: new JsonRpcProvider('https://harmony-0-rpc.gateway.pokt.network'),
+    sd: new JsonRpcProvider('https://api.harmony.one'),
     cv: new JsonRpcProvider('https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc'),
     sd2: new JsonRpcProvider('https://klaytn.rpc.defikingdoms.com/')
 }
