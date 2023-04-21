@@ -5,6 +5,9 @@
     <table class="table table-hover w-100">
       <thead>
       <tr>
+				<th class="text-start">Network
+          <SortIcon field="network"/>
+        </th>
         <th class="text-start">ID#
           <SortIcon field="id"/>
         </th>
@@ -56,7 +59,8 @@
       <tbody>
       <tr v-for="hero of sortedHeroes" :key="hero" @click="this.loadHero(hero.id)"
           :class="{'table-secondary': hero.id === selectedHeroId}">
-        <td class="text-start">{{ hero.id }}</td>
+				<td class="text-end">{{ hero.network }}</td>
+				<td class="text-start">{{ hero.id }}</td>
         <!--        <td />-->
         <!--        <td class="text-start">{{ hero.info.firstName }} {{ hero.info.lastName }} </td>-->
         <td class="text-end">{{ hero.generation }}</td>
@@ -101,6 +105,7 @@ import {capitalize} from "lodash";
 import SortIcon from "@/components/generic/SortIcon";
 
 const defaultSort = {
+	network: 0,
   id: 0,
   gen: 0,
   lvl: 0,
@@ -140,7 +145,18 @@ export default {
       const sortOrder = this.heroSort
       const heroes = [...this.heroes()]
 
-      if (sortOrder.id > 0)
+      if (sortOrder.network > 0)
+        heroes.sort((a, b) => {
+					if(a.network < b.network) return -1;
+					if(a.network > b.network) return 1;
+				})
+      else if (sortOrder.network < 0)
+        heroes.sort((a, b) => {
+					if(a.network > b.network) return -1;
+					if(a.network < b.network) return 1;
+				})
+
+			if (sortOrder.id > 0)
         heroes.sort((a, b) => a.id - b.id)
       else if (sortOrder.id < 0)
         heroes.sort((a, b) => b.id - a.id)

@@ -11,7 +11,7 @@
             <th class="text-start">Item<SortIcon field="name"/></th>
             <th class="text-end">Balance<SortIcon field="balance"/></th>
             <th class="text-end">Jewel Price<SortIcon field="price"/></th>
-            <th class="text-end">Jewels<SortIcon field="jewels"/></th>
+            <th class="text-end">Jewels<SortIcon field="totalJewel"/></th>
             <th class="text-end">Jewel USD</th>
             <th class="text-end">Gold Price<SortIcon field="priceGold"/></th>
             <th class="text-end">Gold<SortIcon field="gold"/></th>
@@ -59,13 +59,13 @@
     <thead>
       <tr>
         <th/>
-        <th class="text-start">Item<SortIcon field="name"/></th>
-        <th class="text-end">Balance<SortIcon field="balance"/></th>
-        <th class="text-end">Jewel Price<SortIcon field="price"/></th>
-        <th class="text-end">Jewels<SortIcon field="jewels"/></th>
+        <th class="text-start">Item</th>
+        <th class="text-end">Balance</th>
+        <th class="text-end">Jewel Price</th>
+        <th class="text-end">Jewels</th>
         <th class="text-end">Jewel USD</th>
-        <th class="text-end">Gold Price<SortIcon field="priceGold"/></th>
-        <th class="text-end">Gold<SortIcon field="gold"/></th>
+        <th class="text-end">Gold Price</th>
+        <th class="text-end">Gold</th>
         <th class="text-end">Gold USD</th>
       </tr>
     </thead>
@@ -95,6 +95,7 @@ const defaultSort = {
   name: 0,
   balance: 0,
   price: 0,
+  totalJewel: 0,
   jewels: 0,
   priceGold: 0,
   gold: 0,
@@ -204,14 +205,14 @@ export default {
         items.sort((a, b) => b.name.localeCompare(a.name))
 
       else if (sortOrder.price > 0)
-        items.sort((a, b) => a.price - b.price)
+        items.sort((a, b) => a.jewelPrice - b.jewelPrice)
       else if (sortOrder.price < 0)
-        items.sort((a, b) => b.price - a.price)
+        items.sort((a, b) => b.jewelPrice - a.jewelPrice)
 
-      else if (sortOrder.jewels > 0)
-        items.sort((a, b) => a.jewels - b.jewels)
-      else if (sortOrder.jewels < 0)
-        items.sort((a, b) => b.jewels - a.jewels)
+      else if (sortOrder.totalJewel > 0)
+        items.sort((a, b) => a.totalJewel - b.totalJewel)
+      else if (sortOrder.totalJewel < 0)
+        items.sort((a, b) => b.totalJewel - a.totalJewel)
 
       else if (sortOrder.priceGold > 0)
         items.sort((a, b) => a.goldPrice - b.goldPrice)
@@ -219,9 +220,9 @@ export default {
         items.sort((a, b) => b.goldPrice - a.goldPrice)
 
       else if (sortOrder.gold > 0)
-        items.sort((a, b) => a.gold - b.gold)
+        items.sort((a, b) => a.totalGold - b.totalGold)
       else if (sortOrder.gold < 0)
-        items.sort((a, b) => b.gold - a.gold)
+        items.sort((a, b) => b.totalGold - a.totalGold)
       else
         items.sort((a, b) => a.name.localeCompare(b.name))
       return items;
