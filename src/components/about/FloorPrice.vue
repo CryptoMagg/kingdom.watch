@@ -45,11 +45,11 @@
           <tr>
             <td class="text-start">Summons left</td>
             <td class="text-start">
-					Basic: S0, S1-2, S3-5, S6-9, S10<br/>
-					Advanced: S0, S1, S2-4, S5<br/>
-					Elite: S0, S1, S3<br/>
-					Exalted: S0, S1<br/>
-				</td>
+              Basic: S0, S1-2, S3-5, S6-9, S10<br/>
+              Advanced: S0, S1, S2-4, S5<br/>
+              Elite: S0, S1, S3<br/>
+              Exalted: S0, S1<br/>
+            </td>
             <td class="text-start">
               The buckets vary based on the type of hero class.
             </td>
@@ -76,25 +76,25 @@
           </tr>
           </thead>
           <tbody>
-					<tr>
-						<td class="text-start">v0.4</td>
-						<td class="text-start">
-							<ul>
-								<li>
-									Hooked up to new API with slightly different logic.
-								</li>
-								<li>
-									Different summons buckets for class types (eg basic, advanded etc)
-								</li>
-								<li>
-									Only gen0 are assessed differently now.
-								</li>
-								<li>
-									Only Crystalvale market used currently. All prices in CRYSTAL.
-								</li>
-							</ul>
-						</td>
-					</tr>
+          <tr>
+            <td class="text-start">v0.4</td>
+            <td class="text-start">
+              <ul>
+                <li>
+                  Hooked up to new API with slightly different logic.
+                </li>
+                <li>
+                  Different summons buckets for class types (eg basic, advanded etc)
+                </li>
+                <li>
+                  Only gen0 are assessed differently now.
+                </li>
+                <li>
+                  Only Crystalvale market used currently. All prices in CRYSTAL.
+                </li>
+              </ul>
+            </td>
+          </tr>
           <tr>
             <td class="text-start">v0.3</td>
             <td class="text-start">

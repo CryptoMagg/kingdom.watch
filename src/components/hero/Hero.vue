@@ -113,51 +113,51 @@ export default {
     },
     async loadHeroes() {
       this.heroes = [];
-			const heroKeySet = [];
+      const heroKeySet = [];
 
-			let queryresults = await queryHeros(this.userAddress);
-			
-			this.heroTotal = 0;
+      let queryresults = await queryHeros(this.userAddress);
+      
+      this.heroTotal = 0;
 
-			for(let heroData of queryresults.heroes){
-				let hero = {...heroData};
+      for(let heroData of queryresults.heroes){
+        let hero = {...heroData};
 
-				hero.rarityString = rarity[hero.rarity];
-				hero.classString = mainClass[hero.mainClass];
-				hero.professionString = professionsMap[hero.profession];
-				
-				hero["minBeforeSummon"] = ((hero.nextSummonTime.valueOf() * 1000  - Date.now()) / 60000).toFixed(0);
-				hero["staminaFullIn"] = ((hero.staminaFullAt * 1000 - Date.now()) / 60000).toFixed(0)
-				hero["name"] = hero.firstName + " " + hero.lastName;
-				hero["bestProfession"] = "-";
-				hero["bestProfessionScore"] = 0;
-				hero["bestRelativeScore"] = 0;
-				hero["bestRelativeProfession"] = "-";
+        hero.rarityString = rarity[hero.rarity];
+        hero.classString = mainClass[hero.mainClass];
+        hero.professionString = professionsMap[hero.profession];
+        
+        hero["minBeforeSummon"] = ((hero.nextSummonTime.valueOf() * 1000  - Date.now()) / 60000).toFixed(0);
+        hero["staminaFullIn"] = ((hero.staminaFullAt * 1000 - Date.now()) / 60000).toFixed(0)
+        hero["name"] = hero.firstName + " " + hero.lastName;
+        hero["bestProfession"] = "-";
+        hero["bestProfessionScore"] = 0;
+        hero["bestRelativeScore"] = 0;
+        hero["bestRelativeProfession"] = "-";
 
-				hero["floorPrice"] = 0;
-				hero.heroKey = findHeroKey(hero);
-				heroKeySet.push(hero.heroKey);
-				
+        hero["floorPrice"] = 0;
+        hero.heroKey = findHeroKey(hero);
+        heroKeySet.push(hero.heroKey);
+        
         this.heroes.push(hero);
-			}
-			this.fetchFloors(heroKeySet);
+      }
+      this.fetchFloors(heroKeySet);
 
     },
-		async fetchFloors(keys){
-		const response = await axios.post("http://34.141.228.218:8081/herofloorBulk" 
-														, {"keys": keys} ,
-														{	headers: {
-																"Content-Type": "application/json",
-																'Access-Control-Allow-Origin': '*',
-															},
-														}
-													).catch(err => console.error(err));
-				this.heroes.forEach(hero => {
-					hero.floorPrice = response.data[hero.heroKey].floorPrice;
-					hero.floorConfidence = response.data[hero.heroKey].confidence;
-					this.heroTotal += hero.floorPrice;
-				});
-	},
+    async fetchFloors(keys){
+    const response = await axios.post("http://34.141.228.218:8081/herofloorBulk" 
+                            , {"keys": keys} ,
+                            {	headers: {
+                                "Content-Type": "application/json",
+                                'Access-Control-Allow-Origin': '*',
+                              },
+                            }
+                          ).catch(err => console.error(err));
+        this.heroes.forEach(hero => {
+          hero.floorPrice = response.data[hero.heroKey].floorPrice;
+          hero.floorConfidence = response.data[hero.heroKey].confidence;
+          this.heroTotal += hero.floorPrice;
+        });
+  },
     async fetchHeroData(heroId) {
       const hero = await heroesContract.getHero(heroId)
       console.info(hero)
@@ -242,7 +242,7 @@ export default {
           })
 
       // this.fetchFloor(true)
-			this.loadHeroes()
+      this.loadHeroes()
 
     } else {
       // this.fetchFloor(false)
