@@ -21,6 +21,9 @@
           As it is rather important to understand what lie behind the floor price presented, a confidence rating is also
           provided. The keys are disclosed in the table below.
         </p>
+        <p class="text-start">
+          <i>Note: Currently only the Crystalvale Tavern (DFK Chain) is used for valuation. All floor values are in CRYSTAL.</i>
+        </p>
         <table class="table table-striped">
           <thead>
           <tr>

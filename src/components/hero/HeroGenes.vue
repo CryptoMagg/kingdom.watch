@@ -128,7 +128,7 @@ export default {
         return {
           p: {},
           s: {},
-					t: {}
+          t: {}
         }
 
       const p = {}
@@ -141,10 +141,10 @@ export default {
         s[stat] = (growth / 100).toFixed(2);
       }
 
-			const t = {}
-			for(const stat in p){
-				t[stat] = ((heroData.pStatGrowth[stat] + heroData.sStatGrowth[stat])/ 100).toFixed(2);
-			}
+      const t = {}
+      for(const stat in p){
+        t[stat] = ((heroData.pStatGrowth[stat] + heroData.sStatGrowth[stat])/ 100).toFixed(2);
+      }
 
       return {p,s,t}
 
