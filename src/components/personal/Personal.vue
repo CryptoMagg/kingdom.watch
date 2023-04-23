@@ -189,9 +189,10 @@ export default {
       progressPct: { sd: 0, cv: 0, sd2: 0 },
       profileName: "",
       heroTotal: { sd: 0, cv: 0, sd2: 0 },
-      heroProgress: { sd: 0, cv: 100, sd2: 100 },
+      heroNumberof: { sd: 0, cv: 0, sd2: 0 },
+      heroProgress: { sd: 0, cv: 0, sd2: 0 },
       inventoryTotal: { sd: 0, cv: 0, sd2: 0 },
-			jewelPrice: 0
+      jewelPrice: 0
     }
   },
   methods: {
@@ -234,8 +235,8 @@ export default {
         }
       }
       this.pricesTimestamp = Date.now()
-			this.jewelPrice = this.prices["JEWEL"];    
-		},
+      this.jewelPrice = this.prices["JEWEL"];    
+    },
   },
   computed: {
     blockTimeMeasurementString() {
@@ -255,7 +256,7 @@ export default {
 
       blockNumber: (expansion) => this.blockNumber[expansion],
       bankBalance: (expansion) => this.bankBalance[expansion],
-			jewelerBalance : (expansion) => this.jewelerBalance[expansion],
+      jewelerBalance : (expansion) => this.jewelerBalance[expansion],
 
       setBankBalance: (balance, expansion) => {
         this.bankBalance[expansion] = balance
@@ -288,6 +289,8 @@ export default {
 
       setHeroTotal: (total, expansion) => this.heroTotal[expansion] = total,
       heroTotal: (expansion) => this.heroTotal[expansion],
+      setHeroNumberof: (total, expansion) => this.heroNumberof[expansion] = total,
+      heroNumberof: (expansion) => this.heroNumberof[expansion],
       setHeroProgress: (pct, expansion) => {
         this.heroProgress[expansion] = pct
         this.calcProgressPct()

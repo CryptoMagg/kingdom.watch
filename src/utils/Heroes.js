@@ -1,5 +1,7 @@
 import {hexToNumber} from "@harmony-js/utils";
 import {valuateAllProfessions} from "@/utils/HeroValuation";
+import { GraphQLClient, gql } from 'graphql-request';
+
 
 export const stats = new Map()
 stats.set("AGI", "agility")
@@ -278,7 +280,7 @@ const statsGenesMap = {
     10: 'element',
     11: 'statsUnknown2'
 }
-const choices = {
+export const choices = {
     gender: {1: 'male', 3: 'female'},
     background: {
         0: 'desert',
@@ -600,6 +602,116 @@ const choices = {
     }
 }
 
+export const professionsMap = {
+  0: 'Mining',
+  2: 'Gardening',
+  4: 'Fishing',
+  6: 'Foraging'
+}
+
+
+const graphqlapiUrl = 'https://defi-kingdoms-community-api-gateway-co06z8vi.uc.gateway.dev/graphql';
+
+const heroQuery =  
+      gql`
+        query getHeroes($ownerAddress: String!){
+          heroes(
+          where: {
+            owner: $ownerAddress
+          }) {
+            id
+            firstName
+            lastName
+            mainClass
+            rarity
+            level
+            generation
+            network
+            summonsRemaining
+            maxSummons
+            summons
+            profession
+            salePrice
+            statBoost1
+            statBoost2
+            nextSummonTime
+            staminaFullAt
+            xp
+          }
+        }`;
+
+export async function queryHeros(address){
+  const client = new GraphQLClient(graphqlapiUrl);
+  return await client.request(heroQuery, {ownerAddress: address});
+}
+
+export function mainClassType(classId){
+  if(classId < 16){
+    return "basic";
+  }
+  else if(classId < 24){
+    return "advanced";
+  }
+  else if(classId < 28){
+    return "elite";
+  }
+  else if(classId === 28){
+    return "exalted";
+  }
+}
+
+export function findSummonsbucket(summons, classtype){
+  if(classtype==="basic"){
+    switch(summons){
+      case 0:
+        return "0";
+      case 1:
+      case 2:
+        return "1-2";
+      case 3:
+      case 4:
+      case 5:
+        return "3-5";
+      case 6:
+      case 7:
+      case 8:
+      case 9:
+        return "6-9";
+      case 10:
+        return "10";
+    }
+  }
+  else if(classtype==="advanced"){
+    switch(summons){
+      case 0:
+        return "0";
+      case 1:
+        return "1";
+      case 2:
+      case 3:
+      case 4:
+        return "2-4";
+      case 5:
+        return "5";
+    }
+  }
+  else if(classtype==="elite" || classtype==="exalted"){
+    return summons.toString();
+  }
+}
+
+export function findHeroKey(hero){
+  if(hero.generation == 0){
+    //gen0s assessed differently
+    return "gen0:" + hero.mainClass + ':' + hero.rarity;
+  }
+  else{
+    // key for api = mainClass:profession:rarity:summons
+    let summonkey = findSummonsbucket(hero.summonsRemaining, mainClassType( hero.mainClass));
+    return hero.mainClass + ':' + hero.profession + ':' + hero.rarity + ":" + summonkey;
+  }
+}
+
 function kai2dec(kai) {
     const ALPHABET = '123456789abcdefghijkmnopqrstuvwx'
     return ALPHABET.indexOf(kai)
@@ -669,10 +781,10 @@ export function extractHeroData(hero, maxScores) {
     heroData["rarity"] = rarity[hero.info.rarity]
     heroData["rarityNum"] = hero.info.rarity
 
-    console.log(`hero.info.class 10: ${hero.info.class} 16: ${parseInt(hero.info.class, 16)} => ${mainClass[hero.info.class]}`)
+    // console.log(`hero.info.class 10: ${hero.info.class} 16: ${parseInt(hero.info.class, 16)} => ${mainClass[hero.info.class]}`)
     heroData["mainClass"] = mainClass[hero.info.class]
 
-    console.log(`hero.info.subClass 10: ${hero.info.subClass} 16: ${parseInt(hero.info.subClass, 16)} => ${mainClass[hero.info.subClass]}`)
+    // console.log(`hero.info.subClass 10: ${hero.info.subClass} 16: ${parseInt(hero.info.subClass, 16)} => ${mainClass[hero.info.subClass]}`)
     heroData["subClass"] = mainClass[hero.info.subClass]
 
     heroData["name"] = `${hero.info.firstName} ${hero.info.lastName}`
@@ -689,11 +801,11 @@ export function extractHeroData(hero, maxScores) {
     heroData["sStatGrowth"] = {}
 
     for (const [stat, hexValue] of Object.entries(hero.primaryStatGrowth)) {
-        heroData["pStatGrowth"][stat] = hexToNumber("0x" + hexValue)
+        heroData["pStatGrowth"][stat] = hexValue;
     }
 
     for (const [stat, hexValue] of Object.entries(hero.secondaryStatGrowth)) {
-        heroData["sStatGrowth"][stat] = hexToNumber("0x" + hexValue)
+        heroData["sStatGrowth"][stat] = hexValue
     }
 
 
@@ -712,7 +824,7 @@ export function extractHeroData(hero, maxScores) {
     try {
         profScore = valuateAllProfessions(heroData)
     } catch (e) {
-        console.log(`Valuation gave excpetion ${e}`)
+        console.log(`Valuation gave exception ${e}`)
     }
     heroData["bestRelativeScore"] = 0
     heroData["bestRelativeProfession"] = ""

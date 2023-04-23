@@ -106,17 +106,6 @@
     },
 	 {
       "chainId": 53935,
-      "address": "0x576C260513204392F0eC0bc865450872025CB1cA",
-      "symbol": "DFKGOLD",
-      "name": "Gold",
-      "decimals": 3,
-      "logoURI": "https://dfk-hv.b-cdn.net/art-assets/items/gold-bag.png",
-      "tags": [
-        "dfk chain"
-      ]
-    },
-	 {
-      "chainId": 53935,
       "address": "0xB78d5580d6D897DE60E1A942A5C1dc07Bc716943",
       "symbol": "DFKAMBRTFY",
       "name": "Ambertaffy",
@@ -480,7 +469,7 @@
     },
     {
       "chainId": 53935,
-      "address": "0xd37aCbAC3C25a543B30aa16208637cfa6EB97eDd",
+      "address": "0xF1D53fa23C562246B9d8EC591eEa12Ec0288a888",
       "symbol": "DFKLFINST",
       "name": "Lesser Finesse Stone",
       "decimals": 0,
@@ -1034,7 +1023,7 @@
       "symbol": "DFKSHAGCAP",
       "name": "Shaggy Caps",
       "decimals": 0,
-      "logoURI": "https://defi-kingdoms.b-cdn.net/art-assets/items/threeEyedEel.png",
+      "logoURI": "https://defi-kingdoms.b-cdn.net/art-assets/items/shaggyCaps.png",
       "tags": [
         "dfk chain"
       ]
