@@ -116,7 +116,7 @@ export default {
       const heroKeySet = [];
 
       let queryresults = await queryHeros(this.userAddress);
-      
+
       this.heroTotal = 0;
 
       for(let heroData of queryresults.heroes){
@@ -125,7 +125,7 @@ export default {
         hero.rarityString = rarity[hero.rarity];
         hero.classString = mainClass[hero.mainClass];
         hero.professionString = professionsMap[hero.profession];
-        
+
         hero["minBeforeSummon"] = ((hero.nextSummonTime.valueOf() * 1000  - Date.now()) / 60000).toFixed(0);
         hero["staminaFullIn"] = ((hero.staminaFullAt * 1000 - Date.now()) / 60000).toFixed(0)
         hero["name"] = hero.firstName + " " + hero.lastName;
@@ -137,14 +137,14 @@ export default {
         hero["floorPrice"] = 0;
         hero.heroKey = findHeroKey(hero);
         heroKeySet.push(hero.heroKey);
-        
+
         this.heroes.push(hero);
       }
       this.fetchFloors(heroKeySet);
 
     },
     async fetchFloors(keys){
-    const response = await axios.post("http://34.141.228.218:8081/herofloorBulk" 
+    const response = await axios.post("http://34.141.228.218:8081/herofloorBulk"
                             , {"keys": keys} ,
                             {	headers: {
                                 "Content-Type": "application/json",
@@ -152,9 +152,16 @@ export default {
                               },
                             }
                           ).catch(err => console.error(err));
-        this.heroes.forEach(hero => {
-          hero.floorPrice = response.data[hero.heroKey].floorPrice;
-          hero.floorConfidence = response.data[hero.heroKey].confidence;
+
+      const confidenceRegex = /^(Low|High|None)$/
+
+      this.heroes.forEach(hero => {
+          hero.floorPrice = parseInt(response.data[hero.heroKey].floorPrice);
+          if (confidenceRegex.test(response.data[hero.heroKey].confidence)) {
+            hero.floorConfidence = response.data[hero.heroKey].confidence;
+          } else {
+            hero.floorConfidence = "Unknown";
+          }
           this.heroTotal += hero.floorPrice;
         });
   },
