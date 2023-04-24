@@ -122,7 +122,7 @@ export default {
     },
 
   async fetchFloors(keys){
-    const response = await axios.post("http://34.141.228.218:8081/herofloorBulk"
+    const response = await axios.post("https://dfk-floor-api.ew.r.appspot.com/herofloorBulk" 
                             , {"keys": keys} ,
                             {	headers: {
                                 "Content-Type": "application/json",
