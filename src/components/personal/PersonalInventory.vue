@@ -245,9 +245,9 @@ export default {
             && pair.priceUsd
         )
         if (pairs?.length > 0){
-					if(itemDetails.symbol === "DFKGOLD" && chainId === "avalanchedfk") console.log(pairs[0]) // here to try and catch intermittent bug where CV gold price get set as Infinity
-					return Number(pairs[0].priceUsd)
-				}
+          if(itemDetails.symbol === "DFKGOLD" && chainId === "avalanchedfk") console.log(pairs[0]) // here to try and catch intermittent bug where CV gold price get set as Infinity
+          return Number(pairs[0].priceUsd)
+        }
       } else {
         console.log(`Got status ${r.status} : ${r.statusText} while loading prices`)
       }
