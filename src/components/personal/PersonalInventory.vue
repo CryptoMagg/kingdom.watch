@@ -3,7 +3,7 @@
   <div v-for="[symbol, expansion] of [['Serendale (Harmony)', 'sd'], ['Crystalvale (DFKChain)', 'cv'], ['Serendale 2.0 (Klatyn)', 'sd2']]" :key="symbol">
     <h3>{{symbol}}</h3>
     <hr/>
-    <div v-if="items[expansion].length > 1">
+    <div v-if="items[expansion].length > 1 || items[expansion][0].balance != 0">
       <table class="table table-hover w-100">
         <thead>
           <tr>
