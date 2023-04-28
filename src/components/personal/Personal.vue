@@ -94,11 +94,24 @@
           Heroes
         </button>
         <div class="collapse" id="collapseHeroes">
-
           <PersonalHeroes :user-address="userAddress"/>
         </div>
       </div>
     </div>
+
+		<div class="row">
+      <div class="col">
+        <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapsePets"
+                aria-expanded="false" aria-controls="collapsePets">
+          Pets
+        </button>
+        <div class="collapse" id="collapsePets">
+          <PersonalPets :user-address="userAddress"/>
+        </div>
+      </div>
+    </div>
+		
     <div class="row">
       <div class="col">
         <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
@@ -132,6 +145,7 @@ import PersonalJeweler from "@/components/personal/PersonalJeweler"
 import PersonalGardens from "@/components/personal/PersonalGardens"
 import PersonalEpoch from "@/components/personal/PersonalEpoch";
 import PersonalInventory from "@/components/personal/PersonalInventory";
+import PersonalPets from "@/components/personal/PersonalPets";
 
 export default {
   name: "Personal",
@@ -143,7 +157,8 @@ export default {
     PersonalBank,
     PersonalJeweler,
     PersonalGardens,
-    PersonalEpoch
+    PersonalEpoch,
+		PersonalPets
   },
   data() {
     return {
