@@ -29,7 +29,7 @@
          <td class="text-start">{{ pet.profBonus }}</td>
          <td class="text-start">{{ pet.craftBonus }}</td>
          <td class="text-start">{{ pet.combatBonus }}</td>
-         <td class="text-end"></td>
+         <td class="text-end">{{ pet.floorPrice }}</td>
          <td class="text-start">{{ pet.floorConfidence }}</td>
         </tr>
       </tbody>
