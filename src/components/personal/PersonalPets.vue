@@ -46,7 +46,7 @@ import {queryPets} from "@/utils/Pets";
 export default {
   name: "PersonalPets",
   props: ["userAddress"],
-  // inject: ["setHeroTotal", "setHeroProgress","setHeroNumberof"],
+  inject: ["setPetTotal", "setPetNumberof"],
   data() {
     return {
       pets: [],
@@ -57,7 +57,12 @@ export default {
       return formatNumber(num, prefix, suffix, decimals)
     },
     async fetchPets(){
-      this.pets = await queryPets(this.userAddress);
+		let petData = await queryPets(this.userAddress);
+      this.pets = petData.pets;
+		for(let expansion of ['sd','cv','sd2']){
+			this.setPetNumberof(petData.count[expansion], expansion)
+			this.setPetTotal(petData.totals[expansion], expansion)
+		}
     }
   },
   mounted() {

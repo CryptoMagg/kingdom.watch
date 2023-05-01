@@ -61,9 +61,9 @@ const chainMap = {
               }
 const bonuses = {
   0: "-",
-  1: "1 star",
-  80: "2 stars",
-  160: "3 stars"
+  1: "★",
+  80: "★★",
+  160: "★★★"
 }
 
 const professions =  {
@@ -77,13 +77,32 @@ async function getPetFloors(){
     .catch(err => console.error(err));
   console.log("pet floors");
   console.log(response);
-  return response.data;
+ if(response){
+ return response.data;
+ }
+ else{
+	return false;
+ }
+	
+
 }
 
 
 export async function queryPets(address){
 
   const petFloors = await getPetFloors();
+
+  const petCount = {
+  sd:0,
+  cv:0,
+  sd2:0
+  };
+
+  const petTotalValue = {
+  sd:0,
+  cv:0,
+  sd2:0
+  };
 
   const client = new GraphQLClient(graphqlapiUrl);
   let results = await client.request(petQuery, {ownerAddress: address});
@@ -108,13 +127,20 @@ export async function queryPets(address){
     pet.profBonus = bonuses[petData.profBonus]
     pet.craftBonus = bonuses[petData.craftBonus]
     pet.combatBonus = bonuses[petData.combatBonus]
-    //set floors
-    let floor = petFloors[petData.rarity];
-    console.log(floor)
-    pet.floorPrice = floor.floorPrice;
-    pet.floorConfidence = floor.confidence;
+    //set floors if found
+		if(petFloors){
+			let floor = petFloors[petData.rarity];
+			pet.floorPrice = floor.floorPrice;
+			pet.floorConfidence = floor.confidence;
+			
+			petTotalValue[pet.chainName] += pet.floorPrice;
+		}
+		petCount[pet.chainName]++;
 
     pets.push(pet);
   }
-  return pets;
+  return {pets: pets,
+          count: petCount,
+          totals: petTotalValue
+        };
 }
