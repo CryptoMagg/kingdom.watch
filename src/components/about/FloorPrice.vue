@@ -24,6 +24,7 @@
         <p class="text-start">
           <i>Note: Currently only the Crystalvale Tavern (DFK Chain) is used for valuation. All floor values are in CRYSTAL.</i>
         </p>
+        
         <table class="table table-striped">
           <thead>
           <tr>
@@ -69,7 +70,12 @@
           </tr>
           </tbody>
         </table>
-
+        <br/>
+        <h2>Pet Floor Prices</h2>
+        <p class="text-start">
+          Pet floor prices are currently based on Rarity only and priced in CRYSTAL. The will be reworked and improved to include Bonuses after the Hero's Best Friend patch has been released.
+        </p>
+        <hr/>
         <h4>Change log</h4>
         <table class="table table-striped">
           <thead>

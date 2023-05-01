@@ -30,9 +30,16 @@
          <td class="text-start">{{ pet.craftBonus }}</td>
          <td class="text-start">{{ pet.combatBonus }}</td>
          <td class="text-end">{{ pet.floorPrice }}</td>
-         <td class="text-start">{{ pet.floorConfidence }}</td>
+         <td class="text-end">{{ pet.floorConfidence }}</td>
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <th class="text-start"  colspan="10">{{ total }} Pets Total</th>
+          <th class="text-end" >{{ floorTotal }}</th>
+          <th class="text-end">{{ formatNumber(floorTotal * this.prices('cv'), '$') }}</th>
+        </tr>
+      </tfoot>
     </table>
   </div>
  </template>
@@ -46,10 +53,12 @@ import {queryPets} from "@/utils/Pets";
 export default {
   name: "PersonalPets",
   props: ["userAddress"],
-  inject: ["setPetTotal", "setPetNumberof"],
+  inject: ["setPetTotal", "setPetNumberof", "prices"],
   data() {
     return {
       pets: [],
+      total: 0,
+      floorTotal:0
     }
   },
   methods: {
@@ -57,12 +66,14 @@ export default {
       return formatNumber(num, prefix, suffix, decimals)
     },
     async fetchPets(){
-		let petData = await queryPets(this.userAddress);
+    let petData = await queryPets(this.userAddress);
       this.pets = petData.pets;
-		for(let expansion of ['sd','cv','sd2']){
-			this.setPetNumberof(petData.count[expansion], expansion)
-			this.setPetTotal(petData.totals[expansion], expansion)
-		}
+      for(let expansion of ['sd','cv','sd2']){
+        this.setPetNumberof(petData.count[expansion], expansion);
+        this.total += petData.count[expansion];
+        this.setPetTotal(petData.totals[expansion], expansion)
+        this.floorTotal += petData.totals[expansion];
+      }
     }
   },
   mounted() {

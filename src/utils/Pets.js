@@ -21,11 +21,11 @@ const petElements = {
                   7: "Dark"
                 };
 const eggType = {
-                  0: "Blue Pet Egg",
-                  1: "Grey Pet Egg",
-                  2: "Green Pet Egg",
-                  3: "Yellow Pet Egg",
-                  4: "Golden Pet Egg"
+                  0: "Blue Egg",
+                  1: "Grey Egg",
+                  2: "Green Egg",
+                  3: "Yellow Egg",
+                  4: "Golden Egg"
                 };
 
 const greyEggData = require("@/data/greyEggData.json");
@@ -56,13 +56,13 @@ const petQuery =
 
 const chainMap = {
                 "SER1": "sd",
-                "CRY": "cv",
+                "CRY":  "cv",
                 "SER2": "sd2"
               }
 const bonuses = {
-  0: "-",
-  1: "★",
-  80: "★★",
+  0:   "-",
+  1:   "★",
+  80:  "★★",
   160: "★★★"
 }
 
@@ -73,18 +73,15 @@ const professions =  {
 };
 
 async function getPetFloors(){
-  const response = await axios.get("http://localhost:8081/petFloors")
+  const response = await axios.get("https://dfk-floor-api.ew.r.appspot.com/petFloors")
     .catch(err => console.error(err));
-  console.log("pet floors");
-  console.log(response);
- if(response){
- return response.data;
- }
- else{
-	return false;
- }
-	
 
+  if(response){
+		return response.data;
+	}
+	else{
+		return false;
+	}
 }
 
 
@@ -93,15 +90,15 @@ export async function queryPets(address){
   const petFloors = await getPetFloors();
 
   const petCount = {
-  sd:0,
-  cv:0,
-  sd2:0
+		sd:0,
+		cv:0,
+		sd2:0
   };
 
   const petTotalValue = {
-  sd:0,
-  cv:0,
-  sd2:0
+		sd:0,
+		cv:0,
+		sd2:0
   };
 
   const client = new GraphQLClient(graphqlapiUrl);
