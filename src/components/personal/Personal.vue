@@ -99,7 +99,7 @@
       </div>
     </div>
 
-		<div class="row">
+    <div class="row">
       <div class="col">
         <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapsePets"
@@ -111,7 +111,7 @@
         </div>
       </div>
     </div>
-		
+    
     <div class="row">
       <div class="col">
         <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
@@ -158,7 +158,7 @@ export default {
     PersonalJeweler,
     PersonalGardens,
     PersonalEpoch,
-		PersonalPets
+    PersonalPets
   },
   data() {
     return {
@@ -306,11 +306,11 @@ export default {
 
       setHeroTotal: (total, expansion) => this.heroTotal[expansion] = total,
       heroTotal: (expansion) => this.heroTotal[expansion],
-		setPetTotal: (total, expansion) => this.petTotal[expansion] = total,
+      setPetTotal: (total, expansion) => this.petTotal[expansion] = total,
       petTotal: (expansion) => this.petTotal[expansion],
       setHeroNumberof: (total, expansion) => this.heroNumberof[expansion] = total,
       heroNumberof: (expansion) => this.heroNumberof[expansion],
-		setPetNumberof: (total, expansion) => this.petNumberof[expansion] = total,
+      setPetNumberof: (total, expansion) => this.petNumberof[expansion] = total,
       petNumberof: (expansion) => this.petNumberof[expansion],
       setHeroProgress: (pct, expansion) => {
         this.heroProgress[expansion] = pct
