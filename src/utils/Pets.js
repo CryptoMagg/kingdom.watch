@@ -1,33 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import axios from "axios";
 
-
-export const Rarity = {
-                        0: "Common",
-                        1: "Uncommon",
-                        2: "Rare",
-                        3: "Legendary",
-                        4: "Mythic"
-                      };
-
-const petElements = {
-                  0: "Fire",
-                  1: "Water",
-                  2: "Earth",
-                  3: "Wind",
-                  4: "Lightning",
-                  5: "Ice",
-                  6: "Light",
-                  7: "Dark"
-                };
-const eggType = {
-                  0: "Blue Egg",
-                  1: "Grey Egg",
-                  2: "Green Egg",
-                  3: "Yellow Egg",
-                  4: "Golden Egg"
-                };
-
 const greyEggData = require("@/data/greyEggData.json");
 const blueEggData = require("@/data/blueEggData.json");
 
@@ -59,18 +32,56 @@ const chainMap = {
                 "CRY":  "cv",
                 "SER2": "sd2"
               }
+              export const Rarity = {
+                0: "Common",
+                1: "Uncommon",
+                2: "Rare",
+                3: "Legendary",
+                4: "Mythic"
+              };
+
+const petElements = {
+          0: "Fire",
+          1: "Water",
+          2: "Earth",
+          3: "Wind",
+          4: "Lightning",
+          5: "Ice",
+          6: "Light",
+          7: "Dark"
+        };
+
+const eggType = {
+          0: "Blue Egg",
+          1: "Grey Egg",
+          2: "Green Egg",
+          3: "Yellow Egg",
+          4: "Golden Egg"
+        };
+
 const bonuses = {
   0:   "-",
   1:   "★",
   80:  "★★",
   160: "★★★"
-}
+};
 
 const bonusStars = {
    0:   "★",
    1:  "★★",
    2: "★★★"
- }
+};
+
+const craftingTypes = {  
+  0: "Blacksmithing",
+  1: "Goldsmithing",
+  2: "Armorsmithing",
+  3: "Woodworking",
+  4: "Leatherworking",
+  5: "Tailoring",
+  6: "Enchanting",
+  7: "Alchemy"
+}
 
 const professions =  {
   0: "Fishing",
@@ -246,7 +257,8 @@ export async function queryPets(address){
     pet.profBonus = gatheringBonuses[petData.eggType][profBonusRef];
     pet.profStars = bonusStars[Math.floor(profBonusRef / 80)];
 
-    pet.craftBonus = bonuses[petData.craftBonus]
+    pet.craftBonus = bonuses[petData.craftBonus - (petData.element * 10000)];
+    pet.craftName = craftingTypes[petData.element];
     pet.combatBonus = bonuses[petData.combatBonus]
     //set floors if available
     if(petFloors){

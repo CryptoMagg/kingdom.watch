@@ -10,9 +10,8 @@
       <th class="text-end">Pet type</th>
       <th class="text-start">Element</th>
       <th class="text-start">Profession</th>
-      <th class="text-start">Prof Bonus</th>
-      <th class="text-start">Prof Bonus Level</th>
-      <th class="text-start">Crafting Bonus</th>
+      <th class="text-start" colspan="2">Prof Bonus</th>
+      <th class="text-start" colspan="2">Crafting Bonus</th>
       <th class="text-start">Combat Bonus</th>
       <th class="text-end"><router-link to="/about/floorprice">Floor</router-link></th>
       <th class="text-start"><router-link to="/about/floorprice">Confidence</router-link></th>
@@ -29,6 +28,7 @@
          <td class="text-start">{{ pet.profName }}</td>
          <td class="text-start">{{ pet.profBonus }}</td>
          <td class="text-start">{{ pet.profStars }}</td>
+         <td class="text-start">{{ pet.craftName }}</td>
          <td class="text-start">{{ pet.craftBonus }}</td>
          <td class="text-start">{{ pet.combatBonus }}</td>
          <td class="text-end">{{ pet.floorPrice }}</td>
