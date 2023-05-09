@@ -73,7 +73,7 @@
         <br/>
         <h2>Pet Floor Prices</h2>
         <p class="text-start">
-          Pet floor prices are currently based on Rarity only and priced in CRYSTAL. The will be reworked and improved to include Bonuses after the Hero's Best Friend patch has been released.
+          Pet floor prices are currently based on Rarity and Egg Type only and priced in CRYSTAL.
         </p>
         <hr/>
         <h4>Change log</h4>
