@@ -258,11 +258,12 @@ export async function queryPets(address){
     pet.profStars = bonusStars[Math.floor(profBonusRef / 80)];
 
     pet.craftBonus = bonuses[petData.craftBonus - (petData.element * 10000)];
-    pet.craftName = craftingTypes[petData.element];
+    if(pet.craftBonus !== '-') pet.craftName = craftingTypes[petData.element]; //only show crafting type if a bonus is present
     pet.combatBonus = bonuses[petData.combatBonus]
     //set floors if available
     if(petFloors){
-      let floor = petFloors[petData.rarity];
+      let petkey = "pet:" + petData.eggType + ":" + petData.rarity; 
+      let floor = petFloors[petkey];
       pet.floorPrice = floor.floorPrice;
       pet.floorConfidence = floor.confidence;
       
