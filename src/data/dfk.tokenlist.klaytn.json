@@ -869,6 +869,28 @@
       "tags": [
         "klaytn"
       ]
-    }
+    },
+    {
+      "chainId": 8217,
+      "address": "0x2F11e335224C5aBd3418B99922A9fe442F5696E9",
+      "symbol": "DFKREGTRT",
+      "name": "Regular Pet Treat",
+      "decimals": 0,
+      "logoURI": "https://defi-kingdoms.b-cdn.net/art-assets/items/pet-treat-regular.png",
+      "tags": [
+        "klaytn"
+      ]
+    },
+    {
+      "chainId": 8217,
+      "address": "0xEec86C39e061B3Dec44f608Ff0ADA8053B8fFaDb",
+      "symbol": "DFKPRMTRT",
+      "name": "Premium Pet Treat",
+      "decimals": 0,
+      "logoURI": "https://defi-kingdoms.b-cdn.net/art-assets/items/pet-treat-premium.png",
+      "tags": [
+        "klaytn"
+      ]
+    } 
   ]
 }
