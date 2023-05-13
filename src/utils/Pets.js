@@ -204,6 +204,8 @@ const gatheringBonuses = {
   }
 }
 
+const validConfidence = ["Low", "High"];
+
 async function getPetFloors(){
   const response = await axios.get("https://dfk-floor-api.ew.r.appspot.com/petFloors")
     .catch(err => console.error(err));
@@ -265,7 +267,12 @@ export async function queryPets(address){
       let petkey = "pet:" + petData.eggType + ":" + petData.rarity; 
       let floor = petFloors[petkey];
       pet.floorPrice = floor.floorPrice;
-      pet.floorConfidence = floor.confidence;
+			if(validConfidence.includes(floor.confidence)){
+				pet.floorConfidence = floor.confidence;
+			}
+			else{
+				pet.floorConfidence = "Unknown";
+			}
       
       petTotalValue[pet.chainName] += pet.floorPrice;
     }
