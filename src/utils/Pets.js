@@ -267,12 +267,7 @@ export async function queryPets(address){
       let petkey = "pet:" + petData.eggType + ":" + petData.rarity; 
       let floor = petFloors[petkey];
       pet.floorPrice = floor.floorPrice;
-			if(validConfidence.includes(floor.confidence)){
-				pet.floorConfidence = floor.confidence;
-			}
-			else{
-				pet.floorConfidence = "Unknown";
-			}
+			pet.floorConfidence = validConfidence.includes(floor.confidence) ? floor.confidence : "Unknown";
       
       petTotalValue[pet.chainName] += pet.floorPrice;
     }
