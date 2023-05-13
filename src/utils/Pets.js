@@ -211,7 +211,12 @@ async function getPetFloors(){
     .catch(err => console.error(err));
 
   if(response){
-    return response.data;
+    let retData = {};
+    for(const key in response.data){
+      let floorDetail = response.data[key];
+      retData[key] = validConfidence.includes(floorDetail.confidence) ? floorDetail : {"floorPrice": 0, "confidence": "Unknown"}
+    }
+    return retData;
   }
   else{
     return false;
@@ -264,11 +269,10 @@ export async function queryPets(address){
     pet.combatBonus = bonuses[petData.combatBonus]
     //set floors if available
     if(petFloors){
-      let petkey = "pet:" + petData.eggType + ":" + petData.rarity; 
+      let petkey = "pet:" + petData.eggType + ":" + petData.rarity;
       let floor = petFloors[petkey];
       pet.floorPrice = parseInt(floor.floorPrice);
-      pet.floorConfidence = validConfidence.includes(floor.confidence) ? floor.confidence : "Unknown";
-      
+      pet.floorConfidence =  floor.confidence;
       petTotalValue[pet.chainName] += pet.floorPrice;
     }
     petCount[pet.chainName]++;
