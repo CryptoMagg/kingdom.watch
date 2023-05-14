@@ -212,7 +212,7 @@ async function getPetFloors() {
   if (response && response.status === 200) {
     return Object.entries(response.data)
       .reduce((acc, [key, tainted]) => {
-        if (/pet:\d+:\d+/.test(key)) {
+        if (/^pet:\d+:\d+$/.test(key)) {
           acc[key] = {
             floorPrice: parseInt(tainted.floorPrice),
             lastUpdated: parseInt(tainted.lastUpdated),
