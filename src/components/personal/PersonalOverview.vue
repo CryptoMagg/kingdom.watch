@@ -74,7 +74,7 @@
               <label class="form-check-label" for="flexSwitchHeroes">Heroes</label>
             </span>
           </td>
-					<th class="text-end">
+          <th class="text-end">
             <span>{{  includeHeroes ? (heroNumberof('sd')+heroNumberof('cv')+heroNumberof('sd2')) : "" }}</span>
           </th>
           <th class="text-end">
@@ -92,6 +92,32 @@
         </tr>
 
         <tr><td colspan="3"></td></tr>
+
+      <tr>
+      <td class="text-start" >
+        <span class="form-check form-switch">
+         <input v-model="includePets" class="form-check-input" type="checkbox" role="switch" id="flexSwitchHeroes">
+         <label class="form-check-label" for="flexSwitchHeroes">Pets</label>
+        </span>
+      </td>
+          <th class="text-end">
+        <span>{{  includePets ? (petNumberof('sd')+petNumberof('cv')+petNumberof('sd2')) : "" }}</span>
+      </th>
+      <th class="text-end">
+        {{ formatNumber(includePets?(petTotal('sd')*tokenPrice('cv'))+(petTotal('cv') * tokenPrice('cv')+(petTotal('sd2') * tokenPrice('cv'))):0, '$') }}
+      </th>
+     </tr>
+     <tr v-for="[symbol, expansion] of [['Serendale', 'sd'], ['Crystalvale', 'cv'], ['Serendale 2.0', 'sd2']]" :key="symbol">
+      <td class="text-start ps-5">{{ symbol }}</td>
+      <td class="text-end">
+        <span>{{ includePets ? petNumberof(expansion) : 0 }}</span>
+      </td>
+      <td class="text-end">
+        <span>{{ formatNumber(includePets ? petTotal(expansion) * tokenPrice('cv') : 0, '$') }}</span>
+      </td>
+     </tr>
+
+     <tr><td colspan="3"></td></tr>
 
         <tr>
           <td class="text-start" colspan="2">
@@ -116,7 +142,7 @@
 
         <tr><td colspan="3"></td></tr>
 
-				<tr>
+        <tr>
           <td class="text-start" colspan="2">
             <span class="form-check form-switch">
               <input v-model="includeJeweler" class="form-check-input" type="checkbox" role="switch" id="flexSwitchInventory">
@@ -403,9 +429,10 @@ export default {
       localProgress: { sd: 0, cv: 0, sd2:0 },
       TotalJewelHeld: 0,
       includeHeroes: true,
+      includePets: true,
       includeInventory: true,
       includeLocked: true,
-		includeJeweler: true,
+      includeJeweler: true,
       poolSort: {
         sd: { id: 1, name: 0, apr: 0, usd: 0 },
         cv: { id: 1, name: 0, apr: 0, usd: 0 },
@@ -413,7 +440,7 @@ export default {
       }
     }
   },
-  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal", "jewelerBalance","heroNumberof"],
+  inject: [ "totalPending", "epoch", "bankBalance", "prices", "progressPct", "pools", "heroTotal", "inventoryTotal", "jewelerBalance","heroNumberof", "petTotal", "petNumberof"],
   methods: {
     formatNumber(num, prefix) {
       return formatNumber(num, prefix)
@@ -450,12 +477,14 @@ export default {
         grandTotal += this.totalLocked(expansion) * this.tokenPrice(expansion)
       if (this.includeHeroes)
         grandTotal += this.heroTotal(expansion) * this.tokenPrice('cv') // all heroes priced in crystal atm
+      if (this.includePets)
+        grandTotal += this.petTotal(expansion) * this.tokenPrice('cv') // all heroes priced in crystal atm
       if(this.includeInventory)
         grandTotal += this.inventoryTotal(expansion) * this.tokenPrice('sd') // all demoninated in JEWEL atm - maybe change this
         grandTotal += this.totalPoolUsd(expansion)
-			if(this.includeJeweler && expansion!='sd'){
+      if(this.includeJeweler && expansion!='sd'){
         grandTotal += (this.jewelerBalance(expansion).jewelBalance + this.jewelerBalance(expansion).pendingRewards) * this.tokenPrice('sd');
-			}
+      }
       return grandTotal
     },
     totalAvailable(expansion) {

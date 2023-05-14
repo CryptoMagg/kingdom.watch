@@ -3,7 +3,7 @@
   <div v-for="[symbol, expansion] of [['Serendale (Harmony)', 'sd'], ['Crystalvale (DFKChain)', 'cv'], ['Serendale 2.0 (Klatyn)', 'sd2']]" :key="symbol">
     <h3>{{symbol}}</h3>
     <hr/>
-    <div v-if="items[expansion].length > 0 && items[expansion][0].balance > 0">
+    <div v-if="items[expansion].length > 1 || items[expansion][0]?.balance != 0">
       <table class="table table-hover w-100">
         <thead>
           <tr>
@@ -46,7 +46,7 @@
   
       </table>
     </div>
-    <div v-if="items[expansion].length === 0 || items[expansion][0].balance == 0">
+    <div v-if="items[expansion].length === 1 && items[expansion][0].balance == 0">
       No items found.
       <hr/>
     </div>
@@ -238,14 +238,16 @@ export default {
       const dsPrefix = "https://api.dexscreener.io/latest/dex/tokens/"
       let r = await axios.get(dsPrefix + itemDetails.address)
       if (r.status === 200) {
-        let pairs = r.data.pairs.filter(pair =>
+        let pairs = r.data.pairs?.filter(pair =>
             pair.dexId === "defikingdoms"
             && Number(pair.priceUsd) > 0
             && pair.chainId === chainId
             && pair.priceUsd
         )
-        if (pairs.length > 0)
+        if (pairs?.length > 0){
+          if(itemDetails.symbol === "DFKGOLD" && chainId === "avalanchedfk") console.log(pairs[0]) // here to try and catch intermittent bug where CV gold price get set as Infinity
           return Number(pairs[0].priceUsd)
+        }
       } else {
         console.log(`Got status ${r.status} : ${r.statusText} while loading prices`)
       }

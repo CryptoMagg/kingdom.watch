@@ -1038,6 +1038,28 @@
       "tags": [
         "dfk chain"
       ]
-    }
+    },
+    {
+      "chainId": 53935,
+      "address": "0xAcDa84fAb3d3cdB38078b04901a26c103C37E7F4",
+      "symbol": "DFKREGTRT",
+      "name": "Regular Pet Treat",
+      "decimals": 0,
+      "logoURI": "https://defi-kingdoms.b-cdn.net/art-assets/items/pet-treat-regular.png",
+      "tags": [
+        "dfk chain"
+      ]
+    },
+    {
+      "chainId": 53935,
+      "address": "0x8Df3fFa5a677ba9737CE8Afcb8dd15Bd74085adD",
+      "symbol": "DFKPRMTRT",
+      "name": "Premium Pet Treat",
+      "decimals": 0,
+      "logoURI": "https://defi-kingdoms.b-cdn.net/art-assets/items/pet-treat-premium.png",
+      "tags": [
+        "dfk chain"
+      ]
+    } 
   ]
 }

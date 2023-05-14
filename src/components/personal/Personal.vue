@@ -94,11 +94,24 @@
           Heroes
         </button>
         <div class="collapse" id="collapseHeroes">
-
           <PersonalHeroes :user-address="userAddress"/>
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col">
+        <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapsePets"
+                aria-expanded="false" aria-controls="collapsePets">
+          Pets
+        </button>
+        <div class="collapse" id="collapsePets">
+          <PersonalPets :user-address="userAddress"/>
+        </div>
+      </div>
+    </div>
+    
     <div class="row">
       <div class="col">
         <button class="btn btn-primary m-2 w-50" type="button" data-bs-toggle="collapse"
@@ -132,6 +145,7 @@ import PersonalJeweler from "@/components/personal/PersonalJeweler"
 import PersonalGardens from "@/components/personal/PersonalGardens"
 import PersonalEpoch from "@/components/personal/PersonalEpoch";
 import PersonalInventory from "@/components/personal/PersonalInventory";
+import PersonalPets from "@/components/personal/PersonalPets";
 
 export default {
   name: "Personal",
@@ -143,7 +157,8 @@ export default {
     PersonalBank,
     PersonalJeweler,
     PersonalGardens,
-    PersonalEpoch
+    PersonalEpoch,
+    PersonalPets
   },
   data() {
     return {
@@ -189,7 +204,9 @@ export default {
       progressPct: { sd: 0, cv: 0, sd2: 0 },
       profileName: "",
       heroTotal: { sd: 0, cv: 0, sd2: 0 },
+      petTotal: { sd: 0, cv: 0, sd2: 0 },
       heroNumberof: { sd: 0, cv: 0, sd2: 0 },
+      petNumberof: { sd: 0, cv: 0, sd2: 0 },
       heroProgress: { sd: 0, cv: 0, sd2: 0 },
       inventoryTotal: { sd: 0, cv: 0, sd2: 0 },
       jewelPrice: 0
@@ -289,8 +306,12 @@ export default {
 
       setHeroTotal: (total, expansion) => this.heroTotal[expansion] = total,
       heroTotal: (expansion) => this.heroTotal[expansion],
+      setPetTotal: (total, expansion) => this.petTotal[expansion] = total,
+      petTotal: (expansion) => this.petTotal[expansion],
       setHeroNumberof: (total, expansion) => this.heroNumberof[expansion] = total,
       heroNumberof: (expansion) => this.heroNumberof[expansion],
+      setPetNumberof: (total, expansion) => this.petNumberof[expansion] = total,
+      petNumberof: (expansion) => this.petNumberof[expansion],
       setHeroProgress: (pct, expansion) => {
         this.heroProgress[expansion] = pct
         this.calcProgressPct()
